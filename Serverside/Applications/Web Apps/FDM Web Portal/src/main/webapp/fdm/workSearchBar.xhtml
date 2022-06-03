@@ -1,0 +1,381 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+ 	<p:sidebar id="workSearchDialog" widgetVar="workSearchDialog" styleClass="searchTabs" style="width:640px; padding:.5em 0em;" position="right">
+ 	
+ 	<p:panel header="Work Order Search">
+ 	<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="padding-left:.25em;cursor:pointer;" onclick="PF('workSearchDialog').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+ 	</p:panel>
+ 	
+ 	<p:remoteCommand name="resetWorkSearchForm" actionListener="#{workList.reset()}" update="workSearchTabs" style="display: none;" />
+						
+		<p:tabView id="workSearchTabs"> <!--  activeIndex="#{workList.activeTab}"> -->
+		
+			<p:tab id="sworkSearchCriteria" title="General">
+
+				<p:panel>
+				
+					<h:form id="searchForm">
+						<p:defaultCommand target="searchWO" />
+						<p:panelGrid id="innerContent" width="100%">
+	
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_workgroup_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allWorkgroupsSelected" value="#{workList.allWorkgroupsSelected}" unselectable="false">
+									<p:ajax update="workgroupSelect" listener="#{workList.searchCriteria.setWorkgroups(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Work Groups" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="workgroupSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{workList.allWorkgroupsSelected == true}">
+										        <f:selectItems value="#{workList.searchCriteria.workgroups}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select"
+											id="showWorkgroups"
+											action="#{workList.loadSelectedWorkgroups}"
+											update="workgroupSelectionForm:workgroupSelection"
+											oncomplete="PF('workgroupSelectionWidget').show();">											
+											</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+
+							
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_user_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allUsersSelected" value="#{workList.allUsersSelected}" unselectable="false">
+									<p:ajax update="userSelect" listener="#{workList.searchCriteria.setUsers(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Users" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="userSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{workList.allUsersSelected == true}">
+										        <f:selectItems value="#{workList.searchCriteria.users}" var="user" itemLabel="#{user.userName}" itemValue="#{user}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select"
+											id="showUsers"
+											action="#{workList.loadSelectedUsers}"
+											update="userSelectionForm:userSelection"
+											oncomplete="PF('userSelectionWidget').show();">												
+											</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+							
+							
+
+							<p:row>
+								<p:column>
+									<h:outputLabel for="statusSelect" value="#{msg.fdm_work_status_label}" />
+								</p:column>
+								<p:column colspan="2" styleClass="noPaddingCell">
+									<p:selectManyCheckbox class="workstatus-checkbox" id="statusSelect"  layout="responsive" columns="2"
+										required="true" requiredMessage="#{msg.fdm_work_no_status_selected}"
+										value="#{workList.searchCriteria.selectedWorkStatusOption}"
+										disabled="#{fn:length(workList.workStatusOptions) eq 0}">
+										<f:selectItems value="#{workList.workStatusOptions}" />
+									</p:selectManyCheckbox>
+									
+									<!-- <p:selectCheckboxMenu id="statusSelect" value="#{workList.selectedWorkStatusOption}" label="Cities" multiple="true" panelStyle="width:350px">
+							            <f:selectItems value="#{workList.workStatusOptions}" />
+							        </p:selectCheckboxMenu> -->
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column>
+									<p:outputLabel 
+										value="#{msg.fdm_search_from_date_label}" />
+								</p:column>
+								<p:column styleClass="noPaddingCell">
+									<p:calendar id="fromDate" value="#{workList.searchCriteria.fromDate}"
+										showOn="button"
+										converterMessage="#{msg.fdm_search_invalid_date_format}"
+										pattern="#{msg.date_pattern}" />
+										
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column>
+									<p:outputLabel 
+										value="#{msg.fdm_search_to_date_label}" />
+								</p:column>
+								<p:column styleClass="noPaddingCell">
+									<p:calendar id="toDate" value="#{workList.searchCriteria.toDate}"
+										showOn="button"
+										converterMessage="#{msg.fdm_search_invalid_date_format}"
+										pattern="#{msg.date_pattern}" />
+							        
+								</p:column>
+							</p:row>
+			
+							<p:row>
+							<p:column colspan="2">
+								<p:messages id="messages" showDetail="false" closable="false">
+							    </p:messages>
+							</p:column>
+							</p:row>
+							
+							<p:row>
+
+								<p:column colspan="3">
+
+								<p:commandButton id="searchWO" value="#{msg.fdm_search_btn}" action="#{workList.search(false)}" update="innerContent" />
+
+								<p:commandButton id="cancelWO" value="#{msg.fdm_search_dialog_cancel_label}" action="#{workList.cancel}" oncomplete="PF('workSearchDialog').hide();" update="innerContent" />
+
+								<p:commandButton id="resetBtn" value="#{msg.fdm_reset_btn}" style="float:right" action="#{workList.reset}" process="@this" update="innerContent" >
+									<p:resetInput target="innerContent"/>
+								</p:commandButton>
+								
+								</p:column>
+
+							</p:row>
+
+	
+						</p:panelGrid>
+
+	
+					</h:form>
+				</p:panel>
+
+
+			</p:tab>
+			
+			<p:tab id="workSearchCriteriaReference" title="Reference">
+			
+				<p:panel>
+				
+					<h:form id="searchWONUMForm">
+					
+						<p:defaultCommand target="searchWONUM" />
+						
+						<p:panelGrid id="innerContent">
+	
+							<p:row>
+								
+								<p:column>
+									<h:outputLabel for="woNumber" value="#{msg.fdm_details_work_order_no_label}" />
+								</p:column>
+										
+								<p:column>
+									<p:inputText id="woNumber" value="#{workList.searchCriteria.woNumber}"
+									required="true" requiredMessage="#{msg.fdm_min_search_no_length_label}" />
+								</p:column>	
+								
+								<p:column style="width:600px" />
+
+							</p:row>
+							
+							<p:row>
+							<p:column colspan="3">
+								<p:messages id="messages" showDetail="false" closable="false">
+							    </p:messages>
+							</p:column>
+							</p:row>
+
+						
+							<p:row>
+							
+								<p:column colspan="3">	
+											
+								<p:commandButton id="searchWONUM" value="#{msg.fdm_search_btn}" action="#{workList.searchWONumber}" process="searchWONUMForm " update="innerContent" />
+									
+								<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" action="#{workList.cancel}" oncomplete="PF('workSearchDialog').hide();" update="innerContent" />
+
+								<p:commandButton value="#{msg.fdm_reset_btn}" style="float:right" action="#{workList.reset}" process="@this" update="innerContent" >
+									<p:resetInput target="innerContent"/>
+								</p:commandButton>
+								
+								</p:column>
+							
+							</p:row>
+								
+						</p:panelGrid>
+
+										
+					</h:form>
+				
+				</p:panel>
+				
+			</p:tab>
+
+		</p:tabView>
+		
+
+		
+	</p:sidebar>
+
+
+		<h:form id="workgroupSelectionForm">
+			<p:sidebar position="right" id="workgroupSelection"
+				widgetVar="workgroupSelectionWidget" style="width:640px;">
+
+				<p:panel id="workgroupSelectionP"
+					header="#{msg.fdm_search_workgroup_dialog_label}">
+			
+					<div style="height:10px;width:100%"></div>
+					
+					<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+						<p:tree id="workgroupSelectTree" value="#{workList.workgroupRoot}"
+							style="width:100%;" var="node" filterMatchMode="contains"
+							selectionMode="checkbox" filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}"
+							selection="#{workList.selectedWorkgroupNodes}">
+							<p:treeNode>
+								<h:outputText value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+								<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+							</p:treeNode>
+						</p:tree>
+					</div>
+					<f:facet name="footer" styleClass="searchDialog">
+
+						<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+							onclick="PF('workgroupSelectionWidget').hide();"
+							action="#{workList.updateSelectedWorkgroups()}"
+							update="workSearchTabs:searchForm:workgroupSelect workgroupSelectTree workSearchTabs:searchForm:allWorkgroupsSelected" />
+
+						<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+							action="#{workList.clearSelectedWorkgroups()}"
+							update="workgroupSelectTree" />
+
+						<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+							onclick="PF('workgroupSelectionWidget').hide();" />
+
+					</f:facet>
+
+				</p:panel>
+			</p:sidebar>
+		</h:form>
+
+
+		<h:form id="userSelectionForm">
+			<p:sidebar position="right" id="userSelection"
+				widgetVar="userSelectionWidget" style="width:640px;">
+
+				<p:panel id="userSelectionP"
+					header="#{msg.fdm_search_user_dialog_label}">
+
+					<div style="height:10px;width:100%"></div>
+					<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+						<p:tree id="userSelectTree" value="#{workList.userRoot}"
+							style="width:100%;" var="node" filterMatchMode="contains"
+							filterBy="#{(node['class'].simpleName == 'HPCUsers' ? node.userName.concat('(').concat(node.id.userCode).concat(')') : node)}"
+							selectionMode="checkbox" selection="#{workList.selectedUserNodes}">
+							<p:treeNode>
+								<h:outputText value="#{(node['class'].simpleName == 'HPCUsers' ? node.userName : node)}" />
+								<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCUsers' ? ' ('.concat(node.id.userCode).concat(')') : '')}" />
+							</p:treeNode>
+						</p:tree>
+					</div>
+					<f:facet name="footer" styleClass="searchDialog">
+
+						<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+							onclick="PF('userSelectionWidget').hide();"
+							action="#{workList.updateSelectedUsers()}"
+							update="workSearchTabs:searchForm:userSelect userSelectTree workSearchTabs:searchForm:allUsersSelected" />
+
+						<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+							action="#{workList.clearSelectedUsers()}" update="userSelectTree" />
+
+						<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+							onclick="PF('userSelectionWidget').hide();" />
+
+					</f:facet>
+
+				</p:panel>
+			</p:sidebar>
+		</h:form>
+
+
+
+		<h:form id="statusSelectionForm">
+			<p:sidebar position="right" id="statusSelection"
+				widgetVar="statusSelectionWidget" style="width:640px;">
+
+				<p:panel id="statusSelectionP"
+					header="#{msg.fdm_search_result_dialog_label}">
+
+					<div style="height:10px;width:100%"></div>
+					<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+						<p:tree id="statusSelectTree" value="#{workList.statusRoot}"
+							style="width:100%;" var="node" filterMatchMode="contains"
+							selectionMode="checkbox" filterBy="#{node}"
+							selection="#{workList.selectedStatusNodes}">
+							<p:treeNode>
+								<h:outputText value="#{node}" />
+							</p:treeNode>
+						</p:tree>
+					</div>
+					<f:facet name="footer" styleClass="searchDialog">
+
+						<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+							onclick="PF('statusSelectionWidget').hide();"
+							action="#{workList.updateSelectedWorkStatuses()}"
+							update="workSearchTabs:searchForm:statusSelect statusSelectTree" />
+
+						<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+							action="#{workList.clearSelectedStatus()}"
+							update="statusSelectTree" />
+
+						<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+							onclick="PF('statusSelectionWidget').hide();" />
+
+					</f:facet>
+
+				</p:panel>
+			</p:sidebar>
+		</h:form>
+
+
+</ui:composition>

@@ -1,0 +1,162 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:p="http://primefaces.org/ui"
+   xmlns:ds="http://deltaspike.apache.org/jsf"
+   contentType="text/html">
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta http-equiv="Pragma" content="no-cache"/>
+		<meta http-equiv="Expires" content="0"/>
+		<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate"/>
+		<!-- Stop Microsoft Edge showing number sequences as phone numbers -->
+		<meta name="format-detection" content="telephone=no"/>
+   		<title>#{msg.fdm_title}</title>
+		<link href="#{request.contextPath}/stylesheet/fdm.css?v=1.4.2" rel="stylesheet" type="text/css" />
+		<link rel="shortcut icon" type="image/png" href="#{request.contextPath}/images/favicon.png" />
+		<h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+		<h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/v4-shims.min-jsf.css" />
+		
+   	</h:head>
+   	
+   	<h:body>
+
+   		<script type="text/javascript">
+   		//<![CDATA[
+   		document.onkeydown = function (event) {
+   			
+   			if (!event) { /* This will happen in IE */
+   				event = window.event;
+   			}
+   				
+   			var keyCode = event.keyCode;
+   			
+   			if (keyCode == 8 &&
+   				((event.target || event.srcElement).tagName != "TEXTAREA") && 
+   				((event.target || event.srcElement).tagName != "INPUT")) { 
+   				
+   				if (navigator.userAgent.toLowerCase().indexOf("msie") == -1) {
+   					event.stopPropagation();
+   				} else {
+   					event.returnValue = false;
+   				}
+   				
+   				return false;
+   			}
+   		};
+   		
+   	//]]>
+   		
+   		$(document).ready(function(){
+			$("body").on("click",'.ui-dialog-mask',function () {
+         		idModal = this.id;
+           		idModal = idModal.replace("_modal","");
+           		if (idModal !== "showAccessTokenId") {
+           			clearTimeout(timerId);
+           			getWidgetVarById(idModal).hide();
+        		}
+       		})
+       		
+       		$.extend($.ui.keyCode, {
+                NUMPAD_ENTER: 108
+            });
+			
+		});
+   		
+		function getWidgetVarById(id) {
+       		for (var propertyName in PrimeFaces.widgets) {
+           		var widget = PrimeFaces.widgets[propertyName];
+           		if (widget &amp;&amp; widget.id === id) {
+          			return widget;
+        		}
+    		}
+  		}
+		
+		var timerId = null; 
+		var timeLeft = 30; 
+		var elem = document.getElementById('expiryCountDown'); 
+		function countdown() { 
+		  if (timeLeft == -1) { 
+		    clearTimeout(timerId); 
+		  } else { 
+		    elem.innerHTML = timeLeft + ' seconds'; 
+		    timeLeft--; 
+		  } 
+		} 
+		
+   		</script>
+   		
+   			<h:form>
+				<p:idleMonitor id="idleMonitor" timeout="#{fdmenv.idleTimeoutms()}"
+					onidle="PF('idleDialog').show();"  >
+				</p:idleMonitor>
+				<p:poll id="sessionAlivePoll" listener="#{fdmenv.onActive}" interval="0#{session.maxInactiveInterval - 30}"  global="false"/>				
+				<p:dialog header="Session Timeout"
+					onShow="PF('logoutPoll').start();timeLeft=30;timerId = setInterval(countdown, 1000);"
+					onHide="timeLeft=-2;elem.innerHTML = 30 + ' seconds';" 
+					widgetVar="idleDialog" 
+					position="center center"
+					id="idleDialog"
+					minHeight="60"
+					width="350" 
+					resizable="false"
+					showEffect="fade" 
+					modal="true" 
+					style="margin:50px;">
+					
+					<p:ajax event="close" listener="#{fdmenv.onActive}" oncomplete="PF('logoutPoll').stop();"  />
+					
+					<p class="p-m-0">Your session is about to expire due to	inactivity.</p>
+					<p>
+						You will be automatically logged out in <span id="expiryCountDown" style="font-weight: bold;">30 seconds</span>
+					</p>
+					<f:facet name="footer">
+						<p:commandButton id="menuLogoutBtn2" value="Log Out" action="#{menu.logout}"></p:commandButton>
+
+		       			<p:commandButton id="menuContinueBtn" value="Continue" action="#{fdmenv.onActive}" 
+		       			onclick="PF('idleDialog').hide(); PF('logoutPoll').stop(); clearTimeout(timerId);" style="width: 5rem" update="idleMonitor"/>
+		       			 
+					</f:facet>
+					<p:poll id="logoutPoll" widgetVar="logoutPoll" global="false" listener="#{fdmenv.logout}" interval="30" autoStart="false"
+					immediate="true"/>
+					
+				</p:dialog>
+			</h:form>
+
+
+	<!-- FDP1398 - MC use growl to pop up messages -->
+   		<h:panelGroup id="msgs" >
+			<p:growl id="growl" showDetail="false" sticky="false" rendered="#{not facesContext.validationFailed}"/>
+		</h:panelGroup> 
+   		
+   		<div id="container">
+			<!-- <a4j:status id="noLoadingStatus" onstart="" onstop="" /> -->
+			<p:ajaxStatus id="noLoadingStatus" onstart="" onsuccess="" />
+			
+			<ui:include src="header.xhtml" />
+			<ui:include src="menu.xhtml" />	
+			<ui:include src="status.xhtml" />
+			
+			<div id="contentContainer">
+				<div id="mainContent">
+					<ui:include src="page-info.xhtml" /> 
+					<ui:insert name="main-body"/>
+				</div>	
+			</div>
+				
+			<!-- <a4j:log level="ALL" popup="false" width="800" height="400" rendered="false"/> -->
+			
+		</div>
+		<!--<a4j:outputPanel ajaxRendered="true">
+		   <h:form style="display:none" prependId="false">
+		        <h:inputHidden id="maximumSeverity" value="#{facesContext.maximumSeverity.ordinal}"/>
+		    </h:form>
+		</a4j:outputPanel>  -->
+		<ui:include src="footer.xhtml" /> 
+		<ds:windowId/>	
+   	</h:body>
+</html>

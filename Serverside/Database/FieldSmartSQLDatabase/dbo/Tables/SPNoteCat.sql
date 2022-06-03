@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[SPNoteCat] (
+    [SPCatID]   INT          NOT NULL,
+    [SPCatDesc] VARCHAR (20) NULL,
+    CONSTRAINT [PK_SPNOTECAT] PRIMARY KEY CLUSTERED ([SPCatID] ASC)
+);
+

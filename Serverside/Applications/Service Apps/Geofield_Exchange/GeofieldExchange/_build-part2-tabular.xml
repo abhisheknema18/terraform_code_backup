@@ -1,0 +1,62 @@
+﻿<x:unwrap xmlns:x="http://www.sigmaseven.co.uk/xml/x"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- This Task group contains the process for Tabular datasets -->
+  <Task xsi:type="SigmaSeven.Exchange.SequentialTaskGroup" x:if="TABULAR">
+    <!-- Define common parameters -->
+    <Task xsi:type="SigmaSeven.Exchange.LogTextTask" Text="1.  BRINGING IN COMMON PARAMETERS" />
+    <Task xsi:type="SigmaSeven.Exchange.IncludeTask" FileName="common.xml" />
+    <Task xsi:type="SigmaSeven.Exchange.IncludeTask" FileName="common-tabular.xml" />
+
+    <!-- Test to see if the state file exists -->
+    <Task xsi:type="SigmaSeven.Exchange.LogTextTask" Text="2.  DETERMINE IF STATE FILE EXISTS" />
+    <Task xsi:type="SigmaSeven.Exchange.FileExistsTask"
+          FilePath="{StateFilePath}">
+      <!-- It does not exist - so copy the file over -->
+      <FileDoesNotExistTask xsi:type="SigmaSeven.Exchange.SequentialTaskGroup">
+        <Task xsi:type="SigmaSeven.Exchange.LogTextTask" Text="3.  STATE FILE DOES NOT EXIST, COPYING INPUT SQLITE" />
+        <Task xsi:type="SigmaSeven.Exchange.CopyFileTask"
+              SourceFile="{InputFolder}\{SqliteName}.sqlite"
+              TargetFile="{StateFilePath}" />
+      </FileDoesNotExistTask>
+
+      <!-- It does exist - run incremental updates -->
+      <FileExistsTask xsi:type="SigmaSeven.Exchange.SequentialTaskGroup">
+        <Task xsi:type="SigmaSeven.Exchange.LogTextTask" Text="3.  STATE FILE EXISTS, COMPUTING DIFFERENCES" />
+        <Task xsi:type="SigmaSeven.Exchange.Incremental.DeltaCreateTask">
+          <!-- Database Delta Generator -->
+          <Generator xsi:type="SigmaSeven.Exchange.Incremental.DatabaseDeltaGenerator"
+                     OutputPath="{UpdateInstructionsFolder}"
+                     FilePrefix="{SqliteName}">
+            <!-- This element defines the source data store - a Sqlite File -->
+            <Database xsi:type="SigmaSeven.DataAccess.SpatiaLite.Database.SpatiaLiteDatabase"
+                      Filename="{InputFolder}\{SqliteName}.sqlite" />
+          </Generator>
+
+          <!-- Database Delta Version Service -->
+          <VersionService xsi:type="SigmaSeven.Exchange.Incremental.DatabaseDeltaVersionService"
+                          VersionFile="{VersionFilePath}" VersionPrefix="{SqliteName}">
+            <!-- This element defines the target data store - a Sqlite File -->
+            <!-- This is typically known as the 'state' file -->
+            <Database xsi:type="SigmaSeven.DataAccess.SpatiaLite.Database.SpatiaLiteDatabase"
+                      CleanAndCompressGeometries="False"
+                      Filename="{StateFilePath}" />
+          </VersionService>
+
+          <!-- Text Log Service -->
+          <LogService xsi:type="SigmaSeven.Exchange.Incremental.TextLogService"
+                      Path="{LogFilePath}" />
+        </Task>
+      </FileExistsTask>
+    </Task>
+
+    <!-- Packaging -->
+    <Task xsi:type="SigmaSeven.Exchange.LogTextTask" Text="4.  CREATING PACKAGE(S)" />
+    <Task xsi:type="SigmaSeven.Exchange.Packaging.PackageTabularDatasetAndDiffTask"
+          UpdatesDir="{UpdateInstructionsFolder}"
+          FullBaselineDir="{StateFileFolderRoot}"
+          PackagesDir="{Packages}"
+          PackageId="{PackageId}"
+          ExtractName="{SqliteName}"
+          MajorVersion="{MajorVersion}" />
+  </Task>
+</x:unwrap>

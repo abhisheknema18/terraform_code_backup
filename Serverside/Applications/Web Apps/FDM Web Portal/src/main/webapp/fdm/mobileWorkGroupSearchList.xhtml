@@ -1,0 +1,244 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/admin-template.xhtml">
+	<ui:param name="bean" value="#{workGroupAdmin}" />
+	<ui:define name="admin-body">
+
+		<p:tabView id="mobileWGSearchTabs">
+			<p:tab id="mobileWGSearchResults"
+				title="#{msg.fdm_search_search_results_tab_label} #{workGroupAdmin.mobileWorkGroupList.size() > 0 ? '('.concat(workGroupAdmin.mobileWorkGroupList.size()).concat(')') : ''}#{workGroupAdmin.filteredMobileWorkGroupList.size() > 0 ? '('.concat(workGroupAdmin.filteredMobileWorkGroupList.size()).concat(')') : ''} "
+				disabled="#{fn:length(workGroupAdmin.mobileWorkGroupList) == 0 }">
+
+				<f:facet name="title">
+					<h:outputText id="theTitle"
+						value="#{msg.fdm_search_search_results_tab_label} #{workGroupAdmin.filteredMobileWorkGroupList.size() > 0 and workGroupAdmin.filteredMobileWorkGroupList.size() lt workGroupAdmin.mobileWorkGroupList.size() ? '('.concat(workGroupAdmin.filteredMobileWorkGroupList.size()).concat(' of ').concat(workGroupAdmin.mobileWorkGroupList.size()).concat(')') : workGroupAdmin.mobileWorkGroupList.size() > 0 ? '('.concat(workGroupAdmin.mobileWorkGroupList.size()).concat(')') : '(0)' } " />
+				</f:facet>
+
+				<h:form id="mobileWGSearchListForm">
+					<p:remoteCommand name="updateFilteredValue"
+						action="#{workGroupAdmin.resetMobileWorkGroupAfterFilter}"
+						update="mobileWGSearchTabs mobileWGSearchTabs:mobileWGSearchListForm" />
+
+					<p:dataTable id="workGroupList"
+						value="#{workGroupAdmin.mobileWorkGroupList}" var="mobileWorkGroup"
+						filterDelay="1000" rowStatePreserved="true" style="width:100%"
+						selection="#{workGroupAdmin.highlightedMobileWorkGroup}" selectionMode="single"
+						styleClass="listHighLightTableCls" resizableColumns="true"
+						rowIndexVar="rowVar" 
+						rowKey="#{mobileWorkGroup}" rowStyleClass="#{mobileWorkGroup.active == 0 ? 'grey-row':''}"
+						
+						filteredValue="#{workGroupAdmin.filteredMobileWorkGroupList}">
+						<p:ajax event="filter" oncomplete="updateFilteredValue();"
+							process="@all" />
+
+						<p:column field="workGroupCode" headerText="Work Group Code" style="width:150px"
+							filterMatchMode="contains"
+							filterBy="#{mobileWorkGroup.id.workgroupCode}"
+							sortBy="#{mobileWorkGroup.id.workgroupCode}">
+							<h:outputText value="#{mobileWorkGroup.id.workgroupCode}" />
+						</p:column>
+
+						<p:column headerText="Work Group Description" style="width:150px"
+							filterMatchMode="contains"
+							filterBy="#{mobileWorkGroup.workgroupDesc}"
+							sortBy="#{mobileWorkGroup.workgroupDesc}">
+							<h:outputText value="#{mobileWorkGroup.workgroupDesc}" />
+						</p:column>
+
+						<p:column headerText="Work Group Category" style="width:150px"
+							filterMatchMode="contains"
+							filterBy="#{mobileWorkGroup.hpcWgCat.wgCatDesc}"
+							sortBy="#{mobileWorkGroup.hpcWgCat.wgCatDesc}">
+							<h:outputText value="#{mobileWorkGroup.hpcWgCat.wgCatDesc}" />
+						</p:column>
+
+						<p:column headerText="Script Profile" style="width:150px"
+							filterMatchMode="contains"
+							filterBy="#{mobileWorkGroup.scriptProfiles.profileDescription.concat(' ('.concat(mobileWorkGroup.scriptProfiles.profileName).concat(') '))}"
+							sortBy="#{mobileWorkGroup.scriptProfiles.profileDescription}">
+							<h:outputText
+								value="#{mobileWorkGroup.scriptProfiles.profileDescription.concat(' ('.concat(mobileWorkGroup.scriptProfiles.profileName).concat(') '))}" />
+						</p:column>
+
+						<p:column headerText="Work Group Class A" style="width:150px"
+							filterMatchMode="contains" filterBy="#{mobileWorkGroup.wgClassA}"
+							sortBy="#{mobileWorkGroup.wgClassA}">
+							<h:outputText value="#{mobileWorkGroup.wgClassA}" />
+						</p:column>
+
+						<p:column headerText="Work Group Class B" style="width:150px"
+							filterMatchMode="contains" filterBy="#{mobileWorkGroup.wgClassB}"
+							sortBy="#{mobileWorkGroup.wgClassB}">
+							<h:outputText value="#{mobileWorkGroup.wgClassB}" />
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="showMobUser" update="workGroupList msgs growl" actionListener="#{workGroupAdmin.setHighlightedMobileWorkGroup(mobileWorkGroup)}"
+								action="#{userAdmin.searchUsersFromWorkGroup(mobileWorkGroup)}">
+								<i class="fas fa-users" alt="users"></i>
+								<p:tooltip for="showMobUser" value="Mobile Users"></p:tooltip>
+							</p:commandLink>
+						</p:column>
+						
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="editMobWG"
+								action="#{workGroupAdmin.editMobileWorkGroup(mobileWorkGroup)}"
+								oncomplete="PF('mobileWorkGroupEditWidget').show();" 
+								update="editMobWorkGroupFrom:mobileWGEdit workGroupList">
+								<f:setPropertyActionListener value="true" target="#{workGroupAdmin.editWorkGroup}"></f:setPropertyActionListener>
+								<i class="far fa-edit" alt="edit"></i>
+								<p:tooltip for="editMobWG" value="Edit Mobile Workgroup"></p:tooltip>
+							</p:commandLink>
+						</p:column>
+
+
+					</p:dataTable>
+					
+					<h:outputText 
+						value="#{workGroupAdmin.filteredMobileWorkGroupList.size() > 0 and workGroupAdmin.filteredMobileWorkGroupList.size() lt workGroupAdmin.mobileWorkGroupList.size() ? ''.concat(workGroupAdmin.filteredMobileWorkGroupList.size()).concat(' of ').concat(workGroupAdmin.mobileWorkGroupList.size()) :  workGroupAdmin.mobileWorkGroupList.size() > 0 ? ''.concat(workGroupAdmin.mobileWorkGroupList.size()) : '0' } #{msg.fdm_search_results_results_found_label}"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+					
+				</h:form>
+			</p:tab>
+
+		</p:tabView>
+		
+		
+	<h:form id="editMobWorkGroupFrom">
+		<p:sidebar id="mobileWGEdit" widgetVar="mobileWorkGroupEditWidget"
+			styleClass="searchTabs" style="width:640px; padding:.5em 0em;"
+			position="right">
+
+			<p:panel
+				header="#{workGroupAdmin.editWorkGroup?msg.fdm_edit_mobile_work_group:msg.fdm_add_mobile_work_group}">
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('mobileWorkGroupEditWidget').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+
+				<p:panelGrid columns="1" width="100%" rendered="#{workGroupAdmin.selectedMobileWorkGroup != null}">
+
+					<p:panelGrid columns="2" width="100%" >
+						<h:outputLabel value="#{msg.fdm_work_group_cat_label}"></h:outputLabel>
+						<p:selectOneMenu value="#{workGroupAdmin.selectedMobileWorkGroup.wgCatId}" label="#{workGroupAdmin.selectedMobileWorkGroup.hpcWgCat.wgCatDesc}"
+							style="min-width: 325px !important;">
+							<f:selectItems value="#{workGroupAdmin.hpcWGCatList}" var="wgc"
+								itemValue="#{wgc.id}" 
+								itemLabel="#{wgc.wgCatDesc}"></f:selectItems>
+						</p:selectOneMenu>
+
+						<h:outputLabel value="#{msg.fdm_work_group_code_label}"></h:outputLabel>
+						<p:inputText value="#{workGroupAdmin.selectedMobileWorkGroup.id.workgroupCode}" maxlength="10" disabled="#{workGroupAdmin.editWorkGroup}" required="true"
+								requiredMessage="#{msg.fdm_work_group_code_invalid}" style="width:350px"></p:inputText>
+
+						<h:outputLabel value="#{msg.fdm_work_group_desc_label}"></h:outputLabel>
+						<p:inputText value="#{workGroupAdmin.selectedMobileWorkGroup.workgroupDesc}" maxlength="40"
+								required="true" requiredMessage="#{msg.fdm_work_group_desc_invalid}" style="width:350px"></p:inputText>
+
+						<h:outputLabel value="#{msg.fdm_mobile_script_profile_label}"></h:outputLabel>
+						<p:selectOneMenu value="#{workGroupAdmin.selectedMobileWorkGroup.profileId}" label="#{workGroupAdmin.selectedMobileWorkGroup.scriptProfiles.profileDescription}" 
+							style="min-width: 325px !important;">
+						
+						<f:selectItem itemLabel=""  noSelectionOption="true"></f:selectItem>
+							<f:selectItems value="#{workGroupAdmin.scriptProfilesList}" var="sp"
+								itemValue="#{sp.id}" 
+								itemLabel="#{sp.profileDescription}">
+								
+								</f:selectItems>
+						</p:selectOneMenu>
+
+						<h:outputLabel value="#{msg.fdm_work_group_class_a_label}"></h:outputLabel>	
+						<p:inputText value="#{workGroupAdmin.selectedMobileWorkGroup.wgClassA}" maxlength="80" rendered="#{workGroupAdmin.validationPropertyClassA == null}"
+							style="width:350px"></p:inputText>
+						<p:selectOneMenu value="#{workGroupAdmin.selectedMobileWorkGroup.wgClassA}" rendered="#{workGroupAdmin.validationPropertyClassA != null}"
+							style="min-width: 325px !important;">
+							<f:selectItems value="#{workGroupAdmin.validationPropertyClassA}" var="cat"
+										itemValue="#{cat.validationProperty}"
+										itemLabel="#{cat.validationProperty}" />
+						</p:selectOneMenu>
+
+						<h:outputLabel value="#{msg.fdm_work_group_class_b_label}"></h:outputLabel>
+						<p:inputText value="#{workGroupAdmin.selectedMobileWorkGroup.wgClassB}" maxlength="80"  rendered="#{workGroupAdmin.validationPropertyClassB == null}"
+							style="width:350px"></p:inputText>
+						<p:selectOneMenu value="#{workGroupAdmin.selectedMobileWorkGroup.wgClassB}" rendered="#{workGroupAdmin.validationPropertyClassB != null}"
+							style="min-width: 325px !important;">
+							<f:selectItems value="#{workGroupAdmin.validationPropertyClassB}" var="cat"
+										itemValue="#{cat.validationProperty}"
+										itemLabel="#{cat.validationProperty}" />
+						</p:selectOneMenu>
+										
+						<h:outputLabel value="Active" ></h:outputLabel>
+						<p:selectBooleanCheckbox value="#{workGroupAdmin.selectedMobileWorkGroup.wgActive}"></p:selectBooleanCheckbox>
+						</p:panelGrid>
+						
+						<p:panelGrid columns="1" style="width:100%"> 
+						
+							<p:messages id="messages" showDetail="false" closable="false">
+							</p:messages>
+						
+						</p:panelGrid>
+						
+						<p:panelGrid columns="2" style="width:100%"> 
+							<p:column>
+							<p:commandButton value="#{msg.fdm_save}" icon="fas fa-save"
+								action="#{workGroupAdmin.validateSaveWorkGroup()}" update="messages" 
+								oncomplete="if(!args.validationFailed) {PF('mobileWorkGroupEditWidget').hide();}">
+								 <p:ajax listener="#{userAdmin.setWorkGroupList(null)}"></p:ajax>
+							</p:commandButton>
+					
+							<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" icon="fas fa-times"
+								onclick="PF('mobileWorkGroupEditWidget').hide();" />
+							</p:column>
+							<p:commandButton value="Delete" icon="far fa-trash-alt" rendered="#{workGroupAdmin.editWorkGroup}"
+								action="#{workGroupAdmin.confirmDeleteWorkGroup()}" update="messages" 
+								style="float:right">
+							</p:commandButton>
+
+						</p:panelGrid>
+					
+				</p:panelGrid>
+			</p:panel>
+		</p:sidebar>
+	</h:form>
+	
+		<h:form>
+
+			<p:dialog id="confirmDeleteId" dynamic="true"
+				widgetVar="deleteWGDialogVar" resizable="false" width="340px"
+				modal="true" position="center center"
+				onShow="PF('deleteWGDialogVar').initPosition()" closable="false"
+				closeOnEscape="false">
+				<f:facet name="header">
+					<h:outputText value="Delete Mobile Work Group" styleClass="dialogheader" />
+				</f:facet>
+				<p:panelGrid columns="1" width="100%">
+					<h:outputText value="#{msg.fdm_delete_work_group_confirm_msg}" />
+
+				</p:panelGrid>
+				<f:facet name="footer">
+					<p:commandButton value="#{msg.fdm_action_no}"
+						onclick="PF('deleteWGDialogVar').hide();"
+						styleClass="ui-confirmdialog-no">
+					</p:commandButton>
+					<p:commandButton value="#{msg.fdm_action_yes}"
+						action="#{workGroupAdmin.deleteMobileWorkGroup()}"
+						onclick="PF('deleteWGDialogVar').hide();"
+						oncomplete="PF('mobileWorkGroupEditWidget').hide();"
+						update="mobileWGSearchTabs mobileWGSearchTabs:mobileWGSearchResults"/>
+
+				</f:facet>
+			</p:dialog>
+
+		</h:form>
+
+
+	</ui:define>
+</ui:composition>

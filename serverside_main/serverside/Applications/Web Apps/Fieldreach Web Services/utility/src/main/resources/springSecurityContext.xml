@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd                     
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+
+	<!-- 
+	#################################################################
+	# For catching the @Secured annotation methods					#
+	# Enable the @Secured annotation to secure service layer methods#
+	#################################################################
+	-->
+
+	<security:global-method-security
+		secured-annotations="enabled" />
+		
+
+	<!-- 
+	#################################################################
+	# Authentication is handled by the web service itself so supply	#
+	# a 'user' here to satisfy the requirement of an 				#
+	# authentication-manager bean. 									#
+	#################################################################
+	-->
+	
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:user-service>
+				<security:user name="user" password="user" authorities="ROLE_USER" />
+			</security:user-service>
+		</security:authentication-provider>
+	</security:authentication-manager>
+  
+  
+  	<!-- 
+	#################################################################
+	# The application will handle authentication by itself 			#
+	# 'IS_AUTHENTICATED_ANONYMOUSLY', but we want to force the 		#
+	# application to use HTTPS for all requests.					#
+	#################################################################
+	#																#
+	# 				CONFIGURATION MAY BE REQUIRED					#
+	#																#
+	#################################################################
+	#																#
+	# If the web service is required to handle SSL request the bean #
+	# below should be uncommented and configured accordingly		#
+	#																#
+	#################################################################
+	-->
+	
+	<!-- 
+	<security:http>
+		<security:intercept-url pattern="/**" requires-channel="https" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<security:port-mappings>
+			<security:port-mapping http="8080" https="8443"/>
+		</security:port-mappings>
+		<security:http-basic/>
+	</security:http>
+	-->
+	
+	
+	<bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
+		<constructor-arg>
+			<list>
+				<security:filter-chain pattern="/**"
+					filters="securityContextPersistenceFilterWithASCFalse" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+	
+	<bean id="securityContextPersistenceFilterWithASCFalse"
+		class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+		<property name='securityContextRepository'>
+			<bean
+				class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
+				<property name='allowSessionCreation' value='false' />
+			</bean>
+		</property>
+	</bean>
+
+</beans>

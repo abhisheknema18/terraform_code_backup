@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[WorkOrderTypes] (
+    [WOType]     VARCHAR (18)  NOT NULL,
+    [WOTypeDesc] VARCHAR (100) NOT NULL,
+    CONSTRAINT [PK_WORKORDERTYPES] PRIMARY KEY CLUSTERED ([WOType] ASC)
+);
+

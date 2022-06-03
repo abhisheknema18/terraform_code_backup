@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd 
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- 
+	#################################################################
+	# Define the beans used by the web services						#
+	#################################################################
+	-->
+
+	<bean id="activityLogController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.ActivityLogControllerImpl"
+		scope="prototype">
+		<property name="activityLogService" ref="activityLogService" />
+		<property name="enabledAppCodes" value="${activity.logging.apps}" />
+	</bean>
+
+	<bean id="userController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.UserControllerImpl"
+		scope="prototype">
+		<property name="userService" ref="userService" />
+		<property name="systemParametersService" ref="systemParametersService" />
+		<property name="userInviteIdentityToken" ref="userInviteIdentityToken"/>
+		<property name="userInvitationService" ref="userInvitationService"/>
+		<property name="userName" value="${auth.userName}"/>
+		<property name="userCode" value="${auth.userCode}"/>
+	</bean>
+
+	<bean id="scriptController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.ScriptControllerImpl"
+		scope="prototype">
+		<property name="fileResourceController" ref="fileResourceController" />
+		<property name="scriptService" ref="scriptService" />
+		<property name="scriptResultsService" ref="scriptResultsService" />
+		<property name="omitFromAHSearch" value="${assethistory.search.omit.scriptcodes}" />
+	</bean>
+
+	<bean id="supportFileController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.SupportFileControllerImpl"
+		scope="prototype">
+		<property name="fileResourceController" ref="fileResourceController" />
+	</bean>
+
+	<bean id="referenceOnlyFileController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.ReferenceOnlyFileControllerImpl"
+		scope="prototype">
+		<property name="fileResourceController" ref="fileResourceController" />
+	</bean>
+
+	<bean id="workOrderController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.WorkOrderControllerImpl"
+		scope="prototype">
+		<property name="fileResourceController" ref="fileResourceController" />
+		<property name="workOrderService" ref="workOrderService" />
+		<property name="workStatuses" ref="workStatus" />
+	</bean>
+	
+	<bean id="workStatus" class="com.amtsybex.fieldreach.services.endpoint.common.WorkStatus" scope="prototype" />
+
+	<bean id="fieldreachTransactionController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.FieldreachTransactionControllerImpl"
+		scope="prototype">
+		<property name="fieldreachTransactionService" ref="fieldreachTransactionService" />
+		<property name="workOrderController" ref="workOrderController" />
+		<property name="fieldreachTransactionJMSController" ref ="fieldreachTransactionJMSController" />
+	</bean>
+
+	<bean id="fileTransferController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.FileTransferControllerImpl"
+		scope="prototype">
+		<property name="fileTransferService" ref="fileTransferService" />
+		<property name="uploadTempDir" value="${file.upload.tempDir}" />
+	</bean>
+	
+	<bean id="userInviteIdentityToken"
+        class="com.amtsybex.fieldreach.services.endpoint.common.impl.UserInviteIdentityTokenImpl">
+    </bean>
+    
+	<!-- 
+	#################################################################
+	# REST Api Messaging - Marshalling In/Out						#
+	#################################################################
+	-->
+
+	<context:component-scan base-package="com.amtsybex.fieldreach.services.messages" />
+
+	<!-- 
+		RestApiMarshaller is now replaced by Jackson library for xml mapping. Although some places do still refer this,
+		aim is to remove this completely.
+	-->
+	<bean id="restApiMarshaller" class="org.springframework.oxm.xstream.XStreamMarshaller">
+		<property name="autodetectAnnotations" value="true"/>
+		<property name="annotatedClasses" ref="oxmClasses"/>
+		<property name="supportedClasses" ref="oxmClasses"/>
+	</bean>
+
+	<util:list id="oxmClasses" value-type="java.lang.String">
+		<value>com.amtsybex.fieldreach.services.messages.request.UploadInitiate</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.UploadPart</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.VALIDATIONTYPEREQUEST</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.FRTransaction</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.RegisterAttachment</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.UpdateScriptResult</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.WorkList</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.WorkOrder</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.WorkOrderStatusRequest</value>
+
+		<value>com.amtsybex.fieldreach.services.messages.response.CallResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.GetScriptResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.GetConfigResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.UploadInitiateResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.UploadPartResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.AssetDatabaseResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.GetScriptReferenceResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.GetSupportFileResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.ValidationTypeResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.RetrieveWorkOrderResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.ScriptResultsSearchResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.GetScriptResultResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.InitiateDownloadResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.DownloadPartResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.ScriptListResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.ConfigListResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.WorkIssuedResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.SupportFileListResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.WorkBankDatabaseResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.GetPersonalViewResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.NextResultStatusResponse</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.ScriptQuestionDefinitionResponse</value>
+
+		<value>com.amtsybex.fieldreach.services.messages.types.Script</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.Validation</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.ValidationProperty</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.File</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.WorkIssued</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.ScriptResult</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.ConfigFile</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.SupportFile</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.Attachment</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.PersonalView</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.Status</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.Response</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.Item</value>
+		
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.DefectNote</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.Defects</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.DefectSet</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.DefectSetDetail</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.FormatInputDef</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.FormatInputDefMe</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.GenNumValid</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.ItemData</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.ItemType</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.MeasureCategories</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.RefCat</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.RefItem</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.RefSubCat</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.ScriptRefItem</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.UnitOfMeasure</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.UomNumValid</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.ValFreeTextReq</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.Validation</value>
+		<value>com.amtsybex.fieldreach.services.messages.types.scriptdef.ValidationProperty</value>
+		
+		<value>com.amtsybex.fieldreach.services.messages.request.RegisterAttachment</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.ScriptResultNote</value>
+		<value>com.amtsybex.fieldreach.services.messages.request.SystemEvent</value>
+		<value>com.amtsybex.fieldreach.services.messages.response.CallResponse</value>
+	</util:list>
+
+
+	<!-- 
+	#################################################################
+	# Resource Handling (download) fileTypeMapping. Used to map 	#
+	# filetype (eg scriptSource) to directory.					 	#
+	#################################################################
+	-->
+
+	<bean id="fileResourceController"
+		class="com.amtsybex.fieldreach.services.resource.impl.FileResourceControllerImpl">
+		<property name="fileTypeMapping">
+			<map>
+				<entry key="script" value="${fileType.script}" />
+				<entry key="config" value="${fileType.config}" />
+				<entry key="scriptSupport" value="${fileType.script.reference}" />
+				<entry key="supportResource" value="${fileType.support.resource}" />
+				<entry key="workorder" value="${fileType.workorder}" />
+			</map>
+		</property>
+	</bean>
+
+
+	<!-- 
+	#################################################################
+	# File Transfer Maintenance										#
+	#################################################################
+	-->
+
+	<!-- 
+		Responsible for managing record of in progress downloads and uploads 
+		in the Fieldreach database, and any associated temporary files.
+	-->
+	<bean id="fileTransferMaintenanceTask"
+		class="com.amtsybex.fieldreach.services.maintenance.impl.FileTransferMaintenanceTaskImpl">
+		<property name="maxDaysActive" value="${fileTransfer.maxDaysActive}"/>
+	</bean>
+
+
+	<!-- 
+	#################################################################
+	# Multi part File Download handling properties				    #
+	#################################################################
+	-->
+
+	<bean id="fileDownloadController"
+		class="com.amtsybex.fieldreach.services.download.impl.FileDownloadControllerImpl">
+		<property name="properties">
+			<map>
+				<entry key="maxDownloadSize" value="${fileDownload.maxDownloadSize}" />
+				<entry key="maxChunkSize" value="${fileDownload.maxChunkSize}" />
+				<entry key="tempDir" value="${fileDownload.tempDir}" />
+			</map>
+		</property>
+	</bean>
+
+
+	<!-- 
+	#################################################################
+	# Multipart Upload handling properties							#
+	#################################################################
+	-->
+	
+	<bean id="fileUploadController"
+		class="com.amtsybex.fieldreach.services.upload.impl.UploadControllerImpl">
+  		<property name="maxUploadSize" value="${file.upload.maxUploadSize}" />
+  		<property name="maxChunkSize" value="${file.upload.maxChunkSize}" />
+  		<property name="tempDir" value="${file.upload.tempDir}" />
+  		<property name="fileTypeMapping">
+  			<map>
+      			<entry key="SPR[.].*[.]XML" value="${script.upload.dir}" />
+      			<entry key=".*[.].*" value="${support.upload.dir}" />
+    		</map>
+  		</property>
+  	</bean>
+
+
+	<!-- 
+	#################################################################
+	# Database Download handling properties							#
+	#################################################################
+	-->
+
+	<bean id="databaseController"
+		class="com.amtsybex.fieldreach.services.resource.impl.DatabaseControllerImpl">
+		<property name="dbTypes">
+			<map>
+				<entry key="assetDb" value="${fileType.assetDb}" />
+				<entry key="workbankDb" value="${fileType.workbankDb}" />
+				<entry key="resulthistoryDb" value="${fileType.resulthistoryDb}" />
+			</map>
+		</property>
+	</bean>
+
+</beans>

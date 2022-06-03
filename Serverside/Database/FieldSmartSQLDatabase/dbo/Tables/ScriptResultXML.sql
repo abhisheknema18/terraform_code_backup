@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[ScriptResultXML] (
+    [ReturnID] INT   NOT NULL,
+    [XMLData]  IMAGE NOT NULL,
+    CONSTRAINT [PK_SCRIPTRESULTXML] PRIMARY KEY CLUSTERED ([ReturnID] ASC)
+);
+

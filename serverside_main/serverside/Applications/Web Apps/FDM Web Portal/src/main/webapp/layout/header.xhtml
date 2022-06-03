@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html">
+	<div id="header"> 
+	<div style="background:white;height:40px; width:100%;">
+		<ul>
+			<li>
+			 	<h:outputText value="#{msg.fdm_username_header_label} "/>
+			 	<strong><h:outputText value="#{fdmenv.user.userName}"/></strong>
+			 </li>
+			 <li>
+			 	<h:outputText value="#{msg.fdm_environment_header_label} "/>
+			 	<strong><h:outputText value="#{fdmenv.environment}"/></strong>
+			 </li>
+		</ul>
+	</div>
+
+	</div>
+</ui:composition>

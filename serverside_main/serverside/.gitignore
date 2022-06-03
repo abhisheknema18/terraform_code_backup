@@ -1,0 +1,25 @@
+**/.settings/
+**/target/
+.project
+.classpath
+Applications/Web Apps/Fieldreach Web Services/mobile/logs/fws.log
+.idea
+.DS_Store
+*.iml
+*.db
+*.dll
+*.exe
+*.pdb
+*.cache
+*.dbmdl
+*.jfm
+**/bin/
+**/obj/
+**/.vs/
+.factorypath
+/Database/FusionSQLDatabase/Import Schema Logs
+*.log
+Test Automation/Portal_Selenium/Selenium App/reports
+Test Automation/Portal_Selenium/Selenium App/screenshots
+Test Automation/Portal_Selenium/Selenium App/TestReport
+Test Automation/Portal_Selenium/Selenium App/test-output

@@ -1,0 +1,11 @@
+FROM acrplatdevshared.azurecr.io/jmeteralpine:jm_5_4_1
+
+COPY ["Applications/Web Apps/Fieldreach Web Services/integration/jmeter/code/entry.sh", "/opt/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/entry.sh"]
+COPY ["Applications/Web Apps/Fieldreach Web Services/integration/jmeter/code/userdata.properties", "/opt/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/userdata.properties"]
+COPY ["Test Automation/Services_JMeter/Integration Web Service Regression/", "/opt/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin"]
+
+RUN rm -r /opt/apache-jmeter-5.4.1/apache-jmeter-5.4.1.tgz
+RUN chmod +x /opt/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/entry.sh
+RUN mkdir /fieldsmart-aut
+ENV FIELDSMART_FS=/fieldsmart-aut
+ENTRYPOINT ["/opt/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/entry.sh"]

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommonTabular xsi:type="SigmaSeven.Exchange.DefineParametersTask"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:x="http://www.sigmaseven.co.uk/xml/x">
+  <!-- ******************************************************************** -->
+  <!-- *                         SQLITE DIFFERENCING                      * -->
+  <!-- ******************************************************************** -->
+
+  <!-- Define full path to root of state file - the file itself must be in a Data folder -->
+  <Parameter Name="StateFileFolderRoot"
+             Path="{Differencing}\{PackageVersionQualifier}\State" />
+
+  <!-- Define full path to state file - note the inclusion of the Data directory, this is expected by the client -->
+  <Parameter Name="StateFilePath"
+             Value="{StateFileFolderRoot}\Data\{SqliteName}.sqlite" />
+
+  <!-- Define full path to version file -->
+  <Parameter Name="VersionFilePath"
+             Path="{Differencing}\{PackageVersionQualifier}\Version\{SqliteName}.xml" />
+</CommonTabular>

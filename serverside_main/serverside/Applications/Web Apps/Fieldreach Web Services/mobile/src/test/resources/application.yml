@@ -1,0 +1,100 @@
+server:
+  port: 8070
+  servlet:
+    context-path: /mobile/
+
+application:
+  version: 1.0
+  
+jdbc: 
+  driverClassName: org.h2.Driver
+  connectionpool:
+    max_size: 5
+      
+hibernate: 
+  dialect: org.hibernate.dialect.H2Dialect
+  show_sql: false
+  format_sql: true 
+
+default:
+  jdbc:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: AMTS
+    password: AMTS
+  instance:
+    key: hiddensercretkey
+     
+folder:
+  basePath: /random/path
+  
+fileType:
+  script: ${folder.basePath}/scripts/source
+  config: ${folder.basePath}/configs
+  script.reference: ${folder.basePath}/scripts/reference
+  support.resource: ${folder.basePath}/scripts/support
+  workorder: ${folder.basePath}/workorders
+  assetDb: ${folder.basePath}/databases/asset                  # The databases directory does not exist in the new file structure
+  workbankDb: ${folder.basePath}/databases/workbank            # The databases directory does not exist in the new file structure
+  resulthistoryDb: ${folder.basePath}/databases/resultshistory # The databases directory does not exist in the new file structure
+
+fileTransfer: 
+  maxDaysActive: 2
+     
+fileDownload:
+  maxDownloadSize: 30720000
+  maxChunkSize: 1024000
+  tempDir: ${folder.basePath}/temp/filedownloads
+  
+packages:
+  dir: 
+  
+file: 
+  upload:
+    maxUploadSize:
+    maxChunkSize: 1024000
+    tempDir: ${folder.basePath}/temp/fileuploads
+
+script:
+  upload:
+    dir: ${folder.basePath}/results/pickup
+    
+support:
+  upload: 
+    dir: ${folder.basePath}/results/support
+
+assethistory:
+  search:
+    omit:
+      scriptcodes: 
+
+workorder:
+  schema:
+    filename: workorder.xsd
+      
+frtransaction:
+  workstatus:
+    destinationtype: DIR
+    destination: ${folder.basePath}/transactions
+    retainstatuslist: 
+    
+activity:
+  logging:
+    apps: 
+
+   
+auth:
+  audience: tn47mNO4J4gySXDG3bhuc11miYI5Jgnh
+  userName: name
+  userCode: nickname
+  
+spring:
+  jackson:
+    default-property-inclusion: non-empty
+  security:
+    oauth2:
+      resourceserver:
+        jwt.issuer-uri: https://mcamt.eu.auth0.com/
+
+#To externalize log4j properties link to an external configuration file
+#logging:
+#  config: "C:/Fieldreach/log4j2-spring.xml"

@@ -1,0 +1,40 @@
+# Referenced by pipeline:
+#   - https://dev.azure.com/amtsybex1/Mobile/_build?definitionId=675
+
+trigger:
+  branches:
+    include:
+      - develop
+      - main
+
+  paths:
+    include:
+      - 'Applications/Web Apps/Fieldreach Web Services/integration/'
+      - 'Test Automation/Services_JMeter/Integration Web Service Regression'
+    exclude:
+      - 'Applications/Web Apps/Fieldreach Web Services/integration/azure-*.yml'
+
+pool: FieldSmart TFCloud (Build)
+
+name: $(TeamProject)_$(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+  - name: applicationBaseFolder
+    value: 'Applications/Web Apps/Fieldreach Web Services/integration/'
+  - name: artifactFolderName
+    value: WebServicesInt
+  - name: artifactName
+    value: fieldreachws-int
+  - group: 'Fusion_Common'
+
+
+stages:
+  # Build the IWS application using the templates.
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/buildUsingDocker.yml  # Template reference
+    parameters:
+      group_DOCKER_FBE: 'DOCKER_ACR_FUSIONBACKEND_TF'
+      container_Path: '/app/fieldreachws-int.war'
+      artifact_Path: '/int/fieldreachws-int.war'
+      application_Path: '/int'
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacBuild.yml  # Database CI template reference

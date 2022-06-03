@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-facesconfig_2_2.xsd"
+	version="2.2">
+ 
+ 	<!-- ========================================================== -->
+	<!-- Configuration to allow backing beans to be Spring Managed	-->
+	<!-- ========================================================== -->
+	<converter>
+        <converter-id>universalConverter</converter-id>
+        <converter-class>com.amtsybex.fieldreach.fdm.web.jsf.converters.UniversalConverter</converter-class>
+    </converter>
+
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>home</from-outcome>
+			<to-view-id>/fdm/home.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>dashboard</from-outcome>
+			<to-view-id>/fdm/dashboard.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>worklist</from-outcome>
+			<to-view-id>/fdm/worklist.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>alertManagerList</from-outcome>
+			<to-view-id>/fdm/alertManagerList.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>userlist</from-outcome>
+			<to-view-id>/fdm/userlist.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>userMonitor</from-outcome>
+			<to-view-id>/fdm/userMonitor.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>		
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>assetlist</from-outcome>
+			<to-view-id>/fdm/assetlist.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>workdetail</from-outcome>
+			<to-view-id>/fdm/workdetail.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>usermap</from-outcome>
+			<to-view-id>/fdm/usermap.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>details</from-outcome>
+			<to-view-id>/fdm/details.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>userAdminSearchList</from-outcome>
+			<to-view-id>/fdm/userAdminSearchList.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>systemUserAdminSearchList</from-outcome>
+			<to-view-id>/fdm/systemUserAdminSearchList.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>detailsMultiView</from-outcome>
+			<to-view-id>/fdm/detailsMultiView.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>search</from-outcome>
+			<to-view-id>/fdm/search.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>equipmentHierarchy</from-outcome>
+			<to-view-id>/fdm/equipmentHierarchy.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>equipmentDetails</from-outcome>
+			<to-view-id>/fdm/equipmentDetails.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>equipmentSearchList</from-outcome>
+			<to-view-id>/fdm/equipmentSearchList.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>resultAnalysis</from-outcome>
+			<to-view-id>/fdm/resultAnalysis.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>mobileWorkGroupSearchList</from-outcome>
+			<to-view-id>/fdm/mobileWorkGroupSearchList.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>accessGroupSearchResults</from-outcome>
+			<to-view-id>/fdm/accessGroupSearchResults.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>accessTokenList</from-outcome>
+			<to-view-id>/fdm/accessTokenList.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>inviteTokenList</from-outcome>
+			<to-view-id>/fdm/inviteTokenList.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>configurationFilesList</from-outcome>
+			<to-view-id>/fdm/configurationFilesList.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule> 
+	
+	<navigation-rule>
+		<navigation-case>
+			<!-- <from-action>#{menu.logout}</from-action> -->
+			<from-outcome>login</from-outcome>
+			<to-view-id>/logout.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<navigation-case>
+			<from-outcome>Invite</from-outcome>
+			<to-view-id>/fdm/Invite.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>  
+  	
+  	<application>
+        <resource-bundle>
+            <base-name>com.amtsybex.fdm.web.jsf.messages.FdmResources</base-name>
+            <var>msg</var>
+        </resource-bundle>
+    </application>
+     
+ 	<application>
+	     <el-resolver>
+	         org.primefaces.application.exceptionhandler.PrimeExceptionHandlerELResolver
+	    </el-resolver>
+    </application>
+
+	<factory>
+	    <exception-handler-factory>
+	       com.amtsybex.fieldreach.fdm.web.jsf.util.ExtendedPrimeExceptionHandlerFactory
+	    </exception-handler-factory>
+	</factory>
+	 
+	 <component>
+        <component-type>org.apache.deltaspike.WindowIdHolder</component-type>
+        <component-class>org.apache.deltaspike.jsf.impl.component.window.WindowIdComponent</component-class>
+    </component>
+
+    <application>
+      	<locale-config>
+         	<default-locale>en_GB</default-locale>
+         	<supported-locale>en_US</supported-locale>
+         	<supported-locale>pt</supported-locale>
+         	<supported-locale>pt_PT</supported-locale>
+      	</locale-config>
+  	</application>
+  	
+  	<!-- Fix for sorting in dataTable in primefaces 10 -->
+  	<render-kit>
+		<renderer>
+			<component-family>org.primefaces.component</component-family>
+			<renderer-type>org.primefaces.component.DataTableRenderer
+			</renderer-type>
+			<renderer-class>com.amtsybex.fieldreach.fdm.web.jsf.util.PatchedDataTableRenderer</renderer-class>
+		</renderer>
+	</render-kit>
+    
+</faces-config>

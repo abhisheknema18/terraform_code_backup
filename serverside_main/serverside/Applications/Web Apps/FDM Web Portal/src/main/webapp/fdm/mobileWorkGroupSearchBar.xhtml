@@ -1,0 +1,456 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+<style>
+.sideBarScrollTable .ui-datatable-scrollable-body{
+	max-height: 85%;
+}
+
+</style>
+	<!-- FDE063 - KN - Mobile Work Group Search Bar -->
+	<h:form id="mobileWorkGroupSearchForm">
+
+		<p:sidebar id="mobileWorkGroupSearchBar"
+			widgetVar="mobileWorkGroupSearchBarWidget" styleClass="searchTabs"
+			style="width:640px; padding:.5em 0em;" position="right">
+
+			<p:panel header="#{msg.fdm_mobile_work_group_search_header}">
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('mobileWorkGroupSearchBarWidget').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+			</p:panel>
+
+			<p:panel>
+				<p:tabView id="searchWorkGroup">
+
+					<p:tab id="mobileWorkGroupSearchTab" title="Search">
+						<p:panel>
+							<p:panelGrid id="innerContent" width="100%">
+								<p:row>
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_work_group_code_label}" />
+									</p:column>
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="userCode" maxlength="10" style="width:300px"
+											value="#{workGroupAdmin.workGroupSearchCriteria.workGroupCode}"
+											autocomplete="false">
+											<p:keyFilter regEx="/[a-z0-9_]/i"></p:keyFilter>
+										</p:inputText>
+										<p:outputLabel id="wgCodeInfo"
+											style="padding-top:5px;position: absolute;left:510px;" styleClass="tool-tip-info">
+											<i class="fas fa-info-circle"></i>
+											<p:tooltip for="wgCodeInfo"
+												value="#{msg.fdm_mobile_work_group_code_hover_msg}"
+												style="width:200px;" />
+										</p:outputLabel>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_work_group_desc_label}" />
+									</p:column>
+
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="userName" maxlength="40" style="width:300px"
+											value="#{workGroupAdmin.workGroupSearchCriteria.workGroupDesc}"
+											autocomplete="false">
+											<p:keyFilter regEx="/[a-z0-9_]/i"></p:keyFilter>
+										</p:inputText>
+										<p:outputLabel id="wgDescInfo"
+											style="padding-top:5px;position: absolute;left:510px;" styleClass="tool-tip-info">
+											<i class="fas fa-info-circle"></i>
+											<p:tooltip for="wgDescInfo"
+												value="#{msg.fdm_mobile_work_group_desc_hover_msg}"
+												style="width:200px;" />
+										</p:outputLabel>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_search_workgroup_label}" />
+									</p:column>
+									<p:column styleClass="noPaddingCell">
+										<p:selectOneRadio id="allWorkgroupsSelected"
+											value="#{workGroupAdmin.allWorkgroupsSelected}"
+											unselectable="false">
+											<p:ajax update="workgroupSelect"
+												listener="#{workGroupAdmin.workGroupSearchCriteria.setWorkgroups(null)}" />
+											<f:selectItem itemLabel="All" itemValue="true" />
+											<f:selectItem itemLabel="Selected Work Groups"
+												itemValue="false" />
+										</p:selectOneRadio>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column />
+									<p:column styleClass="noPaddingCell">
+
+										<p:panelGrid id="workgroupSelect">
+											<p:row>
+												<p:column>
+													<p:selectOneListbox scrollHeight="80"
+														id="workGroupSelectBox"
+														disabled="#{workGroupAdmin.allWorkgroupsSelected == true}">
+														<f:selectItems
+															value="#{workGroupAdmin.workGroupSearchCriteria.workgroups}" />
+													</p:selectOneListbox>
+												</p:column>
+												<p:column>
+													<p:commandButton value="Select" id="showWorkgroups"
+														action="#{workGroupAdmin.loadSelectedWorkgroups}"
+														update="WorkgroupSelectionFromWorkGroupAdmin:WorkGroupAdminWorkgroupSelection"
+														oncomplete="PF('WorkGroupAdminWorkgroupSelectionWidget').show();">
+													</p:commandButton>
+												</p:column>
+											</p:row>
+
+										</p:panelGrid>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column colspan="2">
+										<p:messages id="messages" showDetail="false" closable="false">
+
+										</p:messages>
+									</p:column>
+								</p:row>
+
+								<p:row>
+
+									<p:column colspan="2">
+										<p:commandButton value="#{msg.fdm_search_btn}"
+											action="#{workGroupAdmin.searchMobileWorkGroup()}"
+											oncomplete="if(!args.validationFailed) {PF('mobileWorkGroupSearchBarWidget').hide();}"
+											update="messages" />
+
+										<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+											onclick="PF('mobileWorkGroupSearchBarWidget').hide();"
+											action="#{workGroupAdmin.cancel}" update="innerContent" />
+									
+										<p:commandButton value="#{msg.fdm_reset_btn}"
+											update="innerContent" action="#{workGroupAdmin.reset}"
+											style="float:right">
+											<p:resetInput target="innerContent" />
+										</p:commandButton>
+									</p:column>
+
+								</p:row>
+
+							</p:panelGrid>
+
+						</p:panel>
+
+					</p:tab>
+
+
+				</p:tabView>
+
+			</p:panel>
+
+		</p:sidebar>
+
+	</h:form>
+
+	<h:form id="mobileWorkGroupCategoryForm">
+	
+		<p:sidebar id="manageMobileWorkGroupCategory" widgetVar="manageMobileWorkGroupCategory"
+			styleClass="searchTabs"
+			style="width:640px; padding:.5em 0em;" position="right">
+		
+
+			<p:panel header="Manage Mobile Work Group Categories" id="WGCatPanel">
+
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('manageMobileWorkGroupCategory').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+				
+				<p:panel style="padding-left: 1.5em;">
+				
+				<p:dataTable var="wgCat" id="workGroupCatTable" value="#{workGroupAdmin.hpcWGCatList}"
+					style="width:600px;" styleClass="sideBarScrollTable" selection="#{workGroupAdmin.selectedWorkGroupCategory}" 
+					selectionMode="single" rowKey="#{wgCat.id}" scrollable="true">
+
+
+					<p:column style="font-size: 16px;width:85%;line-height:1.4"
+						headerText="Mobile Work Group Categories">
+							<h:outputText value="#{wgCat.wgCatDesc}" />
+					</p:column>
+					
+					<p:column style="width:15%;vertical-align: middle;">
+						<f:facet name="header">
+
+							<p:commandLink style="font-size: 1.3em;" oncomplete="PF('addMobileWorkGroupCategory').show();" action="#{workGroupAdmin.addMobileWGCat()}" update="addMobileWorkGroupCategoryForm:addMobileWorkGroupCategory mobileWorkGroupCategoryForm:WGCatPanel"
+								disabled="#{workGroupAdmin.disableAddWGCat}">
+
+								<i class="far fa-plus-square" alt="add" style="font-size: 1.2em;" />
+							</p:commandLink>
+						</f:facet>
+ 
+						<p:panel >
+
+							<p:commandLink style="padding-left: 10px;font-size: 1.3em;" oncomplete="PF('addMobileWorkGroupCategory').show();" action="#{workGroupAdmin.editMobileWGCat(wgCat)}"  update="addMobileWorkGroupCategoryForm:addMobileWorkGroupCategory mobileWorkGroupCategoryForm:WGCatPanel">
+								<i class="far fa-edit" alt="edit"/>
+							</p:commandLink >
+
+							<p:commandLink style="padding-left: 10px;font-size: 1.3em;" action="#{workGroupAdmin.validateDeleteMobileWorkGroupCategory(wgCat)}" oncomplete="if(!args.validationFailed) {PF('confirmWorkGroupCatDelete').show();}" update="mobileWorkGroupCategoryForm:WGCatPanel">
+								<i class="far fa-trash-alt" alt="delete"/>
+							</p:commandLink>
+						</p:panel>
+
+					</p:column>
+
+				</p:dataTable>
+				
+				<p:messages id="messagesWGCat" showDetail="false" closable="false"/>
+				
+				</p:panel>
+				
+			</p:panel>
+			
+		</p:sidebar>
+		</h:form>
+		
+		<h:form id="addMobileWorkGroupCategoryForm">
+		<p:sidebar id="addMobileWorkGroupCategory"
+			widgetVar="addMobileWorkGroupCategory" styleClass="searchTabs"
+			style="width:640px; padding:.5em 0em;" position="right">
+
+			<p:panel header="#{workGroupAdmin.workGroupCatEdit ? msg.fdm_edit_mobile_work_group_category_header : msg.fdm_add_mobile_work_group_category_header}">
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('addMobileWorkGroupCategory').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+			</p:panel>
+			<p:panelGrid columns="1" width="100%">
+				<p:panelGrid columns="2" width="100%">
+
+					<h:outputLabel value="Work Group Category"></h:outputLabel>
+					<p:inputText value="#{workGroupAdmin.workGroupCategory}"
+						maxlength="40" required="true" id="wgCatId"
+						requiredMessage="#{msg.fdm_work_group_category_invalid}"
+						style="width:350px">
+
+					</p:inputText>
+
+				</p:panelGrid>
+				<p:panelGrid columns="1" width="100%">
+
+					<p:messages id="messages" showDetail="false" closable="false">
+
+					</p:messages>
+					<p:column>
+					<p:commandButton value="#{msg.fdm_save}" icon="fas fa-save"
+						action="#{workGroupAdmin.saveMobileWorkGroupCategory()}"
+						update="messages mobileWorkGroupCategoryForm:WGCatPanel"
+						oncomplete="if(!args.validationFailed) {PF('addMobileWorkGroupCategory').hide();}" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						icon="fas fa-times" update="mobileWorkGroupCategoryForm:WGCatPanel"
+						onclick="PF('addMobileWorkGroupCategory').hide();" immediate="true"/>
+					</p:column>
+				</p:panelGrid>
+			</p:panelGrid>
+			
+		</p:sidebar>
+
+		</h:form>
+		<h:form id="DeleteMobileWorkGroupCategoryForm">
+
+		<p:dialog id="confirmWorkGroupCatDelete" dynamic="true"
+			widgetVar="confirmWorkGroupCatDelete" resizable="false" width="340px"
+			modal="true" position="center center"
+			onShow="PF('confirmWorkGroupCatDelete').initPosition()" closable="false"
+			closeOnEscape="false">
+			<f:facet name="header">
+
+				<h:outputText value="#{msg.fdm_work_group_category_header}" styleClass="dialogheader" />
+			</f:facet>
+			<p:panelGrid columns="1" width="100%">
+				<h:outputText
+					value="#{msg.fdm_work_group_category_confirm_delete}" />
+
+			</p:panelGrid>
+			<f:facet name="footer">
+				<p:commandButton value="#{msg.fdm_action_no}" 
+					onclick="PF('confirmWorkGroupCatDelete').hide();"
+					styleClass="ui-confirmdialog-no">
+				</p:commandButton>
+				<p:commandButton value="#{msg.fdm_action_yes}" 
+					action="#{workGroupAdmin.deleteMobileWorkGroupCategory()}"
+					oncomplete="PF('confirmWorkGroupCatDelete').hide();" 
+					update="mobileWorkGroupCategoryForm:WGCatPanel"/>
+
+			</f:facet>
+		</p:dialog>
+
+	</h:form>
+
+	<h:form id="addMobWorkGroupForm">
+		<p:sidebar id="mobileWGAdd" widgetVar="mobileWorkGroupAddWidget"
+			styleClass="searchTabs" style="width:640px; padding:.5em 0em;"
+			position="right">
+
+			<p:panel
+				header="#{msg.fdm_add_mobile_work_group}">
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('mobileWorkGroupAddWidget').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+
+				<p:panelGrid columns="1" width="100%" rendered="#{workGroupAdmin.selectedMobileWorkGroup != null}">
+
+					<p:panelGrid columns="2" width="100%" >
+						<h:outputLabel value="#{msg.fdm_work_group_cat_label}"></h:outputLabel>
+						<p:selectOneMenu value="#{workGroupAdmin.selectedMobileWorkGroup.wgCatId}" label="#{workGroupAdmin.selectedMobileWorkGroup.hpcWgCat.wgCatDesc}"
+							style="min-width: 325px !important;">
+							<f:selectItems value="#{workGroupAdmin.hpcWGCatList}" var="wgc"
+								itemValue="#{wgc.id}" 
+								itemLabel="#{wgc.wgCatDesc}"></f:selectItems>
+						</p:selectOneMenu>
+
+						<h:outputLabel value="#{msg.fdm_work_group_code_label}"></h:outputLabel>
+						<p:inputText value="#{workGroupAdmin.selectedMobileWorkGroup.id.workgroupCode}" maxlength="10" disabled="#{workGroupAdmin.editWorkGroup}" required="true"
+								requiredMessage="#{msg.fdm_work_group_code_invalid}" style="width:350px"></p:inputText>
+
+						<h:outputLabel value="#{msg.fdm_work_group_desc_label}"></h:outputLabel>
+						<p:inputText value="#{workGroupAdmin.selectedMobileWorkGroup.workgroupDesc}" maxlength="40"
+								required="true" requiredMessage="#{msg.fdm_work_group_desc_invalid}" style="width:350px"></p:inputText>
+
+						<h:outputLabel value="#{msg.fdm_mobile_script_profile_label}"></h:outputLabel>
+						<p:selectOneMenu value="#{workGroupAdmin.selectedMobileWorkGroup.profileId}" label="#{workGroupAdmin.selectedMobileWorkGroup.scriptProfiles.profileDescription}" 
+							style="min-width: 325px !important;">
+						
+						<f:selectItem itemLabel=""  noSelectionOption="true"></f:selectItem>
+							<f:selectItems value="#{workGroupAdmin.scriptProfilesList}" var="sp"
+								itemValue="#{sp.id}" 
+								itemLabel="#{sp.profileDescription}">
+								
+								</f:selectItems>
+						</p:selectOneMenu>
+
+						<h:outputLabel value="#{msg.fdm_work_group_class_a_label}"></h:outputLabel>	
+						<p:inputText value="#{workGroupAdmin.selectedMobileWorkGroup.wgClassA}" maxlength="80" rendered="#{workGroupAdmin.validationPropertyClassA == null}"
+							style="width:350px"></p:inputText>
+						<p:selectOneMenu value="#{workGroupAdmin.selectedMobileWorkGroup.wgClassA}" rendered="#{workGroupAdmin.validationPropertyClassA != null}"
+							style="min-width: 325px !important;">
+							<f:selectItems value="#{workGroupAdmin.validationPropertyClassA}" var="cat"
+										itemValue="#{cat.validationProperty}"
+										itemLabel="#{cat.validationProperty}" />
+						</p:selectOneMenu>
+
+						<h:outputLabel value="#{msg.fdm_work_group_class_b_label}"></h:outputLabel>
+						<p:inputText value="#{workGroupAdmin.selectedMobileWorkGroup.wgClassB}" maxlength="80"  rendered="#{workGroupAdmin.validationPropertyClassB == null}"
+							style="width:350px"></p:inputText>
+						<p:selectOneMenu value="#{workGroupAdmin.selectedMobileWorkGroup.wgClassB}" rendered="#{workGroupAdmin.validationPropertyClassB != null}"
+							style="min-width: 325px !important;">
+							<f:selectItems value="#{workGroupAdmin.validationPropertyClassB}" var="cat"
+										itemValue="#{cat.validationProperty}"
+										itemLabel="#{cat.validationProperty}" />
+						</p:selectOneMenu>
+										
+						<h:outputLabel value="Active" ></h:outputLabel>
+						<p:selectBooleanCheckbox value="#{workGroupAdmin.selectedMobileWorkGroup.wgActive}"></p:selectBooleanCheckbox>
+						</p:panelGrid>
+						
+						<p:panelGrid columns="1" style="width:100%"> 
+						
+							<p:messages id="messages" showDetail="false" closable="false">
+							</p:messages>
+						
+						</p:panelGrid>
+						
+						<p:panelGrid columns="2" style="width:100%"> 
+							<p:column>
+							<p:commandButton value="#{msg.fdm_save}" icon="fas fa-save"
+								action="#{workGroupAdmin.validateSaveWorkGroup()}" update="messages" 
+								oncomplete="if(!args.validationFailed) {PF('mobileWorkGroupAddWidget').hide();}">
+								 <p:ajax listener="#{userAdmin.setWorkGroupList(null)}"></p:ajax>
+							</p:commandButton>
+					
+							<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" icon="fas fa-times"
+								onclick="PF('mobileWorkGroupAddWidget').hide();" />
+							</p:column>
+							<p:commandButton value="Delete" icon="far fa-trash-alt" rendered="#{workGroupAdmin.editWorkGroup}"
+								action="#{workGroupAdmin.confirmDeleteWorkGroup()}" update="messages" 
+								style="float:right">
+							</p:commandButton>
+
+						</p:panelGrid>
+					
+				</p:panelGrid>
+			</p:panel>
+		</p:sidebar>
+	</h:form>
+	
+	<h:form id="WorkgroupSelectionFromWorkGroupAdmin">
+		<p:sidebar position="right" id="WorkGroupAdminWorkgroupSelection"
+			widgetVar="WorkGroupAdminWorkgroupSelectionWidget" style="width:640px;">
+
+			<p:panel id="workgroupSelectionP"
+				header="#{msg.fdm_search_workgroup_dialog_label}">
+
+				<div style="height: 10px; width: 100%"></div>
+
+				<div
+					style="background: white; margin-bottom: 20px; border: 1px solid lightgrey; border-radius: 4px; width: 100%; overflow: auto">
+					<p:tree id="workgroupSelectTree" value="#{workGroupAdmin.workgroupRoot}"
+						style="width:100%;" var="node" filterMatchMode="contains"
+						selectionMode="checkbox"
+						filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}"
+						selection="#{workGroupAdmin.selectedWorkgroupNodes}">
+						<p:treeNode>
+							<h:outputText
+								value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;"
+								value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('WorkGroupAdminWorkgroupSelectionWidget').hide();"
+						action="#{workGroupAdmin.updateSelectedWorkgroups()}"
+						update="mobileWorkGroupSearchForm:searchWorkGroup" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{workGroupAdmin.clearSelectedWorkgroups()}"
+						update="workgroupSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('WorkGroupAdminWorkgroupSelectionWidget').hide();" />
+
+				</f:facet>
+
+			</p:panel>
+		</p:sidebar>
+	</h:form>
+
+</ui:composition>

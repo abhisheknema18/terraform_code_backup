@@ -1,0 +1,81 @@
+# Build the database artifact
+parameters:
+  - name: 'db_ApplicationBaseFolder'
+    default: 'Database/'
+  - name: db_Solution
+    default: 'FieldSmartSQLDatabase.sln'
+  - name: buildPlatform
+    default: 'Any CPU'
+  - name: buildConfiguration
+    default: 'Release'
+
+# This stage builds the database artifact.
+stages:
+- stage: BuildDbArtifact
+  displayName: Build Database Artifact
+  
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      # Setup and execute GitVersion
+      - task: gitversion/setup@0
+        displayName: 'Git Version (Setup)'
+        inputs:
+          versionSpec: '5.x'
+
+      - task: gitversion/execute@0
+        name: 'ExecuteGitVersion'
+        displayName: 'Git Version (Execute)'
+        inputs:
+          useConfigFile: true
+          configFilePath: '${{parameters.db_ApplicationBaseFolder}}GitVersion.yml'
+          updateProjectFiles: false
+          additionalArguments: '/Verbosity Minimal'
+
+      # Replace tokens in the master.sql,FSSBCON.sql and ScriptPostDeployment.sql files
+      - task: replacetokens@3
+        displayName: "Replace Version Label Token"
+        inputs:
+          targetFiles: |
+            ${{parameters.db_ApplicationBaseFolder}}FieldSmartSQLDatabase\FS_LOGINS.sql
+            ${{parameters.db_ApplicationBaseFolder}}FieldSmartSQLDatabase\Script.PostDeployment.sql
+            ${{parameters.db_ApplicationBaseFolder}}FieldSmartSQLDatabase\\FS_USERS.sql
+          encoding: 'auto'
+          writeBOM: true
+          actionOnMissing: 'warn'
+          keepToken: false
+          tokenPrefix: '#{'
+          tokenSuffix: '}#'
+          useLegacyPattern: false
+          enableTransforms: false
+          enableTelemetry: false
+
+      # Build FieldSmart SQL Database solution
+      - task: VSBuild@1
+        displayName: Build FieldSmart SQL Database solution
+        inputs:
+          solution: '${{parameters.db_ApplicationBaseFolder}}${{parameters.db_Solution}}'
+          platform: '${{parameters.buildPlatform}}'
+          configuration: '${{parameters.buildConfiguration}}'
+
+      # Copy artifacts to Artifact Staging Diretory
+      - task: CopyFiles@2
+        displayName: Copy artifacts to Artifact Staging Directory
+        inputs:
+          SourceFolder: '$(system.defaultworkingdirectory)'
+          Contents: |
+            ${{parameters.db_ApplicationBaseFolder}}FieldSmartSQLDatabase/bin/${{parameters.buildConfiguration}}/**.dacpac
+            ${{parameters.db_ApplicationBaseFolder}}FieldSmartSQLDatabase/FS_LOGINS.sql
+            ${{parameters.db_ApplicationBaseFolder}}FieldSmartSQLDatabase/FS_USERS.sql
+          FlattenFolders: true
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+      # Publish artifacts
+      - task: PublishBuildArtifacts@1
+        displayName: Publish artifacts
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'FieldSmartSqlDatabase'
+          publishLocation: 'Container'

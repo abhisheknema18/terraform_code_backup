@@ -1,0 +1,105 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/search-template.xhtml">
+
+	<ui:param name="bean" value="#{equipmentSearchList}" />
+
+	<ui:define name="search-body">
+
+		<p:tabView id="searchTabs">
+
+			<p:tab id="searchResults"
+			title="#{msg.fdm_search_search_results_tab_label} #{equipmentSearchList.equipmentSearchList.size() > 0 ? '('.concat(equipmentSearchList.equipmentSearchList.size()).concat(')') : ''}#{equipmentSearchList.equipmentSearchList.size() > 0 ? '('.concat(equipmentSearchList.equipmentSearchList.size()).concat(')') : ''}"
+				disabled="#{fn:length(equipmentSearchList.equipmentSearchList) == 0 and search.activeTab == 0}">
+				
+				<f:facet name="title">
+		        	<h:outputText id="theTitle" value="#{msg.fdm_search_search_results_tab_label} #{equipmentSearchList.filteredEquipmentSearchList.size() > 0 and equipmentSearchList.filteredEquipmentSearchList.size() lt equipmentSearchList.equipmentSearchList.size() ? '('.concat(equipmentSearchList.filteredEquipmentSearchList.size()).concat(' of ').concat(equipmentSearchList.equipmentSearchList.size()).concat(')') : equipmentSearchList.equipmentSearchList.size() > 0 ? '('.concat(equipmentSearchList.equipmentSearchList.size()).concat(')') : '(0)' }"  />
+		        </f:facet>
+		        
+
+				<h:form id="equipmentForm">
+					<p:remoteCommand name="updateFilteredValue" update="searchTabs:theTitle searchResultsCount"/>
+					
+					<p:dataTable 
+					value="#{equipmentSearchList.equipmentSearchList}" var="equipSearchList"
+					emptyMessage="No Results Found" 
+					selection="#{equipmentSearchList.selectedEquipment}" 
+					selectionMode="single" 
+					filterDelay="1000"
+					rowIndexVar="equipRowIndex" 
+					rowKey="#{equipSearchList.equipNo}"
+					resizableColumns="true" filteredValue="#{equipmentSearchList.filteredEquipmentSearchList}"
+					fixedHeader="false" multiViewState="true" rowStatePreserved="true" >
+					
+						 <p:ajax event="filter" oncomplete="updateFilteredValue();" />
+						
+					
+					<p:column headerText="Equipment Number" filterMatchMode="contains" filterBy="#{equipSearchList.equipNo}" sortBy="#{equipSearchList.equipNo}" style="width:20%;">
+						<h:outputText value="#{equipSearchList.equipNo}"></h:outputText>
+					</p:column>
+					
+					<p:column headerText="Equipment Reference" filterMatchMode="contains" filterBy="#{equipSearchList.altEquipRef}" sortBy="#{equipSearchList.altEquipRef}" style="width:25%;"> 
+						<h:outputText value="#{equipSearchList.altEquipRef}"></h:outputText>
+					</p:column>
+					
+					<p:column headerText="Equipment Description" filterMatchMode="contains" filterBy="#{equipSearchList.equipDesc}" sortBy="#{equipSearchList.equipDesc}" style="width:35%;">
+						<h:outputText value="#{equipSearchList.equipDesc}"></h:outputText>
+					</p:column>
+					
+					<p:column headerText="Equipment Type" filterMatchMode="contains" filterBy="#{equipSearchList.equipType}" sortBy="#{equipSearchList.equipType}" style="width:20%;">
+						<h:outputText value="#{equipSearchList.equipType}"></h:outputText>
+					</p:column>
+
+					<p:column styleClass="tableIcon">
+
+						<p:commandLink id="equipmentSearchViewBtn" oncomplete="PF('assetViewWidgetVar').show();"
+							action="#{equipmentSearchList.loadAssetInformation(equipSearchList.equipNo)}"
+							update="assetViewPanel">
+							<i class="fas fa-search" alt="edit"></i>
+						</p:commandLink>
+						<p:tooltip id="equipmentSearchView" for="equipmentSearchViewBtn" value="Qucik View"></p:tooltip>
+					</p:column>
+					
+					<p:column styleClass="tableIcon" >
+							<p:commandLink id="equipmentQuickViewBtn" action="#{equipmentSearchList.findEquipmentByRowDetails(equipSearchList)}">
+							<i class="fa fa-external-link" alt="edit"></i>
+							</p:commandLink>
+							<p:tooltip id="equipmentQuickView" for="equipmentQuickViewBtn" value="#{msg.fdm_detailed_view_tool_tip}"></p:tooltip>
+						</p:column>
+						
+					<p:column styleClass="tableIcon" >
+							<p:commandLink ajax="false" id="viewEquipBtn" action="#{equipmentSearch.searchReference}">
+							<!-- <p:ajax listener="#{equipmentSearch.searchReference}"   update="equipViewSearchDialog"/> -->
+							<f:setPropertyActionListener value="#{equipSearchList.equipNo}"
+												target="#{equipmentSearch.equipmentNo}" />
+							<!-- <p:commandLink id="viewEquipBtn" action="#{equipmentHierarchy.equipmentHierarchyTreeView(equip.equipNo)}"> -->
+							<i class="fas fa-sitemap" alt="edit"></i>
+							</p:commandLink>
+							<p:tooltip id="equipmentView" for="viewEquipBtn" value="Open Asset Hierarchy"></p:tooltip>
+						</p:column>
+						
+					</p:dataTable>
+					
+					<h:outputText id="searchResultsCount"
+						value="#{equipmentSearchList.filteredEquipmentSearchList.size() > 0 and equipmentSearchList.filteredEquipmentSearchList.size() lt equipmentSearchList.equipmentSearchList.size() ? ''.concat(equipmentSearchList.filteredEquipmentSearchList.size()).concat(' of ').concat(equipmentSearchList.equipmentSearchList.size()) :  equipmentSearchList.equipmentSearchList.size() > 0 ? ''.concat(equipmentSearchList.equipmentSearchList.size()) : '0' } #{msg.fdm_search_results_results_found_label}"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+		  
+						
+				</h:form>
+
+			</p:tab>
+		</p:tabView>
+
+
+		<ui:include src="../fdm/EquipmentInformation.xhtml">
+			<ui:param name="equipBean" value="#{equipmentSearchList}"></ui:param>
+		</ui:include>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,564 @@
+parameters:
+- name: envName
+  default: 'ENVIRONMENT NOT PASSED IN'
+- name: envNameSouth
+  default: 'ENVIRONMENT NOT PASSED IN'
+- name: envNameWest
+  default: 'ENVIRONMENT NOT PASSED IN'
+- name: hasSignoffTask
+  type: boolean
+  default: true
+- name: appName
+  default: 'appName NOT PASSED IN'
+- name: buildPoolName
+  default: 'FieldSmart TFCloud (Build)'
+- name: deployPoolName
+  default: 'FieldSmart TFCloud (Deployment)'
+# For deployMainArtifact, the expected values are:
+# - NO_CONDITION    - meaning no condition should be enforced
+# - INHIBIT_LOWER   - meaning do not deploy to DEV if this is a main artifact
+# - INHIBIT_HIGHER  - meaning do not deploy to UAT, PREPROD, PROD if this is a main artifact
+- name: deployMainArtifact
+  type: string
+  default: 'NO_CONDITION'
+- name: groupName
+
+stages:
+
+- stage: DeployTesting${{ parameters.envName }}
+  ${{ if eq(parameters.deployMainArtifact, 'INHIBIT_LOWER') }}:
+    condition: ne(variables['resources.pipeline.CI-pipeline.sourceBranch'], 'refs/heads/main')
+  ${{ if eq(parameters.deployMainArtifact, 'INHIBIT_HIGHER') }}:
+    condition: eq(variables['resources.pipeline.CI-pipeline.sourceBranch'], 'refs/heads/main')
+  displayName: Deploy ${{ parameters.envName }} environment
+  variables:
+  - group: ${{ parameters.groupName }}
+  - name: appDeployDbDependency #determines the task dependency order based on whether the automated test env (AUT) is being targetted
+    # Only run auto-test jobs on the AUT for IWS or MWS:
+    #if (S && (IWS || MWS))
+    # Do not run auto-test jobs on other environments, or if on the AUT but IWS and MWS are not being deployed.
+    #else (!S || (S && !IWS && !MWS))
+    ${{ if and(eq(parameters.envName, 'AUT'), or(eq(parameters.appName, 'IWS'), eq(parameters.appName, 'MWS'), eq(parameters.appName, 'FDM'))) }}:
+      value: deployDbDataToEnvironment${{ parameters.envName }}
+    ${{ if or(ne(parameters.envName, 'AUT'), and(eq(parameters.envName, 'AUT'), and(ne(parameters.appName, 'IWS'), ne(parameters.appName, 'MWS'), ne(parameters.appName, 'FDM')))) }}:
+      value: deployDatabaseToEnvironment${{ parameters.envName }}
+  - name: appDeployDependency # determines the task dependency for the app deployment (both this and appDeployDbDependency are required by app deployment)
+    ${{ if and(eq(parameters.envName, 'AUT'), or(eq(parameters.appName, 'IWS'), eq(parameters.appName, 'MWS'), eq(parameters.appName, 'FDM'))) }}:
+      value: resetEnvironment${{ parameters.envName }}
+    ${{ if or(ne(parameters.envName, 'AUT'), and(eq(parameters.envName, 'AUT'), and(ne(parameters.appName, 'IWS'), ne(parameters.appName, 'MWS'), ne(parameters.appName, 'FDM')))) }}:
+      value: waitForApprovalApp
+  - name: signOffDependency #determines the task dependency for the sign-off job
+    ${{ if and(eq(parameters.envName, 'AUT'), or(eq(parameters.appName, 'IWS'), eq(parameters.appName, 'MWS'))) }}:
+      value: TestDockerImage${{ parameters.envName }}
+    ${{ if and(eq(parameters.envName, 'AUT'), eq(parameters.appName, 'FDM')) }}:
+      value: TestDockerImageFDM${{ parameters.envName }}
+    ${{ if or(ne(parameters.envName, 'AUT'), and(eq(parameters.envName, 'AUT'), and(ne(parameters.appName, 'IWS'), ne(parameters.appName, 'MWS'), ne(parameters.appName, 'FDM')))) }}:
+      value: deployToEnvironment${{ parameters.envNameWest }}
+  - name: dbApprovals
+    ${{ if eq(parameters.envName, 'AUT')}}:
+      value: false
+    ${{ if ne(parameters.envName, 'AUT')}}:
+      value: true
+  
+  jobs:
+
+    - job: waitForApprovalApp
+      displayName: "${{ parameters.envName }}: Pre-deployment Approval"
+      pool: server
+      timeoutInMinutes: 10081 # job times out in 7 days
+      steps:
+        - task: ManualValidation@0
+          displayName: ${{ parameters.envName }} deployment approval
+          condition: ${{ ne(parameters.envName, 'AUT') }}
+          timeoutInMinutes: 10080 # task times out in 7 day
+          inputs:
+            notifyUsers: |
+              fieldsmart-notifications@amt-sybex.com
+            instructions: "Please approve the deployment of the build artifacts into ${{ parameters.envName }} on FieldSmart Cloud AKS Cluster"
+            onTimeout: 'reject'
+
+    # This is a conditional task for reset environment which will execute only  if AUT environment  and application is either MWS/IWS.
+    - ${{ if and(eq(parameters.envName, 'AUT'), or(eq(parameters.appName, 'IWS'), eq(parameters.appName, 'MWS'), eq(parameters.appName, 'FDM'))) }}:
+      - job: resetEnvironment${{ parameters.envName }}
+        displayName: "${{ parameters.envName }}: Reset_Environment"
+        dependsOn: waitForApprovalApp
+        pool: ${{ parameters.buildPoolName }}
+        steps:
+          - task: Bash@3
+            displayName: 'Reset Environments and file systems'
+            name: 'Reset_Environment'
+            inputs:
+              targetType: 'inline'
+              script: |            
+                pwd
+                azcopy rm '$(FILESHAREURL)?$(FILESHARESAS)' --recursive=true
+                azcopy copy '$(System.DefaultWorkingDirectory)/Test Automation/AzurePipeline/jmeter/filesystem/*' '$(FILESHAREURL)?$(FILESHARESAS)' --recursive=true
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    # This task is more related to database deployment. 
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacDeployment.yml  # Template reference
+      parameters:        
+        envName: ${{ parameters.envName }}
+        groupName: ${{ parameters.groupName }}
+        hasApprovalTask: ${{ variables.dbApprovals }}
+        hasSignoffTask: ${{ variables.dbApprovals }}
+
+    # This job depends on the successful completion of the dacpacDeployment template above and only works if environment is AUT and application is either IWS/MWS/FDM.
+    - ${{ if and(eq(parameters.envName, 'AUT'), or(eq(parameters.appName, 'IWS'), eq(parameters.appName, 'MWS'), eq(parameters.appName, 'FDM'))) }}:
+      - job: deployDbDataToEnvironment${{ parameters.envName }}
+        dependsOn: deployDatabaseToEnvironment${{ parameters.envName }}
+        condition: succeeded()
+        displayName: "${{ parameters.envName }}: Database data deployment"
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          # checkout Serverside onto vmImage
+          - checkout: self
+  
+          # Clean up data from the database deployment, to prevent primary key clashes
+          # Clear old data from the database (DbCleanup1.sql)
+          - task: SqlAzureDacpacDeployment@1
+            displayName: Clear old data from the database (DbCleanup.sql)
+            inputs:
+              azureSubscription: 'amt-fieldsmart-dev-01'
+              AuthenticationType: 'server'
+              ServerName: $(DB_HOSTNAME)
+              DatabaseName: $(DB_DATABASENAME)
+              SqlUsername: $(DB_USERNAME)
+              SqlPassword: $(DB_PASSWORD)
+              deployType: 'SqlTask'
+              SqlFile: '$(System.DefaultWorkingDirectory)/$(automationTestRootFolder)/Database_Files/DbCleanup.sql'
+              IpDetectionMethod: 'AutoDetect'
+  
+          # Load in database seed data
+          # Reload regression test dataset into database (InitialiseFieldSmartData.sql script)
+          - task: SqlAzureDacpacDeployment@1
+            displayName: Reload regression test dataset into database (InitialiseFieldSmartData.sql script)
+            inputs:
+              azureSubscription: 'amt-fieldsmart-dev-01'
+              AuthenticationType: 'server'
+              ServerName: $(DB_HOSTNAME)
+              DatabaseName: $(DB_DATABASENAME)
+              SqlUsername: $(DB_USERNAME)
+              SqlPassword: $(DB_PASSWORD)
+              deployType: 'SqlTask'
+              SqlFile: '$(System.DefaultWorkingDirectory)/$(automationTestRootFolder)/Database_Files/InitialiseFieldSmartData_CutDown.sql'
+              IpDetectionMethod: 'AutoDetect'
+ 
+    # This task does the deployment of application on any environment.
+    - job: deployToEnvironment${{ parameters.envName }}
+      dependsOn: # app deployment can only run when the cleanup and db tasks have run, so has 2 dependencies
+        - ${{ variables.appDeployDbDependency }}
+        - ${{ variables.appDeployDependency }}
+      condition: succeeded() 
+      displayName: "${{ parameters.envNameSouth }}: App Deployment"
+      pool: ${{ parameters.deployPoolName }}
+      steps:
+        # Checkout the Fusion Helm Template repository
+        - checkout: FusionHelmTemplate
+        - checkout: FusionDevOps
+
+        # Download artifacts - this allows us access to the imagetag file so we know what version to install
+        - download: 'CI-pipeline'
+          displayName: 'Download Artifacts'
+
+        # Get the Image Tag that we plan to run - this is saved into a file stored as an artifact by the CI pipeline
+        - task: Bash@3
+          displayName: 'Get Image version to be run'
+          name: 'GetImageVersion'                
+          inputs:
+            targetType: 'inline'
+            script: |                    
+              TAG=`cat "$(Pipeline.Workspace)/$(artifactFolderName)/dockerImageTagName.imagetag"`
+              echo "Detected version:  "$TAG
+              echo "##vso[task.setvariable variable=imageTagVersion;isOutput=true]$TAG"                  
+
+        # AZ Login
+        - task: Bash@3
+          displayName: 'Login to Azure'
+          name: 'AzLogin'
+          env:
+            AZ_LOGIN_SECRET: $(SECRET)
+          inputs:
+            targetType: 'inline'
+            script: |
+              az login --service-principal -u $CLIENT_ID -p $AZ_LOGIN_SECRET --tenant $TENANTID
+
+        # AZ Set Subscription
+        - task: Bash@3
+          displayName: 'Connect to the subscription'
+          name: 'AzSetAccount'
+          inputs:
+            targetType: 'inline'
+            script: |
+              az account set --subscription $SUBSCRIPTIONID
+
+        # AZ Get Credentials
+        - task: Bash@3
+          displayName: 'Getting credentials for helm'
+          name: 'AzGetCredentials'
+          inputs:
+            targetType: 'inline'
+            script: |
+              az aks get-credentials --resource-group $RESOURCE_GROUP --name $K8S_NAME
+
+          # Replace Logging level in yaml files from variable groups
+        - task: replacetokens@3
+          displayName: "Replace logging level"
+          env:
+            LOGGINGLEVEL: $LOGGINGLEVEL
+            LOGHIKARI: $LOGHIKARI
+            LOGSPRINGFRAMEWORK: $LOGSPRINGFRAMEWORK
+            LOGHIBERNATE: $LOGHIBERNATE
+            LOGAMTSYBEX: $LOGAMTSYBEX
+            LOGAPACHE: $LOGAPACHE
+            LOGJAVAXENTWEBCONT: $LOGJAVAXENTWEBCONT
+            LOGCOMSUNFACES: $LOGCOMSUNFACES
+            LOGJAVAXFACES: $LOGJAVAXFACES
+            LOGAMTSYBEXFIELDREACHDIS: $LOGAMTSYBEXFIELDREACHDIS
+            LOGAMTSYBEXFIELDREACH: $LOGAMTSYBEXFIELDREACH
+            MAXUPLOADSIZE: $MAXUPLOADSIZE
+          inputs:
+            targetFiles: '**/*.yaml'
+            encoding: 'auto'
+            writeBOM: true
+            actionOnMissing: 'warn'
+            keepToken: false
+            tokenPrefix: '#{'
+            tokenSuffix: '}#'
+            useLegacyPattern: false
+            enableTransforms: false
+            enableTelemetry: false
+
+        # Deploy with helm
+        - task: Bash@3
+          displayName: 'Deploy with helm'
+          name: 'HelmDeploy'
+          env:
+            HELM_TEMPLATE_DIR: fusion-helm-template
+            AKS_NS: fieldsmart
+            CONFIG_DIR: fusion-devops/configs
+          inputs:
+            targetType: 'inline'
+            script: |
+              export TAG=$(GetImageVersion.imageTagVersion)
+              helm upgrade --install --atomic --timeout $TIMEOUTDURATION --cleanup-on-fail $ARTIFACTNAME $BUILD_SOURCESDIRECTORY/$HELM_TEMPLATE_DIR \
+                          -n $AKS_NS \
+                          -f $BUILD_SOURCESDIRECTORY/$CONFIG_DIR/$TENANTNAME/common/values-common-$ENV_NAME.yaml \
+                          -f $BUILD_SOURCESDIRECTORY/$CONFIG_DIR/$TENANTNAME/common/values-common-$ENV_NAME.yaml \
+                          -f $BUILD_SOURCESDIRECTORY/$CONFIG_DIR/$TENANTNAME/$ARTIFACTNAME/values-common.yaml \
+                          -f $BUILD_SOURCESDIRECTORY/$CONFIG_DIR/$TENANTNAME/$ARTIFACTNAME/values-$ENV_NAME.yaml \
+                          --set image.tag=$TAG 
+                          
+        # List the deployments in the 'fieldsmart' namespace
+        - task: Bash@3
+          displayName: 'List the deployments in the "fieldsmart" namespace'
+          name: 'ListDeployments'
+          inputs:
+            targetType: 'inline'
+            script: |
+              helm ls -n fieldsmart
+
+        # AZ Logout
+        - task: Bash@3
+          displayName: 'Logout of Azure'
+          name: 'AzLogout'
+          inputs:
+            targetType: 'inline'
+            script: |
+              az logout
+
+    # This task does the deployment of application on any environment.
+    - job: deployToEnvironment${{ parameters.envNameWest }}
+      dependsOn: # app deployment can only run when the cleanup and db tasks have run, so has 2 dependencies
+        - ${{ variables.appDeployDbDependency }}
+        - ${{ variables.appDeployDependency }}
+      condition: succeeded() 
+      displayName: "${{ parameters.envNameWest }}: App Deployment"
+      pool: ${{ parameters.deployPoolName }}
+      steps:
+        # Checkout the Fusion Helm Template repository
+        - checkout: FusionHelmTemplate
+        - checkout: FusionDevOps
+
+        # Download artifacts - this allows us access to the imagetag file so we know what version to install
+        - download: 'CI-pipeline'
+          displayName: 'Download Artifacts'
+
+        # Get the Image Tag that we plan to run - this is saved into a file stored as an artifact by the CI pipeline
+        - task: Bash@3
+          displayName: 'Get Image version to be run'
+          name: 'GetImageVersion'                
+          inputs:
+            targetType: 'inline'
+            script: |                    
+              TAG=`cat "$(Pipeline.Workspace)/$(artifactFolderName)/dockerImageTagName.imagetag"`
+              echo "Detected version:  "$TAG
+              echo "##vso[task.setvariable variable=imageTagVersion;isOutput=true]$TAG"                  
+
+        # AZ Login
+        - task: Bash@3
+          displayName: 'Login to Azure'
+          name: 'AzLogin'
+          env:
+            AZ_LOGIN_SECRET: $(SECRET)
+          inputs:
+            targetType: 'inline'
+            script: |
+              az login --service-principal -u $CLIENT_ID -p $AZ_LOGIN_SECRET --tenant $TENANTID
+
+        # AZ Set Subscription
+        - task: Bash@3
+          displayName: 'Connect to the subscription'
+          name: 'AzSetAccount'
+          inputs:
+            targetType: 'inline'
+            script: |
+              az account set --subscription $SUBSCRIPTIONID
+
+        # AZ Get Credentials
+        - task: Bash@3
+          displayName: 'Getting credentials for helm'
+          name: 'AzGetCredentials'
+          inputs:
+            targetType: 'inline'
+            script: |
+              az aks get-credentials --resource-group $RESOURCE_GROUP_WEST --name $K8S_NAME_WEST
+
+          # Replace Logging level in yaml files from variable groups
+        - task: replacetokens@3
+          displayName: "Replace logging level"
+          env:
+            LOGGINGLEVEL: $LOGGINGLEVEL
+            LOGHIKARI: $LOGHIKARI
+            LOGSPRINGFRAMEWORK: $LOGSPRINGFRAMEWORK
+            LOGHIBERNATE: $LOGHIBERNATE
+            LOGAMTSYBEX: $LOGAMTSYBEX
+            LOGAPACHE: $LOGAPACHE
+            LOGJAVAXENTWEBCONT: $LOGJAVAXENTWEBCONT
+            LOGCOMSUNFACES: $LOGCOMSUNFACES
+            LOGJAVAXFACES: $LOGJAVAXFACES
+            LOGAMTSYBEXFIELDREACHDIS: $LOGAMTSYBEXFIELDREACHDIS
+            LOGAMTSYBEXFIELDREACH: $LOGAMTSYBEXFIELDREACH
+            MAXUPLOADSIZE: $MAXUPLOADSIZE
+          inputs:
+            targetFiles: '**/*.yaml'
+            encoding: 'auto'
+            writeBOM: true
+            actionOnMissing: 'warn'
+            keepToken: false
+            tokenPrefix: '#{'
+            tokenSuffix: '}#'
+            useLegacyPattern: false
+            enableTransforms: false
+            enableTelemetry: false
+
+        # Deploy with helm
+        - task: Bash@3
+          displayName: 'Deploy with helm'
+          name: 'HelmDeploy'
+          env:
+            HELM_TEMPLATE_DIR: fusion-helm-template
+            AKS_NS: fieldsmart
+            CONFIG_DIR: fusion-devops/configs
+          inputs:
+            targetType: 'inline'
+            script: |
+              export TAG=$(GetImageVersion.imageTagVersion)
+              helm upgrade --install --atomic --timeout $TIMEOUTDURATION --cleanup-on-fail $ARTIFACTNAME $BUILD_SOURCESDIRECTORY/$HELM_TEMPLATE_DIR \
+                          -n $AKS_NS \
+                          -f $BUILD_SOURCESDIRECTORY/$CONFIG_DIR/$TENANTNAME/common/values-common-$ENV_NAME_WEST.yaml \
+                          -f $BUILD_SOURCESDIRECTORY/$CONFIG_DIR/$TENANTNAME/common/values-common-$ENV_NAME_WEST.yaml \
+                          -f $BUILD_SOURCESDIRECTORY/$CONFIG_DIR/$TENANTNAME/$ARTIFACTNAME/values-common.yaml \
+                          -f $BUILD_SOURCESDIRECTORY/$CONFIG_DIR/$TENANTNAME/$ARTIFACTNAME/values-$ENV_NAME_WEST.yaml \
+                          --set image.tag=$TAG 
+                          
+        # List the deployments in the 'fieldsmart' namespace
+        - task: Bash@3
+          displayName: 'List the deployments in the "fieldsmart" namespace'
+          name: 'ListDeployments'
+          inputs:
+            targetType: 'inline'
+            script: |
+              helm ls -n fieldsmart
+
+        # AZ Logout
+        - task: Bash@3
+          displayName: 'Logout of Azure'
+          name: 'AzLogout'
+          inputs:
+            targetType: 'inline'
+            script: |
+              az logout
+
+    # This is a conditional task for Test docker image which will execute only  if environment is AUT and application is either MWS/IWS.
+    - ${{ if and(eq(parameters.envName, 'AUT'), or(eq(parameters.appName, 'IWS'), eq(parameters.appName, 'MWS'))) }}:
+      - job: TestDockerImage${{ parameters.envName }}
+        dependsOn: deployToEnvironment${{ parameters.envName }}
+        condition: succeeded() 
+        displayName: "${{ parameters.envName }}: Test Docker Image"
+        pool: ${{ parameters.buildPoolName }}
+        steps:
+          # Checkout the serverside repository
+          - checkout: self
+            clean: false
+            # Replace Properties data in properties files from variable groups
+          - task: replacetokens@3
+            displayName: "Replace Properties data"
+            env:
+              Auth0Header: $Auth0Header
+              IwsAuth0Header: $IwsAuth0Header
+              HostIP: $HostIP
+              NO_SCRIPT_PROFILE_USERNAME: $NO_SCRIPT_PROFILE_USERNAME
+              NO_SCRIPT_PROFILE_PASSWORD: $NO_SCRIPT_PROFILE_PASSWORD
+              SCRIPT_PROFILE_USERNAME: $SCRIPT_PROFILE_USERNAME
+              SCRIPT_PROFILE_PASSWORD: $SCRIPT_PROFILE_PASSWORD
+              UNAUTHORISED_USERNAME: $UNAUTHORISED_USERNAME
+              UNAUTHORISED_PASSWORD: $UNAUTHORISED_PASSWORD
+              AUTHORISED_USERNAME: $AUTHORISED_USERNAME
+              AUTHORISED_PASSWORD: $AUTHORISED_PASSWORD
+              INACTIVE_USER_USERNAME: $INACTIVE_USER_USERNAME
+              INACTIVE_USER_PASSWORD: $INACTIVE_USER_PASSWORD
+              ACTIVE_USER1_USERNAME: $ACTIVE_USER1_USERNAME
+              ACTIVE_USER1_PASSWORD: $ACTIVE_USER1_PASSWORD
+              ACTIVE_USER2_USERNAME: $ACTIVE_USER2_USERNAME
+              ACTIVE_USER2_PASSWORD: $ACTIVE_USER2_PASSWORD
+              DB_DATABASENAME: $DB_DATABASENAME
+              DB_HOSTNAME: $DB_HOSTNAME
+              # We've deliberately elected to use the application credentials for now, rather than an SA-style login
+              DB_USERNAME: $FSAPP_USERNAME
+              DB_PASSWORD: $FSAPP_PASSWORD
+            inputs:
+              targetFiles: '**/*.properties'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: false
+    
+          - task: Bash@3
+            displayName: 'Build JMeter docker image and execute image'
+            name: 'JMeterExecute'
+            inputs:
+              #failOnStderr: true
+              targetType: 'inline'
+              script: |            
+                pwd
+                echo $(applicationBaseFolder)
+                docker build -t jmeteralpine:regTests . --file '$(applicationBaseFolder)/jmeter/dockerfile'
+                docker run -v /fieldsmart-aut:/fieldsmart-aut -v "$(System.DefaultWorkingDirectory)/jmeter:/opt/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/code" jmeteralpine:regTests 
+                docker ps -a
+                # docker cp jmeteralpine:'/opt/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/code' '$(System.DefaultWorkingDirectory)/jmeter'
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+          - task: Bash@3
+            displayName: 'Check Status of JMeter failure'
+            name: 'JMeterFailure'
+            inputs:
+              failOnStderr: true
+              targetType: 'inline'
+              script: | 
+                cd $(System.DefaultWorkingDirectory)
+                mkdir -p $(System.DefaultWorkingDirectory)/jmeter_results/
+                pwd
+                cp -r jmeter jmeter_results
+                sudo rm -rf jmeter
+     
+                # Copy report-test-result.sh file to jmeter_results folder.
+                cd '$(System.DefaultWorkingDirectory)/$(applicationBaseFolder)jmeter'
+                sudo cp report-test-result.sh $(System.DefaultWorkingDirectory)/jmeter_results/jmeter/reports
+                
+                # move to jmeter_results folder
+                cd $(System.DefaultWorkingDirectory)/jmeter_results/jmeter/reports
+                pwd
+     
+                # Look for all instances of errorCount and omit those where the errorCount is 0
+                # If the number of lines returned is non-zero then we must have at least one test that has run
+                # with a non-zero errorCount
+                cat statistics.json | grep errorCount | grep -v 'errorCount\" : 0' #|  if [ $? -eq "1" ] ; then  echo "TEST PASS" ; else echo "TESTS FAILED" >> /dev/stderr ; fi
+                #Execute the test script. Compare the value and fail the output.
+                sh report-test-result.sh
+                
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+            
+          - task: publishhtmlreport@1
+            displayName: 'Publish Html Reports'
+            inputs:
+              htmlType: 'Jmeter'
+              JmeterReportsPath: '$(System.DefaultWorkingDirectory)/jmeter_results/jmeter/reports'
+  
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish load test Artifacts"
+            inputs:
+              pathToPublish: '$(System.DefaultWorkingDirectory)/jmeter_results/jmeter/reports/'
+              condition: always()
+
+
+    - ${{ if and(eq(parameters.envName, 'AUT'), eq(parameters.appName, 'FDM')) }}:
+      - job: TestDockerImageFDM${{ parameters.envName }}
+        dependsOn: deployToEnvironment${{ parameters.envName }}
+        condition: succeeded() 
+        displayName: "${{ parameters.envName }}: Test Selenium Docker Image"
+        pool: ${{ parameters.buildPoolName }}
+        steps:
+          # Checkout the serverside repository
+          - checkout: self
+            clean: false
+                
+          - task: Bash@3
+            displayName: 'Build Selenium docker image and execute image'
+            name: 'SeleniumExecute'
+            inputs:
+              targetType: 'inline'
+              script: |            
+                pwd
+                echo $(applicationBaseFolder)
+                docker build -t selenium:pocTests . --file '$(applicationBaseFolder)/selenium/dockerfile'
+                docker run -v "$(System.DefaultWorkingDirectory)/selenium:/opt/selenium_reports" selenium:pocTests
+                docker ps -a
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  
+          - task: Bash@3
+            displayName: 'Check Status of Selenium tests'
+            name: 'SeleniumFailure'
+            inputs:
+              failOnStderr: true
+              targetType: 'inline'
+              script: | 
+                pwd
+                cd $(System.DefaultWorkingDirectory)
+                mkdir -p $(System.DefaultWorkingDirectory)/selenium_results/
+                pwd
+                cp -r selenium selenium_results
+                sudo rm -rf selenium
+       
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish selenium test Artifacts"
+            inputs:
+              pathToPublish: '$(System.DefaultWorkingDirectory)/selenium_results/selenium'
+              artifactName: seleniumreport
+              condition: always()
+  
+    # The pipeline would wait for sign off from concerned team.
+    - ${{ if eq(parameters.hasSignoffTask, true) }}:
+      - job: waitForSignoffApp
+        displayName: "${{ parameters.envName }}: Post-deployment App Sign-off"
+        dependsOn: ${{ variables.signOffDependency }}
+        condition: succeeded() 
+        pool: server
+        timeoutInMinutes: 10081 # job times out in 7 days
+        steps:
+          - task: ManualValidation@0
+            displayName: ${{ parameters.envName }} sign-off
+            timeoutInMinutes: 10080 # task times out in 7 day
+            inputs:
+              notifyUsers: |
+                fieldsmart-notifications@amt-sybex.com
+              instructions: "Provide sign-off on code deployed to ${{ parameters.envName }} ?"
+              onTimeout: 'reject'

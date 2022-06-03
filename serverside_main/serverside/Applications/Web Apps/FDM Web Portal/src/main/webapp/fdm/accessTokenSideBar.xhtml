@@ -1,0 +1,292 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+	<script>
+	function myFunction() {
+		
+		  var text_to_copy = document.getElementById("accessTokenId");
+		  
+		  text_to_copy.select();
+			
+		  navigator.clipboard.writeText(text_to_copy.value);
+			
+		}
+
+	</script>
+
+	<p:sidebar id="addIntegrationAccessWidget"
+		widgetVar="addIntegrationAccessWidget" styleClass="searchTabs"
+		style="width:640px; padding:.5em 0em; overflow: hidden;"
+		position="right">
+
+		<p:panel header="#{msg.fdm_add_access_token_label}">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('addIntegrationAccessWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:panel>
+						<h:form id="addForm">
+							<p:panelGrid id="innerContent" width="100%">
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_application_name_label}" />
+									</p:column>
+
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="applicationName" required="true" maxlength="50"
+											value="#{integrationAccessToken.selectedAccessToken.name}"
+											style="width:250px" autocomplete="false"
+											requiredMessage ="Application Name is invalid" >
+										</p:inputText>
+									</p:column>
+
+								</p:row>
+
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_linked_system_user_label}" />
+									</p:column>
+									<p:column styleClass="noPaddingCell">
+
+										<p:selectOneMenu required="true"
+											requiredMessage="Select a user"
+											value="#{integrationAccessToken.selectedAccessToken.linkedUserCode}"
+											scrollHeight="230" style = "min-width: 230px !important;">
+											<f:selectItems value="#{integrationAccessToken.tokenCapableSystemUsers}"
+												var="selectItem" 
+												itemLabel="#{selectItem.userName}"
+												itemValue="#{selectItem.id}">
+											</f:selectItems>
+										</p:selectOneMenu>
+
+
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_expiry_label}" />
+									</p:column>
+
+									<p:column styleClass="noPaddingCell">
+										<p:selectOneMenu required="true"
+											requiredMessage="Select Expiry Period"
+											value="#{integrationAccessToken.selectedExpiryVal}"
+											valueChangeListener="#{integrationAccessToken.onExpiryChange}"
+											scrollHeight="230"
+											style = "min-width: 230px !important;">
+											<p:ajax event="change"
+												update="addForm:expiryDateReadOnly" />
+											<f:selectItems value="#{integrationAccessToken.loadExpiry()}"
+												var="selectItem" itemLabel="+ #{selectItem.getValue() == '1' ? selectItem.getValue().concat(' ').concat(msg.fdm_accesstoken_expiry_unit) 
+												: selectItem.getValue().concat(' ').concat(msg.fdm_accesstoken_expiry_units)} "
+												itemValue="#{selectItem.getValue()}">
+											</f:selectItems>
+										</p:selectOneMenu>
+									</p:column>
+									
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="expiryDateReadOnly" readonly="true"
+											value="#{func:intToDate(integrationAccessToken.selectedAccessToken.expiryDate)}"
+											style="width:150px;height:27px;" autocomplete="false">
+											<f:convertDateTime dateStyle="medium"/>
+										</p:inputText> 
+									</p:column>
+
+								</p:row>
+								
+								<p:row>
+								
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_token_notes_label}" />
+									</p:column>
+									<p:column styleClass="noPaddingCell" colspan="2">
+										
+										<p:inputTextarea value="#{integrationAccessToken.selectedAccessToken.tokenNotes}" style="width:420px" rows="15" maxlength="250">
+										
+										</p:inputTextarea>
+										
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column colspan="2">
+										<p:messages id="messages" showDetail="false" closable="false">
+
+										</p:messages>
+									</p:column>
+								</p:row>
+
+								<p:row>
+
+									<p:column>
+
+										<p:commandButton id="addIntegrationAccessBtn" 
+											value="#{msg.fdm_save}" icon="fas fa-save"
+											action="#{integrationAccessToken.saveAccessToken}" 
+											update = "messages showAccessTokenId"/>
+
+										<p:commandButton id="cancelAdmin"
+											icon="fas fa-times"
+											value="#{msg.fdm_search_dialog_cancel_label}"
+											onclick="PF('addIntegrationAccessWidget').hide();" />
+									</p:column>
+								</p:row>
+							</p:panelGrid>
+						</h:form>
+		</p:panel>
+
+	</p:sidebar>
+
+	<p:dialog id="showAccessTokenId"
+		widgetVar="showAccessTokenDialog" 
+		resizable="false" 
+		style="width:550px;"
+		modal="true"
+		position="center center"
+		onShow="PF('showAccessTokenDialog').initPosition()" 
+		closable="false"
+		closeOnEscape="false"
+		draggable="false"
+		>
+		<f:facet name="header">
+			<h:outputText value="#{msg.fdm_access_token_label}" styleClass="dialogheader" />
+		</f:facet>
+		<p:panelGrid columns="1" width="100%">
+			<p:inputTextarea value="#{integrationAccessToken.generatedToken}" readonly="true" cols="90" rows="13"
+				id="accessTokenId" />
+			<p:commandButton onclick="myFunction();PF('showAccessTokenDialog').hide();" action="#{integrationAccessToken.redirect}"
+				value="#{msg.fdm_copy_and_close}" icon="fas fa-clipboard" update="addIntegrationAccessWidget">
+
+			</p:commandButton>
+		</p:panelGrid>
+	</p:dialog>
+
+
+
+	<p:sidebar id="revokeAccessTokenWidget"
+		widgetVar="revokeAccessTokenWidget" styleClass="searchTabs"
+		style="width:640px; padding:.5em 0em; overflow: hidden;"
+		position="right">
+
+		<p:panel header="#{msg.fdm_access_token_revoke_token_side_header}">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('revokeAccessTokenWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:panel>
+			<h:form id="revokeForm">
+				<p:panelGrid id="innerContent" width="100%">
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_application_name_label}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="applicationName" readonly="true"
+								value="#{integrationAccessToken.selectedAccessToken.name}"
+								style="width:250px;background: #d6f5e1;" autocomplete="false">
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+					
+					<p:row>
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_linked_system_user_label}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="linkedSysUserRevoke" readonly="true"
+								value="#{integrationAccessToken.selectedAccessToken.linkedUserCode}"
+								style="width:250px;background: #d6f5e1;" autocomplete="false">
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+					
+					<p:row>
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_access_token_expiry_date_label}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="expiryDateRevoke" readonly="true"
+								value="#{func:intToDate(integrationAccessToken.selectedAccessToken.expiryDate)}"
+								style="width:250px;background: #d6f5e1;" autocomplete="false">
+								<f:convertDateTime dateStyle="medium" />
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+					
+					<p:row>
+								
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_access_token_revoke_notes}" />
+									</p:column>
+									<p:column styleClass="noPaddingCell" colspan="2">
+										
+										<p:inputTextarea value="#{integrationAccessToken.selectedAccessToken.revokeNotes}" style="width:420px" rows="15" maxlength="250"
+										required="true" requiredMessage="#{msg.fdm_access_token_revoke_notes_message}">
+										
+										</p:inputTextarea>
+										
+									</p:column>
+								</p:row>
+
+
+					<p:row>
+						<p:column colspan="2">
+							<p:messages id="messages" showDetail="false" closable="false">
+
+							</p:messages>
+						</p:column>
+					</p:row>
+
+					<p:row>
+
+						<p:column>
+
+							<p:commandButton id="revokeAccessTokenBtn" value="revoke"
+								icon="fas fa-user-slash"
+								action="#{integrationAccessToken.revokeAccessToken}"
+								update="messages" />
+
+							<p:commandButton id="cancelAccessToken"
+								icon="fas fa-times"
+								value="#{msg.fdm_search_dialog_cancel_label}"
+								onclick="PF('revokeAccessTokenWidget').hide();" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+			</h:form>
+		</p:panel>
+
+	</p:sidebar>
+
+</ui:composition>

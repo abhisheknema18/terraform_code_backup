@@ -1,0 +1,994 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:XSDRoot="http://www.amt-sybex.com">
+	
+	<complexType name="scriptResultNote">
+		<sequence>
+			<element name="noteText" type="string"/>
+			<element name="resOrderNo" type="int"/>
+			<element name="sequenceNumber" type="int"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="systemEvent">
+		<sequence>
+			<element name="application" type="string"/>
+			<element name="districtCode" type="string"/>
+			<element name="errorCode" type="string"/>
+			<element name="eventCategory" type="string"/>
+			<element name="eventDate" type="int"/>
+			<element name="eventDesc" type="string"/>
+			<element name="eventSummary" type="string"/>
+			<element name="eventTime" type="string"/>
+			<element name="eventType" type="string"/>
+			<element name="returnId" type="long"/>
+			<element name="severity" type="int"/>
+			<element name="sourceSystem" type="string"/>
+			<element name="userCode" type="string"/>
+			<element name="workOrderNo" type="string"/>
+		</sequence>
+	</complexType>	
+
+	<complexType name="updateScriptResult">
+		<sequence>
+		<element name="ITEM" type="item"/>
+		<element name="USERCODE" type="string"/>
+		</sequence>
+	</complexType>
+  
+	<complexType name="workList">
+		<sequence>
+			<element name="userCode" type="string"/>
+			<element name="workgroupCode" type="string"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="workOrder">
+		<sequence>
+			<element name="districtCode" type="string"/>
+			<element name="workorderNo" type="string"/>
+		</sequence>
+	</complexType> 
+	
+	<complexType name="getDeltaScriptResultResponse">
+		<sequence>
+			<element name="checksum" type="string"/>
+			<element name="error" type="errorMessage"/>
+			<element name="fileName" type="string"/>
+			<element name="scriptResultSource" type="string"/>
+			<element name="success" type="boolean"/>
+		</sequence>
+	</complexType>	
+	
+	<complexType name="getScriptReportResponse">
+		<sequence>
+			<element name="checksum" type="string"/>
+			<element name="error" type="errorMessage"/>
+			<element name="scriptReportSource" type="string"/>
+			<element name="success" type="boolean"/>
+		</sequence>
+	</complexType>	
+  
+	<complexType name="resultsHistoryDatabaseResponse">
+		<sequence>
+			<element name="error" type="errorMessage"/>
+			<element name="full" type="fullDataBaseMessage"/>
+			<element name="success" type="boolean"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="resultsHistoryDeltaResponse">
+		<sequence>
+			<element name="deltaResultList" type="XSDRoot:deltaResultList"/>
+			<element name="error" type="errorMessage"/>
+			<element name="success" type="boolean"/>
+		</sequence>
+	</complexType>  
+  
+  	<complexType name="deltaResultList">
+		<sequence>
+			<element name="returnId" type="string" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+  
+	<complexType name="item">
+		<sequence>
+			<element name="DATE" type="string"/>
+			<element name="FREETEXT" type="string"/>
+			<element name="PREV" type="string"/>
+			<element name="RESPONSE" type="response"/>
+			<element name="RESPONSEFILE" type="string"/>
+			<element name="RESPONSEFILENAME" type="string"/>
+			<element name="resOrderNo" type="int"/>
+			<element name="seqNo" type="int"/>
+			<element name="TIME" type="string"/>
+			<element name="UOM" type="string"/>
+		</sequence>
+	</complexType>
+
+
+	<complexType name="response">
+		<sequence>
+			<element name="LABEL" type="string"/>
+			<element name="LINENO" type="string"/>
+			<element name="RESPONSEDisplay" type="string"/>
+			<element name="type" type="string"/>
+			<element name="value" type="string"/>
+		</sequence>
+	</complexType>  
+
+
+	<complexType name="ErrorMessage">
+		<sequence>
+			<element name="errorCode" type="string" />
+			<element name="errorDescription" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="GetScriptResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="scriptFileSource" type="string" />
+			<element name="success" type="boolean" />
+			<element name="checksum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="script">
+		<sequence>
+			<element name="scriptCode" type="string" />
+			<element name="scriptId" type="string" />
+			<element name="scriptDesc" type="string" />
+			<element name="versionNumber" type="integer" />
+			<element name="dateCreated" type="integer" />
+			<element name="Filerefs" type="XSDRoot:File" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="CallResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="success" type="boolean" />
+		</sequence>
+	</complexType>
+
+	<complexType name="UploadInitiateResponse">
+		<sequence>
+			<element name="identifier" type="string" />
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="maxChunkSizeBytes" type="long" />
+			<element name="startFromPart" type="integer" />
+			<element name="success" type="boolean" />
+		</sequence>
+	</complexType>
+
+	<complexType name="UploadInitiate">
+		<sequence>
+			<element name="fileName" type="string" />
+			<element name="totalSizeBytes" type="long" />
+			<element name="mimeType" type="string" />
+			<element name="identifier" type="string" />
+			<element name="fileDesc" type="string" minOccurs="0"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="UploadPart">
+		<sequence>
+			<element name="identifier" type="string" />
+			<element name="partNumber" type="integer" />
+			<element name="data" type="string" />
+			<element name="dataLength" type="long" />
+			<element name="checksum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="UploadPartResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="success" type="boolean" />
+			<element name="complete" type="boolean" />
+			<element name="nextPart" type="integer" />
+		</sequence>
+	</complexType>
+
+	<complexType name="File">
+		<sequence>
+			<element name="Name" type="string" />
+			<element name="Checksum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="Config">
+		<sequence>
+			<element name="eqConfig" type="XSDRoot:EQConfig" />
+			<element name="wmConfig" type="XSDRoot:WMConfig" />
+			<element name="scriptConfig" type="XSDRoot:ScriptConfig" />
+		</sequence>
+	</complexType>
+
+	<complexType name="EQConfig">
+		<sequence>
+			<element name="fileName" type="string" />
+			<element name="checkSum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="WMConfig">
+		<sequence>
+			<element name="fileName" type="string" />
+			<element name="checkSum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="ScriptConfig">
+		<sequence>
+			<element name="fileName" type="string" />
+			<element name="checkSum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="GetConfigResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="success" type="boolean" />
+			<element name="configFileSource" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="FullDataBaseMessage">
+		<sequence>
+			<element name="name" type="string" />
+			<element name="checksum" type="string" />
+			<element name="sizeBytes" type="long" />
+		</sequence>
+	</complexType>
+
+	<complexType name="AssetDatabaseResponse">
+		<sequence>
+			<element name="full" type="XSDRoot:FullDataBaseMessage" />
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="success" type="boolean" />
+		</sequence>
+	</complexType>
+
+	<complexType name="GetScriptReferenceResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="referenceFileSource" type="string" />
+			<element name="success" type="boolean" />
+		</sequence>
+	</complexType>
+
+	<complexType name="GetSupportFileResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="supportFileSource" type="string" />
+			<element name="success" type="boolean" />
+		</sequence>
+	</complexType>
+
+	<complexType name="VALIDATIONTYPERESPONSE">
+		<sequence>
+			<element name="ERROR" type="XSDRoot:ErrorMessage" />
+			<element name="VALIDATIONS" type="XSDRoot:VALIDATION" minOccurs="0" maxOccurs="unbounded" />
+			<element name="SUCCESS" type="boolean" />
+			<element name="CHECKSUMMATCH" type="int" />
+		</sequence>
+	</complexType>
+
+	<complexType name="VALIDATION">
+		<sequence>
+			<element name="VALIDATIONPROPERTIES" type="XSDRoot:VALIDATIONPROPERTY" minOccurs="0" maxOccurs="unbounded" />
+			<element name="VALIDATIONTYPE" type="string" />
+			<element name="VALIDATIONDESC" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="VALIDATIONPROPERTY">
+		<sequence>
+			<element name="EQUIVVALUE" type="string" />
+			<element name="WEIGHTSCORE" type="int" minOccurs="0" />
+			<element name="COLOR" type="string" />
+			<element name="NAME" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="VALIDATIONTYPEREQUEST">
+		<sequence>
+			<element name="VALIDATIONTYPE" type="string" minOccurs="0" maxOccurs="unbounded" />
+			<element name="CHECKSUM" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="WorkIssuedResponse">
+		<sequence>
+			<element name="success" type="boolean" />
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="workIssuedList" type="XSDRoot:WorkIssued" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="RecallWork">
+		<sequence>
+			<element name="additionalText" type="string" minOccurs="0" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	
+	<complexType name="CancelWork">
+		<sequence>
+			<element name="additionalText" type="string" minOccurs="0" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	
+	<complexType name="WorkIssued">
+		<sequence>
+			<element name="workOrderNo" type="string" minOccurs="1" maxOccurs="1" />
+			<element name="workOrderDesc" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="issuedTime" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="equipNo" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="equipDesc" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="altEquipRef" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="planStartDate" type="int" minOccurs="0" maxOccurs="1" />
+			<element name="reqFinishDate" type="int" minOccurs="0" maxOccurs="1" />
+			<element name="userCode" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="woType" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="sourceFileName" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="districtCode" type="string" minOccurs="1" maxOccurs="1" />
+			<element name="workStatus" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="workStatusDate" type="int" minOccurs="0" maxOccurs="1" />
+			<element name="workStatusTime" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="additionalText" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="issuedDate" type="int" minOccurs="1" maxOccurs="1" />
+			<element name="workgroupCode" type="string" minOccurs="1" maxOccurs="1" />
+			<element name="fileCreateDate" type="int" minOccurs="1" maxOccurs="1" />
+			<element name="fileCreateTime" type="string" minOccurs="1" maxOccurs="1" />
+			<element name="attachments" type="XSDRoot:Attachment" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="RetrieveWorkOrderResponse">
+		<sequence>
+			<element name="success" type="boolean" />
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="workOrderData" type="string" />
+			<element name="checksum" type="string" />
+			<element name="filename" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="FRTransaction">
+		<sequence>
+			<element name="Item" type="XSDRoot:TransactionItem" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+
+	<complexType name="TransactionItem">
+		<sequence>
+			<element name="UserCode" type="string" />
+			<element name="LogDate" type="integer" />
+			<element name="LogTime" type="string" />
+			<element name="DeviceId" type="string" />
+			<element name="Trans" type="XSDRoot:transType" />
+		</sequence>
+	</complexType>
+
+	 <complexType name="transType">
+		<sequence>
+			<element name="AdditionalText" type="string"/>
+			<element name="DistrictCode" type="string"/>
+			<element name="Latitude" type="string"/>
+			<element name="Longitude" type="string"/>
+			<element name="type" type="string"/>
+			<element name="WorkOrderNo" type="string"/>
+			<element name="WorkStatus" type="string"/>
+		</sequence>
+	</complexType>
+  
+	<complexType name="WOTransType">
+		<sequence>
+			<element name="WorkOrderNo" type="string" />
+			<element name="DistrictCode" type="string" minOccurs="0" />
+			<element name="WorkStatus" type="string" />
+			<element name="AdditionalText" type="string" />
+		</sequence>
+		<attribute name="type" type="string" use="required" />
+	</complexType>
+
+	<complexType name="ScriptResultsSearchResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="success" type="boolean" />
+			<element name="resultsetCount" type="integer" />
+			<element name="scriptResultList" type="XSDRoot:ScriptResult" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="ScriptResult">
+		<sequence>
+			<element name="returnId" type="string" />
+			<element name="scriptCode" type="string" />
+			<element name="deviceId" type="string" />
+			<element name="workorderNo" type="string" />
+			<element name="workorderDesc" type="string" />
+			<element name="equipNo" type="string" />
+			<element name="equipDesc" type="string" />
+			<element name="altEquipRef" type="string" />
+			<element name="summaryDesc" type="string" />
+			<element name="completeDate" type="string" />
+			<element name="completeTime" type="string" />
+			<element name="completeUser" type="string" />
+			<element name="completeUserName" type="string" />
+			<element name="completeCode" type="string" />
+			<element name="workgroupCode" type="string" />
+			<element name="resultStatus" type="string" />
+			<element name="totalWeightScore" type="string" />
+			<element name="resAssocCode" type="string" />
+			<element name="scriptDesc" type="string" />
+			<element name="workgroupDesc" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="GetScriptResultResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="scriptResultSource" type="string" />
+			<element name="success" type="boolean" />
+			<element name="checksum" type="string" />
+			<element name="edit" type="boolean" minOccurs="0"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="InitiateDownloadResponse">
+		<sequence>
+			<element name="success" type="boolean"/>
+			<element name="error" type="XSDRoot:ErrorMessage"/>
+			<element name="identifier" type="string"/>
+			<element name="totalParts" type="integer"/>
+			<element name="checksum" type="string"/>
+			<element name="fileName" type="string"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="DownloadPartResponse">
+		<sequence>
+			<element name="success" type="boolean"/>
+			<element name="error" type="XSDRoot:ErrorMessage"/>
+			<element name="identifier" type="string"/>
+			<element name="partData" type="string"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="ConfigListResponse">
+		<sequence>
+			<element name="success" type="boolean"/>
+			<element name="error" type="XSDRoot:ErrorMessage"/>
+			<element name="configList" type="XSDRoot:ConfigFile" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="ConfigFile">
+		<sequence>
+			<element name="fileName" type="string" />
+			<element name="checkSum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="SupportFileListResponse">
+		<sequence>
+			<element name="success" type="boolean"/>
+			<element name="error" type="XSDRoot:ErrorMessage"/>
+			<element name="supportFileList" type="XSDRoot:SupportFile" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="SupportFile">
+		<sequence>
+			<element name="fileName" type="string" />
+			<element name="checkSum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="WorkBankDatabaseResponse">
+		<sequence>
+			<element name="full" type="XSDRoot:FullDataBaseMessage" />
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="success" type="boolean" />
+		</sequence>
+	</complexType>
+
+	<complexType name="Attachment">
+		<sequence>
+			<element name="fileName" type="string" />
+			<element name="fileDesc" type="string" />
+			<element name="type" type="string" />
+			<element name="checkSum" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="RegisterAttachment">
+		<sequence>
+			<element name="fileName" type="string" />
+			<element name="fileType" type="string" />
+			<element name="checksum" type="string" />
+			<element name="fileDesc" type="string" minOccurs="0"/>
+			<element name="fileContent" type="string" />
+		</sequence>
+	</complexType>
+
+	<complexType name="GetPersonalViewResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="success" type="boolean" />
+			<element name="personalViewList" type="XSDRoot:PersonalView" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="PersonalView">
+		<sequence>
+			<element name="viewId" type="string" />
+			<element name="viewName" type="string" />
+			<element name="viewDesc" type="string" />
+			<element name="viewDefault" type="boolean" />
+		</sequence>
+	</complexType>
+
+	<complexType name="NextResultStatusResponse">
+		<sequence>
+			<element name="success" type="boolean"/>
+			<element name="error" type="XSDRoot:ErrorMessage"/>
+			<element name="resultStatusList" type="XSDRoot:Status" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="Status">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="OrderNo" type="string" use="required"/>
+				<attribute name="System" type="string" use="required"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="ScriptQuestionDefinitionResponse">
+		<sequence>
+			<element name="error" type="XSDRoot:ErrorMessage" />
+			<element name="success" type="boolean" />
+			<element name="itemData" type="XSDRoot:ItemData" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="ItemData">
+		<sequence>
+			<element name="DEFECTS" type="XSDRoot:Defects" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="DEFECTSET" type="XSDRoot:DefectSet" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="FORMATINPUTDEFME" type="XSDRoot:FormatInputDefMe" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="ITEM" type="XSDRoot:ItemType" minOccurs="1" maxOccurs="1"/>
+			<element name="VALIDATION" type="XSDRoot:Validation" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="MEASURECATEGORIES" type="XSDRoot:MeasureCategories" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="REFCAT" type="XSDRoot:RefCat" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="SCRIPTREFITEM" type="XSDRoot:ScriptRefItem" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="Defects">
+		<sequence>
+			<element name="DEFECTCODE">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="4" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="DEFECTDESCRIPTION" minOccurs="0">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="40" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="DEFECTNOTE" minOccurs="0" maxOccurs="unbounded">
+				<complexType>
+					<sequence>
+						<element name="DEFECTCODE">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="4" />
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="SNID" type="int" minOccurs="0" />
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="DefectSet">
+		<sequence>
+			<element name="DEFECTSETNAME">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="10" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="DEFECTSETDESC" minOccurs="0">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="40" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="DEFECTSETDETAIL" minOccurs="0" maxOccurs="unbounded">
+				<complexType>
+					<sequence>
+						<element name="DEFECTSETNAME">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="10" />
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="DEFECTCODE">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="4" />
+								</restriction>
+							</simpleType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="FormatInputDefMe">
+		<sequence>
+			<element name="SEQUENCENUMBER" type="int"/>
+			<element name="MINENTRY" type="int" minOccurs="0"/>
+			<element name="SCRIPTID" type="int" minOccurs="0"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="ItemType">
+		<choice maxOccurs="unbounded">
+			<element name="SCRIPTID" type="int" minOccurs="1" maxOccurs="1"/>
+			<element name="SEQUENCENUMBER" type="int" minOccurs="1" maxOccurs="1"/>
+			<element name="ALTERNATEREF" default="" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="15"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="ITEMTEXT" default="" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="255"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="ITEMTYPE" default="" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="25"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="INPUTTYPE" default="" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="2"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="ILEVEL" type="int" default="0" minOccurs="1" maxOccurs="1"/>
+			<element name="FIELDSIZE" default="" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="10"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="PRECISION" type="int" minOccurs="0"  maxOccurs="1"/>
+			<element name="VALIDATION" default="" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="20"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="DATAREF" default="" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="2"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="DEFECTSETNAME" default="" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="10"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="UOMCATID" type="int" default="0" minOccurs="0" />
+			<element name="VALFREETEXTREQ" minOccurs="0" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="SEQUENCENUMBER" type="int"/>
+						<element name="VALIDATIONTYPE">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="15"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="RESPONSE">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="80"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="DISPLAYMESSAGE" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="100"/>
+								</restriction>
+							</simpleType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="UOMNUMVALID" minOccurs="0" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="SEQUENCENUMBER" type="int"/>
+						<element name="UOMTYPE">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="12"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="UPPERLIMIT" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="12"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="LOWERLIMIT" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="12"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="UPPERWARNING" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="12"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="LOWERWARNING" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="12"/>
+								</restriction>
+							</simpleType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="FORMATINPUTDEF" minOccurs="0" maxOccurs="unbounded">
+				<complexType>
+					<sequence>
+						<element name="SEQUENCENUMBER" type="int"/>
+						<element name="CHARPOS" type="int"/>
+						<element name="CHARTYPE" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="2"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="ALLOWEDCHARS" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="50"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="CASE" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="1"/>
+								</restriction>
+							</simpleType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="GENNUMVALID" minOccurs="0" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="SEQUENCENUMBER" type="int"/>
+						<element name="UPPERLIMIT" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="25"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="LOWERLIMIT" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="25"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="UPPERWARNING" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="25"/>
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="LOWERWARNING" default="" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="25"/>
+								</restriction>
+							</simpleType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="RELWEIGHT" type="int" minOccurs="0" maxOccurs="1"/>
+		</choice>
+	</complexType>
+
+	<complexType name="Validation">
+		<sequence>
+			<element name="VALIDATIONTYPE">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="15" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="VALIDATIONDESC">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="100" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="VALIDATIONPROPERTY" maxOccurs="unbounded" minOccurs="0">
+				<complexType>
+					<sequence>
+						<element name="VALIDATIONTYPE">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="15" />
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="VALIDATIONPROPERTY">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="100" />
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="EQUIVVALUE" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="80" />
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="WEIGHTSCORE" type="int" minOccurs="0"/>
+						<element name="COLOUR" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="12" />
+								</restriction>
+							</simpleType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="MeasureCategories">
+		<sequence>
+			<element name="UOMCATID" type="int" />
+			<element name="CATNAME" type="string"/>
+			<element name="UNITOFMEASURE" minOccurs="0" maxOccurs="unbounded">
+				<complexType>
+					<sequence>
+						<element name="UOMCATID" type="int" />
+						<element name="UOMTYPE" type="string" />
+						<element name="PREF" type="int" />
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="RefCat">
+		<sequence>
+			<element name="REFCATID" type="int" />
+			<element name="REFCATDESC" minOccurs="0">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="40" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="REFSUBCAT" minOccurs="0" maxOccurs="unbounded">
+				<complexType>
+					<sequence>
+						<element name="REFSUBCATID" type="int" />
+						<element name="REFSUBCATDESC" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="40" />
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="REFCATID" type="int" minOccurs="0" />
+						<element name="REFSUBCATTYPE" minOccurs="0">
+							<simpleType>
+								<restriction base="string">
+									<maxLength value="2" />
+								</restriction>
+							</simpleType>
+						</element>
+						<element name="REFITEM" minOccurs="0" maxOccurs="unbounded">
+							<complexType>
+								<sequence>
+									<element name="REFID" type="int" />
+									<element name="REFDESC" minOccurs="0">
+										<simpleType>
+											<restriction base="string">
+												<maxLength value="100" />
+											</restriction>
+										</simpleType>
+									</element>
+									<element name="REFSUBCATID" type="int" minOccurs="0" />
+									<element name="OTHERREF" minOccurs="0">
+										<simpleType>
+											<restriction base="string">
+												<maxLength value="100" />
+											</restriction>
+										</simpleType>
+									</element>
+								</sequence>
+							</complexType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="ScriptRefItem">
+		<sequence>
+			<element name="ID" type="int" />
+			<element name="SEQUENCENUMBER" type="int" />
+			<element name="REFID" type="int" />
+			<element name="IDTYPE">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="1" />
+					</restriction>
+				</simpleType>
+			</element>
+		</sequence>
+	</complexType>
+
+</schema>

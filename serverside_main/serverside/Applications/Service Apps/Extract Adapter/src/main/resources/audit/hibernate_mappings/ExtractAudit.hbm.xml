@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.amtsybex.fieldreach.extract.audit.model">
+
+	<class name="ExtractAudit" table="EXTRACT_AUDIT">
+	
+		<id name="id" column="ID">
+			<generator class="assigned"/>
+		</id>
+		
+		<property name="returnId"
+				  type="integer"
+				  not-null="false"
+				  column="RETURNID"/>
+				  				 						  
+		<property name="instance"
+				  type="string"
+				  not-null="false"
+				  column="INSTANCE"/>
+		
+		<property name="extracted"
+				  type="boolean"
+				  not-null="true"
+				  column="EXTRACTED"/>
+				  	  	
+		<property name="auditDate"
+				  type="date"
+				  not-null="true"
+				  column="AUDITDATE"/>
+				  
+		<property name="auditTime"
+				  type="time"
+				  not-null="true"
+				  column="AUDITTIME"/>
+				  
+		<one-to-one name="redelivery" 
+					class="com.amtsybex.fieldreach.extract.audit.model.Redelivery"
+					cascade="all"
+					lazy="false">
+		</one-to-one>
+		
+		<one-to-one name="error" 
+					class="com.amtsybex.fieldreach.extract.audit.model.ExtractErrors"
+					cascade="all"
+					lazy="false">
+		</one-to-one>
+	
+	</class>
+	
+</hibernate-mapping>

@@ -1,0 +1,100 @@
+jdbc: 
+  driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  connectionpool:
+    max_size: 5
+
+hibernate:
+  dialect: org.hibernate.dialect.SQLServerDialect
+  show_sql: false
+  format_sql: true
+
+default:
+  jdbc:
+    url: jdbc:sqlserver://myserver.ad.capita.co.uk:1433;databaseName=fieldsmart;
+    username: 
+    password: 
+
+folder:
+  basePath: /home/fusion/fieldsmart
+                
+portal:
+  refresh:
+    interval: 500
+  enableuserworkassignment: false
+  workorderlocation: ${folder.basePath}/workorders
+  approval:
+    result: APPROVAL
+    closework: FIELDCOMPLETE
+  result:
+    templatelocation: ${folder.basePath}/results/templates
+
+joinfaces:
+  myfaces:
+    support-managed-beans: false
+    support-jsp-and-faces-el: false
+    expression-factory: org.apache.el.ExpressionFactoryImpl<
+  jsf:
+    facelets-skip-comments: true
+    project-stage: production
+    facelets-libraries: /WEB-INF/functions.taglib.xml
+    client-window-mode: none
+    datetimeconverter-default-timezone-is-system-timezone: true
+    state-saving-method: client
+    config-files:
+    - /WEB-INF/faces-config.xml
+    default-suffix: .xhtml
+   
+  scope-configurer:
+    cdi:
+      enabled: true
+      order: 0
+    jsf:
+      enabled: true
+      order: 1
+      
+  primefaces:
+    theme: bootstrap
+    font-awesome: false
+    submit: partial
+    move-scripts-to-bottom: true
+    uploader: native
+
+spring:
+  thymeleaf:
+    enabled: false
+  jpa:
+    open-in-view: false
+  security:
+    oauth2:
+      client:
+        registration:
+          auth0:
+            client-id: 
+            client-secret: 
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          auth0:
+            # N.B. The trailing slash is important.
+            issuer-uri: 
+
+management:
+  health:
+    defaults:
+      enabled: false
+
+accesstoken:
+  key:
+    public: /mnt/secrets-store/public
+    private: /mnt/secrets-store/privatePKCS8
+
+server:
+  servlet:
+    session:
+      timeout : 900
+
+tenant-uri:
+   mws: 
+   portal: 

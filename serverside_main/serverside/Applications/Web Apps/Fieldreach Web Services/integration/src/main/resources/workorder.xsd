@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="WorkOrder">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="WorkOrderDetail" type="WorkOrderDetail" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="EquipmentDetail" type="EquipmentDetail" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="EquipmentList" type="EquipmentList" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="WorkOrderDetail">
+		<xs:sequence>
+            <xs:element name="WorkOrderNo" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="WorkOrderDesc" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="WorkGroupCode" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="OperationType" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Latitude" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Longitude" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="PlanStartDate" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+        </xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EquipmentDetail">
+        <xs:sequence>
+            <xs:element name="EquipNo" type="xs:string" />
+            <xs:element name="EquipDesc" type="xs:string" />
+            <xs:element name="AltEquipRef" type="xs:string" />
+            <xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="EquipmentList">
+        <xs:sequence>
+            <xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

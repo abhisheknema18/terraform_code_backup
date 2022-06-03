@@ -1,0 +1,436 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<p:remoteCommand name="updateAlertCount" 
+		global="false"
+		actionListener="#{alertManagerList.loadCount}"
+		update="menuForm:alertsEquipBtn"/>
+
+	<h:form id="menuForm">
+		
+		<div id="nav">
+			<div id="navLogo"/>
+			<ul>
+ 
+				<li>
+					<h:commandLink id="menuHomeBtn" class="navMenuLink" action="home" >
+					 	<span class="fa fa-home navIcon" />
+					 	<span class="navLink">Home</span>
+						<span class="navDown"></span>
+					</h:commandLink>
+				</li>
+
+				<li class="#{view.viewId=='/fdm/dashboard.xhtml' ? 'menu' : ''}" style="#{fdmenv.dashboardView == true ? '' : 'display:none'}">
+				
+				 	<h:commandLink id="menuDashboardBtn" class="navMenuLink" action="dashboard" >
+					 	<span class="fa fa-dashboard navIcon" />
+					 	<span class="navLink">Dashboard</span>
+						<span class="navDown #{view.viewId=='/fdm/dashboard.xhtml' ? 'fa fa-sort-down' : ''}"></span>
+					</h:commandLink>
+
+					<ul style="#{view.viewId=='/fdm/dashboard.xhtml' ? '' : 'display:none'}">
+						<li>
+							<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewDBBtn" 
+							onclick="PF('dashAddDialogWidget').show()" >
+								<span class="navIcon fa fa-plus"/><h:outputText value="Add Dashboard Item" />
+							</p:commandLink>	
+						</li>
+						<!-- <li>
+							<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewReturnedScriptBtn" 
+							action="#{dashboard.handleAddItem('ReturnedScript')}" 
+							oncomplete="PF('dashEditDialogWidgetADD').show()"
+							update="dashboardAddItem msgs" >
+								<span class="fa fa-plus""/><h:outputText value="Script Results" />
+							</p:commandLink>	
+						</li>
+						<li>
+							<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewWorkInProgressBtn" 
+							action="#{dashboard.handleAddItem('WorkInProgress')}" 
+							oncomplete="PF('dashEditDialogWidgetADD').show()"
+							update="dashboardAddItem msgs">
+								<span class="fa fa-plus""/><h:outputText value="Work Status" />
+							</p:commandLink>	
+						</li>
+						<li>
+							<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewActiveUserBtn" 
+							action="#{dashboard.handleAddItem('ActiveUser')}" 
+							oncomplete="PF('dashEditDialogWidgetADD').show()"
+							update="dashboardAddItem msgs">
+								<span class="fa fa-plus""/><h:outputText value="On-line Users" />
+							</p:commandLink>	
+						</li> -->
+					</ul>
+				</li> 
+				<li style="#{fdmenv.workView == true ? '' : 'display:none'}">
+											<!-- workList.navigate -->
+					<span class="navMenuLink">
+					 	<span class="fa fa-clipboard-check navIcon" />
+					 	<span class="navLink">#{msg.fdm_work}</span>
+						<span class="navDown fa fa-sort-down"></span>
+					</span>
+					<ul>
+						<li>
+													<!-- workList.navigate -->
+							<h:commandLink id="viewWorkBtn">
+								<p:ajax oncomplete="PF('workSearchDialog').show();" update="workSearchDialog"/>
+								<span class="navIcon fa fa-search"/><h:outputText value="#{msg.fdm_search_btn}" />
+							</h:commandLink>	
+						</li>
+						<li style="#{fdmenv.workManagement == true ? '' : 'display:none'}">
+							<h:commandLink id="viewWorkAllocationBtn" action="#{workList.loadWorkAllocation()}">
+								<span class="navIcon fa fa-user-plus"/><h:outputText value="#{msg.fdm_work_assignment}" />
+							</h:commandLink>	
+						</li>
+						<li style="#{fdmenv.workManagement == true and (fdmenv.isCloseApprovalActive()) ? '' : 'display:none'}">
+							<h:commandLink id="viewWorkCloseureApproveBtn" action="#{workList.loadWorkClosureApproval()}">
+								<span class="navIcon fa fa-check"/><h:outputText value="#{msg.fdm_work_closure_approval}" />
+							</h:commandLink>	
+						</li>
+					</ul>
+				</li>
+				<li  onmouseenter="clearSubMenu()">
+					<span class="navMenuLink">
+					 	<span class="fa fa-file navIcon" />
+					 	<span class="navLink">Results</span>
+						<span class="navDown fa fa-sort-down"></span>
+					</span>
+					<ul>
+						<li>
+							<h:commandLink id="viewResultsBtn">
+								<p:ajax oncomplete="PF('resultSearchDialog').show();" update="resultSearchDialog"/>
+								<span class="navIcon fa fa-search"/><h:outputText value="#{msg.fdm_search_btn}" />
+							</h:commandLink>	
+						</li>
+
+						<li style="#{fdmenv.isResultsApproval() ? '' : 'display:none'}">
+							<h:commandLink id="approveResultsBtn" action="#{search.searchApprovals()}" update="msgs">
+								<span class="navIcon fa fa-check-circle"/><h:outputText value="#{msg.fdm_search_approval_btn}" />
+							</h:commandLink>	
+						</li>
+						
+						<li style="#{fdmenv.isResultAnalysis() ? '' : 'display:none'}">
+							<h:commandLink id="analiseResultsBtn">
+								<p:ajax listener="#{resultAnalysis.initSearchBarIsSearchingVersion(false)}" oncomplete="PF('resultAnalysisDialog').show();" update="resultAnalysisDialog"/>
+								<span class="fa fa-chart-bar" style="margin-left:15px; margin-right:10px;"/><h:outputText value="#{msg.fdm_data_set_analytics}" />
+							</h:commandLink>	
+						</li>
+						
+						<li style="#{fdmenv.isResultMetrics() ? '' : 'display:none'}">
+							<h:commandLink id="analiseVersionResultsBtn">
+								<p:ajax listener="#{resultAnalysis.initSearchBarIsSearchingVersion(true)}" oncomplete="PF('resultAnalysisDialog').show();" update="resultAnalysisDialog"/>
+								<span class="navIcon fa fa-chart-line"/><h:outputText value="#{msg.fdm_script_metrics}" />
+							</h:commandLink>	
+						</li>
+						
+						<li style="#{fdmenv.personalView == true and search.personalViewMenuSearch == true ? '' : 'display:none'}">				
+								
+								<p:commandLink onclick="onClickSubMenu('.personalViewNav')" global="false">
+								<span class="navIcon fa fa-caret-right personalViewNav"/> <h:outputText value="Personal View" />
+								</p:commandLink>
+								<ul>
+								<ui:repeat var="personalView" value="#{search.personalViewList}">
+									<li style="#{personalView.searchMenu == 1 ? '' : 'display:none'}" class = "personalViewNavChild nodisplay">
+										<h:commandLink action="#{search.findScriptByPersonalView(personalView)}" styleClass="childClass">
+											
+											<h:outputText value="#{personalView.viewName}"/>
+										</h:commandLink>
+									</li>	
+								</ui:repeat>
+								</ul>						
+						</li>
+					</ul>
+				</li>
+				<!-- FDE060 - KN - Asset Drop Down Start -->
+
+				<li>
+					<span class="navMenuLink" onmouseover="#{fdmenv.isManageAlerts() ? 'updateAlertCount()' : '' }">
+					 	<span class="fas fa-share-alt navIcon" />
+					 	<span class="navLink">Assets</span>
+						<span class="navDown fa fa-sort-down"></span>
+					</span>
+					<ul>
+						<li>
+							<h:commandLink id="searchEquipBtn">
+								<p:ajax listener="#{equipmentSearch.resetSearch()}" oncomplete="PF('equipmentSearchDialogWidget').show();" update="equipSearchDialog"/>
+								<span class="navIcon fa fa-search"/><h:outputText value="Search" />
+							</h:commandLink>	
+						</li>	
+						<li style="#{fdmenv.isManageAlerts() ? '' : 'display:none; ' } #{alertManagerList.alertCount == 0 ? 'line-height:35px; color:darkgray;' : ''}">
+							<h:commandLink id="alertsEquipBtn" action="#{alertManagerList.viewAlerts()}" disabled="#{alertManagerList.alertCount == 0}">
+								<span class="navIcon fa fa-exclamation-triangle" style="#{alertManagerList.alertCount != 0 ? 'color:red;' : ''}"/><h:outputText value="Alerts (#{alertManagerList.alertCount})" />
+							</h:commandLink>	
+						</li>											
+						
+					</ul>
+				</li>
+			
+				<li style="#{fdmenv.userMonitor == true ? '' : 'display:none'}">
+					<span class="navMenuLink">
+						<span class="fa fa-file navIcon" />
+						<span class="navLink">User</span>
+						<span class="navDown fa fa-sort-down"></span>
+					</span>
+					<ul>
+						<li><h:commandLink action="#{userMonitor.searchUserStatus()}">
+							<span class="navIcon fa fa-search"/><h:outputText value="User Status" />
+							</h:commandLink></li>
+					</ul></li>
+					
+						<!-- User admin -->
+				 <li style="#{fdmenv.user.adminUser == 1 ? '' : fdmenv.viewWorkGroupAdmin=='true' ? '' : 'display:none'}" onmouseenter="clearSubMenu()">
+					<span class="navMenuLink">
+					 	<span class="fas fa-user navIcon" />
+					 	<span class="navLink">Admin</span>
+						<span class="navDown fa fa-sort-down"></span>
+					</span>
+					<ul>
+						<li class="mobileUserParent" style="#{fdmenv.viewWorkGroupAdmin?'':'display:none'}">
+							<p:commandLink onclick="onClickSubMenu('.mobileUsersNav')" global="false">
+								<span class="navIcon fa fa-caret-right mobileUsersNav"/><h:outputText value="Mobile Users" />
+							</p:commandLink>
+						</li>
+						
+						<li class="mobileUsersNavChild nodisplay">
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('adminUserSearchWidget').show();" update="adminUserSearchWidget"/>
+								<span class="navIcon fas fa-user"/><h:outputText value="Search Mobile Users" />
+							</h:commandLink>	
+						</li>
+						<!-- FDE063 - KN - Mobile WG Admin Menu Start -->
+						<li class="mobileUsersNavChild nodisplay">
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('mobileWorkGroupSearchBarWidget').show();" update="mobileWorkGroupSearchForm"/>								
+								<span class="navIcon fas fa-folder"/><h:outputText value="Search Mobile Work Groups" />
+							</h:commandLink>	
+						</li>
+						<li class="mobileUsersNavChild nodisplay">
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('mobileWorkGroupAddWidget').show();" update="addMobWorkGroupForm:mobileWGAdd" listener="#{workGroupAdmin.addMobileWorkGroup}" />
+								<f:setPropertyActionListener value="false" target="#{workGroupAdmin.editWorkGroup}"/>
+								<span class="navIcon fas fa-folder-plus"/><h:outputText value="Add Mobile Work Group" />
+							</h:commandLink>	
+						</li>
+						<li class="mobileUsersNavChild nodisplay" style="#{fdmenv.user.adminUser == 0 ? 'display:none' : ''}">
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('manageMobileWorkGroupCategory').show();" listener="#{workGroupAdmin.getMobileWorkGroupCategory}" update="mobileWorkGroupCategoryForm"/>
+								<span class="navIcon fas fa-clipboard-list"/><h:outputText value="Manage Mobile Work Group Category" />
+
+							</h:commandLink>	
+						</li>
+						
+						
+						<li class="systemUserParent" style="#{fdmenv.user.adminUser == 0 ? 'display:none' : ''}">
+							<p:commandLink onclick="onClickSubMenu('.systemUsersNav')" global="false">
+							<span class="navIcon fa fa-caret-right systemUsersNav"/><h:outputText value="System Users" />
+							</p:commandLink>
+						</li>
+						
+						<li class="systemUsersNavChild nodisplay">
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('systemAdminUserSearchWidget').show();" update="systemAdminUserSearchWidget" />
+								<span class="navIcon fas fa-user-cog"/><h:outputText value="Search System Users" />
+							</h:commandLink>	
+						</li>
+
+						<li class="systemAccessParent" style="#{fdmenv.user.adminUser == 0 ? 'display:none' : ''}">
+							<p:commandLink onclick="onClickSubMenu('.systemAccessNav')" global="false">
+							<span class="navIcon fa fa-caret-right systemAccessNav"/><h:outputText value="System Access" />
+							</p:commandLink>
+						</li>
+						
+						<li class="systemAccessNavChild nodisplay">
+							<h:commandLink styleClass="childClass" action="#{accessGroup.searchAccessGroups}">
+								<span class="navIcon fas fa-eye"/><h:outputText value="View All Access Groups" />
+							</h:commandLink>	
+						</li>
+						
+						<li class="systemAccessNavChild nodisplay">
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('searchAccessGroupWidget').show();" update="accessGroupSearchForm:searchAccessGroupWidget"/>
+								<span class="navIcon fas fa-users-cog"></span><h:outputText value="Search Access Groups" />
+							</h:commandLink>	
+						</li>
+
+						<li class="systemAccessNavChild nodisplay">
+							<h:commandLink styleClass="childClass">
+							<p:ajax oncomplete="PF('addAccessGroupWidget').show();" listener="#{accessGroup.addAccessGroup()}" update="addAccessGroupWidget"/>
+								<span class="navIcon fas fa-users-cog"><span class="systemUserIcon fas fa-plus"/></span><h:outputText value="Add Access Groups" />
+							</h:commandLink>
+						</li>
+						
+						<!-- User Invitation Menu Start  -->
+						<li class="userInvitationParent" style="#{fdmenv.user.adminUser == 1 || fdmenv.viewWorkGroupAdmin ? '' : 'display:none'}">
+							<p:commandLink onclick="onClickSubMenu('.userInvitationNav')" global="false">
+								<span class="navIcon fa fa-caret-right userInvitationNav"/><h:outputText value="User Invitation" />
+							</p:commandLink>
+						</li>
+						
+						<li class="userInvitationNavChild nodisplay" style="#{fdmenv.viewWorkGroupAdmin?'':'display:none'}">
+							
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('adduserInvitationWidget').show();" update="adduserInvitationWidget" listener= "#{userInvitation.addUserInvitation(false)}"/>
+								<span class="navIcon fas fa-key"><span class="systemUserIcon fas fa-plus"/></span><h:outputText value="Create Mobile User Invitation" />
+							</h:commandLink>
+						</li>
+						
+						<li class="userInvitationNavChild nodisplay" style="#{fdmenv.viewWorkGroupAdmin?'':'display:none'}">
+							
+							<p:commandLink styleClass="childClass" action="#{userInvitation.loadInvitationsList(false)}">
+								<span class="navIcon fas fa-eye"><span class="systemUserIcon"/></span><h:outputText value="View Mobile User Invitations" />
+							</p:commandLink>
+						</li>
+						
+						<li class="userInvitationNavChild nodisplay" style="#{fdmenv.user.adminUser == 0 ? 'display:none' : ''}">
+							
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('addSysUserInvitationWidget').show();" update="addSysUserInvitationWidget addSysUserInvitationForm:innerContent" listener= "#{userInvitation.addUserInvitation(true)}"/>
+								<span class="navIcon fas fa-key"><span class="systemUserIcon fas fa-plus"/></span><h:outputText value="Create System User Invitation" />
+							</h:commandLink>
+						</li>
+						
+						<li class="userInvitationNavChild nodisplay" style="#{fdmenv.user.adminUser == 0 ? 'display:none' : ''}">
+							
+							<h:commandLink styleClass="childClass" action="#{userInvitation.loadInvitationsList(true)}">
+								<span class="navIcon fas fa-eye"><span class="systemUserIcon"/></span><h:outputText value="View System User Invitations" />
+							</h:commandLink>
+						</li>
+						
+						<!-- Access Token Menu Start  -->
+						<li class="accessTokenParent" style="#{fdmenv.user.adminUser == 0 ? 'display:none' : ''}">
+							<p:commandLink onclick="onClickSubMenu('.accessTokenNav')" global="false">
+								<span class="navIcon fa fa-caret-right accessTokenNav"/><h:outputText value="Shared Access Tokens" />
+							</p:commandLink>
+						</li>
+						
+						<li class="accessTokenNavChild nodisplay">
+							
+							<h:commandLink styleClass="childClass">
+								<p:ajax oncomplete="PF('addIntegrationAccessWidget').show();" update="addIntegrationAccessWidget" listener="#{integrationAccessToken.addAccessToken}"/>
+								<span class="navIcon fas fa-key"><span class="systemUserIcon fas fa-plus"/></span><h:outputText value="Add Access Token" />
+							</h:commandLink>
+						</li>
+						
+						<li class="accessTokenNavChild nodisplay">
+							<p:commandLink styleClass="childClass" action="#{integrationAccessToken.loadAccessTokenList}">
+								<span class="navIcon fas fa-eye"/><h:outputText value="View Access Token" />
+							</p:commandLink>	
+						</li>
+						<!-- Access Token Menu Ends  -->
+						<li class="configurationMgmtParent" style="#{fdmenv.user.adminUser == 0 ? 'display:none' : ''}">
+							<p:commandLink global="false" action="#{configurationManagement.viewConfig}" actionListener="#{configurationManagement.setActiveTab('WMConfig')}">
+								<span class="navIcon fa fa-caret-right "/><h:outputText value="Configuration Files" />
+							</p:commandLink>
+						</li>
+					</ul>
+				</li> 
+        
+				<!-- FDE060 - KN - Asset Drop Down END -->
+				<!-- <li>
+					<h:commandLink id="menuUserBtn" action="#{userList.navigate}" value="&#xA0;" >
+					 	<span class="fa fa-user-o navIcon" />
+					 	<span class="navLink">Users</span>
+						<span class="navDown fa fa-sort-down"></span>
+					</h:commandLink>
+					<ul>
+						<li>
+							<h:commandLink id="viewUsersBtn" action="#{userList.navigate}">
+								<span class="fa fa-search""/><h:outputText value="Search" />
+							</h:commandLink>	
+						</li>
+					</ul>
+				</li> -->
+			</ul>
+			<div id="navRight" class="horizontalmenu" style="float:right;">
+				<ul style="float:right">
+					
+					<li>
+					 	<h:commandLink id="menuLogoutBtn" styleClass="fa fa-sign-out" action="#{menu.logout}" style="font-size:1.6em;text-align:center;">
+						</h:commandLink>
+					</li>
+				</ul>
+			</div>	
+		</div>
+	</h:form>
+	
+	<h:form id="changePWForm">
+
+	<h:panelGroup id="handleChange">
+	
+	<script>
+		 
+		function onClickSubMenu(str){
+			
+			var strChild = str.concat("Child");
+			
+			if($(str).hasClass('fa fa-caret-right')){
+				$(str).removeClass('fa fa-caret-right');
+				$(str).addClass('fas fa-caret-down');
+			}else{
+	        	$(str).addClass('fa fa-caret-right');
+				$(str).removeClass('fas fa-caret-down');
+			}
+			
+			if($(strChild).hasClass('nodisplay')){
+				$(strChild).removeClass('nodisplay');
+			}else{
+	        	$(strChild).addClass('nodisplay');
+			}
+		}
+		
+		function clearSubMenu(){
+			
+			clearMenuItems(".personalViewNav");
+			clearMenuItems(".mobileUsersNav");
+			clearMenuItems(".systemUsersNav");
+			clearMenuItems(".systemAccessNav");
+			clearMenuItems(".accessTokenNav");
+			clearMenuItems(".userInvitationNav");
+			
+		}
+		
+		function clearMenuItems(str){
+			
+			var strChild = str.concat("Child");
+			
+			$(strChild).addClass('nodisplay');
+			
+			$(str).removeClass('fas fa-caret-down');
+			$(str).addClass('fa fa-caret-right');
+			
+		}
+				
+	</script>
+	<style>
+		.nodisplay{
+			display:none !important;
+		}
+		
+		.childClass{
+			margin-left: 20px;
+		}
+	</style>
+	</h:panelGroup>
+		
+	</h:form>
+
+	
+
+<!-- PRB0050354 - MC - search criteria have now moved from page specific to the menu -->
+<ui:include src="../fdm/workSearchBar.xhtml" />
+<ui:include src="../fdm/searchBar.xhtml" />
+<!-- FDE060 - KN - equipment search bar included -->
+<ui:include src="../fdm/equipmentSearchBar.xhtml" />
+<ui:include src="../fdm/resultAnalysisBar.xhtml" />
+<ui:include src="../fdm/userAdminSearchBar.xhtml" />
+<ui:include src="../fdm/mobileWorkGroupSearchBar.xhtml" />
+<ui:include src="../fdm/systemUserAdminSearchBar.xhtml" />
+<ui:include src="../fdm/AccessGroupSearchBar.xhtml" />
+<ui:include src="../fdm/accessTokenSideBar.xhtml" />
+<ui:include src="../fdm/userInvitationSideBar.xhtml" />
+</ui:composition>
+

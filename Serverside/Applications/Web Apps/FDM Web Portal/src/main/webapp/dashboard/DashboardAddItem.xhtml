@@ -1,0 +1,212 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:func="http://amt-sybex.com/functions">
+
+<h:panelGroup id="dashyMain#{widgetId}" >
+	<div class="ui-g-6 ui-md-4 ui-lg-3 ui-xl-2 dashboardItem">
+
+		<h:form id="dashItemForm#{widgetId}">
+
+			<p:panel id="dashItem#{widgetId}" styleClass="panelStyle scriptPanel" style="display:none;">
+
+
+				<h:panelGroup id="dashy">
+					<p:remoteCommand name="cancelEdit#{widgetId}"
+						actionListener="#{dashboard.cancelEdit(dashboardItem)}"
+						update="dashy"
+						style="display: none;" />
+
+				</h:panelGroup>
+				
+			<h:panelGroup  id="DRAG#{widgetId}" />
+
+			<h:panelGroup id="DROP#{widgetId}" />
+
+			</p:panel>
+
+
+		</h:form>
+		
+
+		<ui:include src="../dashboard/DashboardEditSideBar.xhtml">
+			<ui:param name="dashboardItem" value="#{dashboard.dashboardAddItem}" />
+		</ui:include>
+				
+		<h:form id="dashAddForm">
+		
+			<p:sidebar 
+				id="dashAddDialog"
+				widgetVar="dashAddDialogWidget"
+				styleClass="dashboardAddSideBar"
+				position="right" baseZIndex="10000">
+		
+				<p:panel id="editPanel" header="New Dashboard Item"
+					style="background:none;margin-bottom:20px;">
+					
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('dashAddDialogWidget').hide();"/>
+					</div>
+					
+					<div style="height:30px;width:100%"></div>
+					
+							<ul>
+							
+								<li style="#{fdmenv.scriptResultsDashboard == true ? '' : 'display:none'}">
+								
+									<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewReturnedScriptBtn" 
+									action="#{dashboard.handleAddItem('ReturnedScript')}" 
+									oncomplete="PF('dashEditDialogWidgetADD').show()"
+									update="dashboardAddItem msgs" >
+									
+										<p:panelGrid>
+										
+											<p:row>
+											
+												<p:column>
+												<span class="fa fa-file addImage" style="color:#339966; border-color:#339966;"/>
+												</p:column>
+												
+												<p:column>
+												
+													<h:outputText style="font-size:1.3em;font-weight:bold;" value="Script Results" />
+													<br /><div style="height:10px;"></div>
+													<span style="color:gray;display:block; text-align: justify; text-justify: inter-word;">Add a dashboard item representing Script Results. Customisable by Script Code, Result Status and Timeline.</span>
+		
+												</p:column>
+											</p:row>
+										
+										</p:panelGrid>
+		
+									</p:commandLink>	
+								</li>
+		
+								<li style="#{fdmenv.workInprogressDashboard == true ? '' : 'display:none'}">
+									<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewWorkInProgressBtn" 
+									action="#{dashboard.handleAddItem('WorkInProgress')}" 
+									oncomplete="PF('dashEditDialogWidgetADD').show()"
+									update="dashboardAddItem msgs">
+		
+										<p:panelGrid>
+										
+											<p:row>
+											
+												<p:column>
+													<span class="fa fa-clipboard-check addImage" style="color:#00a3cc; border-color:#00a3cc;"/>
+												</p:column>
+												<p:column>
+												
+													<h:outputText style="font-size:1.3em;font-weight:bold;" value="Work Status" />
+													<br /><div style="height:10px;"></div>
+													<span style="color:gray;display:block; text-align: justify; text-justify: inter-word;">Add a dashboard item representing Work Order Statuses. Customisable by Work Group, Work Status and Timeline.</span>
+												
+												</p:column>
+											</p:row>
+										
+										</p:panelGrid>
+									</p:commandLink>	
+								</li>
+								
+								<!-- 32701 - KN - Adding Over Due Dashboard Item Start -->
+								<li style="#{fdmenv.workOverDueDashboard == true ? '' : 'display:none'}">
+									<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewWorkOverDueBtn" 
+									action="#{dashboard.handleAddItem('WorkOverDue')}" 
+									oncomplete="PF('dashEditDialogWidgetADD').show()"
+									update="dashboardAddItem msgs">
+										
+										<p:panelGrid>
+										
+											<p:row>
+											
+												<p:column>
+												<span class="far fa-clock addImage" style="color:#ed4657; border-color:#ed4657;"/>
+												</p:column>
+												
+												<p:column>
+													
+													<h:outputText style="font-size:1.3em;font-weight:bold;" value="Overdue Work" />
+													<br /><div style="height:10px;"></div>
+													<span style="color:gray;display:block; text-align: justify; text-justify: inter-word;">Add a dashboard item representing Overdue Work. Customisable by Timeline</span>
+													
+												</p:column>
+												
+												
+											</p:row>
+										
+										</p:panelGrid>
+									</p:commandLink>	
+								</li>
+								<!-- 32701 - KN - Adding Over Due Dashboard Item End -->
+								
+								<!-- 33353 - KN - Adding At Risk Dashboard Item Start -->
+								<li style="#{fdmenv.atRiskDashboard == true ? '' : 'display:none'}">
+									<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewAtRiskWorkBtn" 
+									action="#{dashboard.handleAddItem('AtRisk')}" 
+									oncomplete="PF('dashEditDialogWidgetADD').show()"
+									update="dashboardAddItem msgs">
+										
+										<p:panelGrid>
+										
+											<p:row>
+											
+												<p:column>
+												<span class="fas fa-exclamation addImage" style="color:#984550; border-color:#984550;"/>
+												</p:column>
+												
+												<p:column>
+													
+													<h:outputText style="font-size:1.3em;font-weight:bold;" value="At Risk Work" />
+													<br /><div style="height:10px;"></div>
+													<span style="color:gray;display:block; text-align: justify; text-justify: inter-word;">Add a dashboard item representing At Risk Work. Customisable by At Risk Time Window</span>
+													
+												</p:column>
+												
+											</p:row>
+										
+										</p:panelGrid>
+									</p:commandLink>	
+								</li>
+								<!-- 33353 - KN - Adding At Risk Dashboard Item End -->
+							
+								<li style="#{fdmenv.activeUserDashboard == true ? '' : 'display:none'}">
+									<p:commandLink rendered="#{view.viewId=='/fdm/dashboard.xhtml'}" id="addNewActiveUserBtn" 
+									action="#{dashboard.handleAddItem('ActiveUser')}" 
+									oncomplete="PF('dashEditDialogWidgetADD').show()"
+									update="dashboardAddItem msgs">
+										
+										<p:panelGrid>
+										
+											<p:row>
+											
+												<p:column>
+												<span class="fa fa-users addImage" style="color:#FF9966; border-color:#FF9966;"/>
+												</p:column>
+												
+												<p:column>
+													
+													<h:outputText style="font-size:1.3em;font-weight:bold;" value="User Access" />
+													<br /><div style="height:10px;"></div>
+													<span style="color:gray;display:block; text-align: justify; text-justify: inter-word;">Add a dashboard item representing User Access. Customisable by Work Group and Timeline.</span>
+													
+												</p:column>
+												
+												
+											</p:row>
+										
+										</p:panelGrid>
+									</p:commandLink>	
+								</li>
+								
+							</ul>
+					
+				</p:panel>
+			</p:sidebar>
+		</h:form>
+				
+	</div>
+</h:panelGroup>
+</ui:composition>

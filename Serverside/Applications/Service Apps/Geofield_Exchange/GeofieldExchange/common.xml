@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Common xsi:type="SigmaSeven.Exchange.DefineParametersTask"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:x="http://www.sigmaseven.co.uk/xml/x">
+  <!-- ******************************************************************** -->
+  <!-- *                              BASICS                              * -->
+  <!-- ******************************************************************** -->
+
+  <!-- Root folder for all Geofield Exchange working files -->
+  <Parameter Name="GeofieldExchangeRoot"
+             Path="D:\Geofield-Exchange" />
+
+  <!-- Define folder for all Data files -->
+  <Parameter Name="DataRoot"
+             Path="{GeofieldExchangeRoot}\Data" />
+
+  <!-- Define folder for all differencing related files (Tabular and File-based Datasets) -->
+  <Parameter Name="Differencing"
+             Path="{DataRoot}\2. Dataset Differencing" />
+
+  <!-- Define the Package ID and Major Version number qualifier - this keeps different datasets separate -->
+  <Parameter Name="PackageVersionQualifier"
+             Value="{PackageId}_v{MajorVersion}" />
+
+  <!-- Define full path to the Update Instructions Folder -->
+  <Parameter Name="UpdateInstructionsFolder"
+             Path="{Differencing}\{PackageVersionQualifier}\Updates" />
+  
+  <!-- Define full path to log file -->
+  <Parameter Name="LogFilePath"
+             Path="{Differencing}\{PackageVersionQualifier}\Log\Log.txt" />
+
+  <!-- Define folder where Packages should be placed -->
+  <Parameter Name="Packages"
+             Path="{DataRoot}\3. Packages" />
+</Common>

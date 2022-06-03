@@ -1,0 +1,57 @@
+default:
+  jdbc:
+    url: jdbc:sqlserver://myserver.ad.capita.co.uk:1433;databaseName=fieldsmart;
+    username: 
+    password: 
+  instance:
+    key: hiddensercretkey
+
+jdbc:
+  driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  connectionpool:
+    max_size: 5
+
+hibernate:
+  dialect: org.hibernate.dialect.SQLServerDialect
+  show_sql: false
+  format_sql: true
+
+folder:
+  basePath: /home/fusion/fieldsmart
+
+fxl:
+  scriptresult:
+    pickup:
+      dir: ${folder.basePath}/results/pickup
+      pollinginterval: 10000
+    archive.dir: ${folder.basePath}/results/archive
+    error.dir: ${folder.basePath}/results/error
+    db.import: FALSE
+    equipmentattrib:
+      load: false
+      refreshdays: 20
+  geometry:
+    binaryresponse.dir: ${folder.basePath}/sessions
+  dbroot: ${folder.basePath}/logs/auditdb
+  audit:
+    jdbc:
+      driverClassName: org.h2.Driver
+      url: jdbc:h2:file:${fxl.dbroot}/fxlauditdb/fxlauditdb;CIPHER=AES;AUTO_SERVER=TRUE
+      username: fxlauditdbadmin
+      password: d1d8297896808bee2bd5c7bd96c9ea7a 4734E46BEB6F11D75E29C4E3C15CBE48
+      pool.max_size: 10
+    retention.period: 7
+
+spring:
+  main:
+    web-application-type: none
+  jmx:
+    enabled: true
+
+management:
+  endpoints:
+    jmx:
+      domain: "xmlLoader.health.check"
+  health:
+    defaults:
+      enabled: false

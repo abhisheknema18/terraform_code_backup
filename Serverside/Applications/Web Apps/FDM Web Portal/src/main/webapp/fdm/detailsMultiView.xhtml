@@ -1,0 +1,415 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	template="/layout/detailsMultiView-template.xhtml">
+
+	<ui:param name="bean" value="#{detailsMultiView}" />
+	
+	<ui:define name="details-body">
+	
+	<p:tooltip />
+	
+	
+	<style>
+	 table .ui-datatable tbody td:ui-widget-content{
+	 border-bottom: 1px solid #dddddd;
+	}
+	
+	tbody td .scriptConsolidate{
+		padding-left:30px;
+		width:350px;
+	}
+	
+	th .scriptConsolidate{
+		padding-left:30px;
+	}
+	
+	tbody td .responseConsolidate{
+		white-space:normal;
+		background-image:none;
+		width:180px;
+	}
+	
+	.ui-datatable .ui-state-hover {
+		background-color:#C0EFD2;
+	}
+	
+	.headerInfoTable {
+		margin-bottom:5px;
+	}
+	
+	.headerInfoTable .ui-panelgrid-cell{
+		height:2.1em;
+		border-bottom:1px solid lightgray;
+	}
+	
+	.headerInfoTable .ui-widget-content{
+		background:none;
+	}
+	
+	.resultSetTable img{
+		max-width:100%;
+	}
+	
+	.fullWidthTable .ui-datatable-scrollable-header {
+			width:calc(100vw - 235px); 
+	}
+	
+	.fullWidthTable .ui-datatable-scrollable-body {
+			border:1px solid lightgrey;
+			height:calc(100vh - 490px); 
+			width:calc(100vw - 235px); 
+	}
+	
+	.ui-widget-content .ui-datatable-even{
+		height:auto;
+	}
+	.ui-widget-content .ui-datatable-odd{
+		height:auto;
+	}
+	
+	.noPadding .ui-panel-content{
+		padding:0px;
+	}
+
+	</style>
+	
+
+	
+
+		<h:form id="detailsForm">
+			<div id="navigationContainer" class="resultNavigationContainer">
+				<div id="navigation" class="resultNavigation">
+				
+					<p:commandLink id="nonAjax"
+						action="#{detailsMultiView.navigateReturn}" update="@all"
+						title="Return to List" styleClass="resultNavigationButton fa fa-list" />
+
+				</div>
+			</div>
+			<p:panel id="detailsTab" width="100%">
+			
+				<h:panelGrid id="resultSetTablePnl" columns="1" style="width:100%;margin-top:10px;" styleClass="resultSetTable">
+				
+					<h:panelGrid columns="2" style="float:right; margin-bottom:10px" cellpadding="5">
+        				<h:outputText value="#{msg.fdm_details_script_question_toggle}" style="padding-right:5px; line-height:24px;"/>
+						<p:toggleSwitch id="showAll" value="#{details.showAllQuestions}" >
+							<p:ajax update="resultSetTable" />
+						</p:toggleSwitch>
+					</h:panelGrid>
+
+					<p:dataTable id="resultSetTable" 
+						value="#{detailsMultiView.details.get(0).answers}"
+						var="result" 
+						styleClass="fullWidthTable"
+						rowIndexVar="resultTableRowInd"
+						resizableColumns="false" 
+						selectionMode="single"
+						selection="#{detailsMultiView.selectedAnswer}"
+						scrollable="true"
+						scrollHeight="calc(100vh - 490px)"
+						scrollWidth="calc(100vw - 235px)"
+						rowStyleClass="#{result.heading ? ( details.showAllQuestions or result.isHasAnsweredQuestions() ? 'heading' : 'hideRow') : (result.endMarker ? 'endMarker' : (not detailsMultiView.isAllQuestionsUnAnswered(result) ? 'answered' : (details.showAllQuestions ? 'notAnswered' : 'hideRow'))) }"
+						rowKey="#{result.id}">
+						
+						<p:column headerText="" styleClass="scriptConsolidate">
+						
+							<f:facet name="header">
+							
+								<p:panelGrid id="headerGrid" styleClass="headerInfoTable">
+								     
+								    <p:row>
+									    <p:column style="text-align:right;border:0px;">
+											<h:outputText value="#{msg.fdm_details_completed_label}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;font-weight:bold;" />
+										</p:column>
+								    </p:row>
+								    
+								    <p:row>
+									    <p:column style="text-align:right;border:0px;">					
+									    	<h:outputText value="#{msg.fdm_details_result_status_label}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;font-weight:bold;" />
+									    </p:column>
+								    </p:row>
+								    
+									<p:row>
+									    <p:column style="text-align:right;border:0px;">					
+									    	<h:outputText value="#{msg.fdm_details_user_label}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;font-weight:bold;" />
+									    </p:column>
+								    </p:row>
+								    
+								    <p:row>
+									    <p:column style="text-align:right;border:0px;">
+									    	<h:outputText value="#{msg.fdm_details_work_order_no_label}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;font-weight:bold;"/>
+									    </p:column>
+								    </p:row>
+								    								    
+								    <p:row>
+									    <p:column style="text-align:right;border:0px;">
+									    	<h:outputText value="#{msg.fdm_details_work_order_description_label}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;font-weight:bold;"/>
+									    </p:column>
+								    </p:row>
+								    
+								    
+								    <p:row>
+									    <p:column style="text-align:right;border:0px;">
+									    	<h:outputText value="#{msg.fdm_details_equipment_description_label}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;font-weight:bold;" />
+									    </p:column>
+								    </p:row>
+								    
+								</p:panelGrid>
+
+								
+								<h:outputText value="#{msg.fdm_details_script_header_label}" />
+								
+								<div style="float:right;margin-right:5px;">
+								
+								<p:selectBooleanCheckbox  id="selectAll" style="margin-top:2px;" value="#{detailsMultiView.selectAll}">
+									<p:ajax event="change" process="@this" listener="#{detailsMultiView.toggleSelectAll()}" update="resultSetTable sideMenuForm"/>
+								</p:selectBooleanCheckbox>
+								
+								<p:outputLabel for="selectAll" id="selectAllLabel" value="(#{detailsMultiView.selectedDetails == null ? '0' : detailsMultiView.selectedDetails.size()} of #{detailsMultiView.details.size()} selected)" style="border:none;width:auto;font-size:0.9em"/>
+
+								</div>
+								
+							</f:facet>
+						
+							
+							<h:outputText value="#{result.script}" /> 
+							
+							
+						</p:column>
+						
+						<c:forEach items="#{detailsMultiView.details}" var="_entry" varStatus="status">
+						
+						
+						<p:column headerText="#{_entry.returnId}"
+							styleClass="responseConsolidate">
+							
+							<f:facet name="header">
+							
+								<p:panelGrid styleClass="headerInfoTable">
+								     
+								    <p:row>
+									    <p:column style="overflow:hidden; text-overflow:ellipsis">
+											<h:outputText value="#{_entry.completeDate}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+												<f:convertDateTime dateStyle="medium" />
+											</h:outputText>
+										</p:column>
+								    </p:row>
+								    
+								    <p:row>
+									    <p:column style="overflow:hidden; text-overflow:ellipsis">					
+									    	<h:outputText title="#{_entry.script.resultStatus}" value="#{_entry.script.resultStatus}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" />
+									    </p:column>
+								    </p:row>
+								    
+									<p:row>
+									    <p:column style="overflow:hidden; text-overflow:ellipsis">					
+									    	<h:outputText title="#{_entry.script.hpcUser.userName}" value="#{_entry.script.hpcUser.userName}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" />
+									    </p:column>
+								    </p:row>
+								    
+								    <p:row>
+									    <p:column style="overflow:hidden; text-overflow:ellipsis">
+									    	<h:outputText title="#{_entry.script.workOrderNo}" value="#{_entry.script.workOrderNo}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"/>
+									    </p:column>
+								    </p:row>	
+								    							    
+								    <p:row>
+									    <p:column style="overflow:hidden; text-overflow:ellipsis">
+									    	<h:outputText title="#{_entry.script.workOrderDesc}" value="#{_entry.script.workOrderDesc}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"/>
+									    </p:column>
+								    </p:row>
+								    
+								    <p:row>
+									    <p:column style="overflow:hidden; text-overflow:ellipsis">
+									    
+									    	<div style="width:calc(100% - 20px); float:left; overflow:hidden; text-overflow:ellipsis">
+									    	
+									    		<h:outputText title="#{_entry.script.equipDesc}"  value="#{_entry.script.equipDesc}" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;" />
+										    	
+									    	</div>
+									    	
+									    	<div style="float:right;margin-top:3px;">
+										    	<p:commandLink rendered="#{_entry.script.equipNo!=null and not detailsMultiView.pageFrom.equals('equipmentDetails')}"
+											    		action="#{detailsMultiView.setSelectedEquipmentDetails(_entry)}"
+														oncomplete="PF('assetViewWidgetVar').show();"
+														update="assetViewDialog"
+														title="#{msg.fdm_quick_view_tool_tip}"
+														style="">
+													<i class="fas fa-search" alt="edit" ></i>
+												</p:commandLink>
+									    	</div>
+									    	
+										    	
+											
+									    </p:column>
+								    </p:row>
+								    
+								</p:panelGrid>
+								<p:selectBooleanCheckbox value="#{_entry.selectedOnApprovalDetail}" style="margin: 0px 5px;">
+								<!-- <p:ajax event="change" update="productsDataTable" listener="#{productBean.setVisibility}"/> -->
+									<p:ajax event="change" process="@this" update="selectAll selectAllLabel sideMenuForm" listener="#{detailsMultiView.toggleSelection(_entry)}"/>
+								</p:selectBooleanCheckbox>
+								<p:commandLink title="#{msg.fdm_detailed_view_tool_tip}" style="float:right;" action="#{search.searchResults.loadSingleViewFromMutiView(_entry)}" rendered="#{not detailsMultiView.pageFrom.equals('equipmentDetails')}">
+									<i class="fa fa-external-link" style="vertical-align:middle;font-size:1.1em; padding:0px 5px;" alt="edit"></i>
+								</p:commandLink>
+							</f:facet>
+							
+							<p:panel styleClass="noPadding" style="width:100%; background:none; padding:0px;" rendered="#{_entry.answers.get(resultTableRowInd).responseType eq 'OK' and _entry.answers.get(resultTableRowInd).viewPII}" >
+								<i class="fas fa-circle-hidden fa-xs fullwidth" style="color:#666; border-color:#666;padding-top: 3px;" aria-hidden="true"></i>
+
+							</p:panel>
+							
+							<p:panel styleClass="noPadding" style="width:100%; background:none; padding:0px;" rendered="#{_entry.answers.get(resultTableRowInd).responseType ne 'OK'}">
+								<h:outputText value="#{_entry.answers.get(resultTableRowInd).response}" />
+							</p:panel>
+							
+							
+							<p:panel styleClass="noPadding" style="width:100%; background:none; padding:0px;" rendered="#{_entry.answers.get(resultTableRowInd).responseType eq 'OK' and not _entry.answers.get(resultTableRowInd).viewPII}" >
+							
+							<h:outputText value="#{_entry.answers.get(resultTableRowInd).response}"
+								rendered="#{not _entry.answers.get(resultTableRowInd).bitmap and not _entry.answers.get(resultTableRowInd).photograph and not _entry.answers.get(resultTableRowInd).date and not _entry.answers.get(resultTableRowInd).multiPickList}" styleClass = "#{_entry.answers.get(resultTableRowInd).taskListItems != null ? 'taskItemList' : ''  }"
+								style="#{_entry.answers.get(resultTableRowInd).ootFlag != 0 ? _entry.answers.get(resultTableRowInd).otCol : _entry.answers.get(resultTableRowInd).colorMap.get(_entry.answers.get(resultTableRowInd).response)}"> 
+							</h:outputText>
+							
+							<h:outputText value="(#{_entry.answers.get(resultTableRowInd).uom})" rendered="#{_entry.answers.get(resultTableRowInd).uom != null}" style="padding-left:5px"/>
+
+							<p:panelGrid rendered="#{_entry.answers.get(resultTableRowInd).multiPickList and _entry.answers.get(resultTableRowInd).responseType ne 'OK'}">
+								<h:outputText value="#{_entry.answers.get(resultTableRowInd).response}" />
+							</p:panelGrid>
+							<p:panelGrid rendered="#{_entry.answers.get(resultTableRowInd).multiPickList and _entry.answers.get(resultTableRowInd).responseType eq 'OK'}">
+								<ul class="multipickList">
+
+									<li><h:outputText value="#{_entry.answers.get(resultTableRowInd).response}" style="#{_entry.answers.get(resultTableRowInd).colorMap.get(_entry.answers.get(resultTableRowInd).response)}"/></li>
+
+									<ui:repeat value="#{_entry.answers.get(resultTableRowInd).multiPickListItems}"
+										var="countMulti">
+										<li ><h:outputText value="#{countMulti.id.response}" style="#{_entry.answers.get(resultTableRowInd).colorMap.get(countMulti.id.response)}"/></li>
+									</ui:repeat>
+
+								</ul>
+							</p:panelGrid>
+
+							<p:panelGrid
+								rendered="#{_entry.answers.get(resultTableRowInd).taskListItems != null and _entry.answers.get(resultTableRowInd).responseType ne 'OK'}">
+								<h:outputText value="#{_entry.answers.get(resultTableRowInd).response}" style="#{_entry.answers.get(resultTableRowInd).colorMap.get(_entry.answers.get(resultTableRowInd).response)}"/>
+							</p:panelGrid>
+							<p:panelGrid
+								rendered="#{_entry.answers.get(resultTableRowInd).taskListItems != null and _entry.answers.get(resultTableRowInd).responseType eq 'OK'}">
+								<ul class="multipickList">
+									<ui:repeat value="#{_entry.answers.get(resultTableRowInd).taskListItems}" var="countItem">
+										<li class="#{countItem.task.taskCompleteCode == 'TC' ?  'taskListComplete' : 'taskListNotComplete'}">
+										<h:outputText value="#{countItem.task.taskDesc}"  style = "#{_entry.answers.get(resultTableRowInd).colorMap.get(countItem.task.taskDesc)}"/></li>
+									</ui:repeat>
+								</ul>
+							</p:panelGrid>
+
+							<h:outputText value="#{_entry.answers.get(resultTableRowInd).dateValue}"
+								rendered="#{_entry.answers.get(resultTableRowInd).date}">
+								<f:convertDateTime dateStyle="medium" />
+							</h:outputText>
+							<h:commandLink rendered="#{_entry.answers.get(resultTableRowInd).bitmap}" target="_blank"
+								action="image.xhtml">
+								<f:setPropertyActionListener
+									target="#{details.selectedAnswer.activeImage}"
+									value="#{_entry.answers.get(resultTableRowInd).base64Bitmap}" />
+								<h:graphicImage value="#{_entry.answers.get(resultTableRowInd).base64Bitmap}"
+									rendered="#{_entry.answers.get(resultTableRowInd).bitmap}" />
+							</h:commandLink>
+							<h:commandLink rendered="#{_entry.answers.get(resultTableRowInd).photograph}" target="_blank"
+								action="image.xhtml">
+								<f:setPropertyActionListener
+									target="#{details.selectedAnswer.activeImage}"
+									value="#{_entry.answers.get(resultTableRowInd).base64Photograph}" />
+								<h:graphicImage value="#{_entry.answers.get(resultTableRowInd).base64Photograph}"
+									rendered="#{_entry.answers.get(resultTableRowInd).photograph}" />
+							</h:commandLink>
+							<p:commandLink value="Play #{_entry.answers.get(resultTableRowInd).video ? 'Video' : 'Audio'}"
+								oncomplete="PF('audioVideoDialogVar').show();"
+								action="#{details.setSelectedAnswer(result)}"
+								rendered="#{(_entry.answers.get(resultTableRowInd).video or _entry.answers.get(resultTableRowInd).audio) and _entry.answers.get(resultTableRowInd).responseType eq 'OK'}"
+								update="audioVideoDialogForm:audioVideoDialog"
+								icon="#{_entry.answers.get(resultTableRowInd).video ? 'far fa-video' : 'far fa-microphone'}">
+								<f:setPropertyActionListener target="#{details.videoTag}"
+									value="#{_entry.answers.get(resultTableRowInd).video}" />
+							</p:commandLink>
+							
+							</p:panel>
+							
+							<p:panel styleClass="noPadding" rendered="#{_entry.answers.get(resultTableRowInd).freeText != null and _entry.answers.get(resultTableRowInd).freeText != ''}" style="width:100%;margin-top:5px;border-top:1px solid lightgray !important; background:none; padding:5px 0px 0px 0px;-webkit-border-radius:0px; border-radius:0px;">
+								<h:outputText style="color:gray; font-size=0.8em" value="#{_entry.answers.get(resultTableRowInd).freeText}" rendered="#{!_entry.answers.get(resultTableRowInd).viewPII}"/>
+								<i class="fas fa-circle-hidden fa-xs fullwidth" style="#{_entry.answers.get(resultTableRowInd).viewPII ? 'color:#666; border-color:#666;padding-top: 3px;' : 'display: none;'}" aria-hidden="true"></i>
+								
+							</p:panel>
+						
+							
+						</p:column>
+
+						</c:forEach>
+
+					</p:dataTable>
+					
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+		</h:form>
+		
+			<h:form  id="audioVideoDialogForm">
+			<p:remoteCommand name="audioVideoRecomteCloseCommand" update="audioVideoDialogForm:audioVideoDialog"></p:remoteCommand>
+			<p:dialog id="audioVideoDialog" 
+				dynamic="true"
+				widgetVar="audioVideoDialogVar" 
+				resizable="false" 
+				width="500px"  height="#{details.videoTag ? '500px' : '100px' }"
+				modal="true" 
+				position="center center"
+				onShow="PF('audioVideoDialogVar').initPosition()" 
+				closable="false"
+				closeOnEscape="false" 
+				draggable="false"
+				onHide="audioVideoRecomteCloseCommand()">
+
+				<f:facet name="header">
+
+					<h:outputText value="Media Playback" />
+					<p:commandLink oncomplete="PF('audioVideoDialogVar').hide();"
+						styleClass="downloadVideoBtn" style="padding-left: 10px;">
+						<i class="fas fa-times fa-fw" style="font-size: 20px"></i>
+					</p:commandLink>
+
+				</f:facet>
+
+				<p:panel rendered="#{details.videoTag}">
+				<video id="videoContainer" controls="controls"  width="450px" height="450px" controlsList="nodownload" disablePictureInPicture="true"> 
+					<source src="#{details.selectedAnswer.base64Video}" type="video/mp4"/> 
+					<source src="#{details.selectedAnswer.base64Video}" type="video/quicktime"/> 
+					Your browser does not support HTML5 video.
+				</video>
+				</p:panel>
+				<p:panel rendered="#{!details.videoTag}">
+				
+				<audio  id="audioContainer" controls="controls" style="width:100%" controlsList="nodownload"> 
+					<source src="#{details.selectedAnswer.base64Video}" type="audio/m4a"/> 
+					<source src="#{details.selectedAnswer.base64Video}" type="audio/aac"/> 
+					<source src="#{details.selectedAnswer.base64Video}" type="audio/wav"/> 
+					Your browser does not support HTML5 Audio.
+				</audio>
+				</p:panel>
+			</p:dialog>
+		
+		</h:form>
+
+		<ui:include src="../fdm/EquipmentInformation.xhtml">
+			<ui:param name="equipBean" value="#{detailsMultiView.selectedEquipmentDetails}"></ui:param>
+		</ui:include>
+		
+	</ui:define>
+</ui:composition>

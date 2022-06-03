@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommonFileBased xsi:type="SigmaSeven.Exchange.DefineParametersTask"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:x="http://www.sigmaseven.co.uk/xml/x">
+  <!-- ******************************************************************** -->
+  <!-- *                         FILES DIFFERENCING                       * -->
+  <!-- ******************************************************************** -->
+
+  <!-- Define full path to state file -->
+  <Parameter Name="StateFilePath"
+             Path="{Differencing}\{PackageVersionQualifier}\State\State.xml" />
+</CommonFileBased>

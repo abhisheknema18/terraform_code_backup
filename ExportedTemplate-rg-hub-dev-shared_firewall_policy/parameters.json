@@ -1,0 +1,99 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ipGroups_ipgroup_all_name": {
+            "value": null
+        },
+        "actionGroups_DevGroup_name": {
+            "value": null
+        },
+        "ipGroups_ipgroup_qa_all_name": {
+            "value": null
+        },
+        "ipGroups_ipgroup_aut_all_name": {
+            "value": null
+        },
+        "ipGroups_ipgroup_dev_all_name": {
+            "value": null
+        },
+        "ipGroups_ipgroup_uat_all_name": {
+            "value": null
+        },
+        "ipGroups_ipgroup_platform_name": {
+            "value": null
+        },
+        "bastionHosts_bastion_hub_dev_name": {
+            "value": null
+        },
+        "ipGroups_ipgroup_hub_lower_ag_name": {
+            "value": null
+        },
+        "ipGroups_ipgroup_platform_ops_name": {
+            "value": null
+        },
+        "publicIPAddresses_pip_bastion_name": {
+            "value": null
+        },
+        "azureFirewalls_fw_hub_dev_shared_name": {
+            "value": null
+        },
+        "firewallPolicies_fwp_hub_dev_shared_name": {
+            "value": null
+        },
+        "virtualNetworks_vnet_hub_dev_shared_name": {
+            "value": null
+        },
+        "metricalerts_Bastion___Session_Count_name": {
+            "value": null
+        },
+        "publicIPAddresses_pip_fw_hub_dev_shared_01_name": {
+            "value": null
+        },
+        "ipGroups_ipgroup_all_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_plat_dev_shared_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_web_dev_uksouth_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_glb_dev_shared_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_hub_dev_uksouth_shared_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_glb_qa_shared_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_web_qa_uksouth_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_glb_uat_shared_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_web_uat_uksouth_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_web_aut_uksouth_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_glb_aut_shared_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_web_cs1_uksouth_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_web_cs1_ukwest_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_plat_pen_shared_externalid": {
+            "value": null
+        },
+        "virtualNetworks_vnet_hub_externalid": {
+            "value": null
+        }
+    }
+}

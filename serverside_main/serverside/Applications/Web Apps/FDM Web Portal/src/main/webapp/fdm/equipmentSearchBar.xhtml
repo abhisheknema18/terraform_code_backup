@@ -1,0 +1,146 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+	<script>
+	$("input").keypress(function(event) {
+	    if (event.which == 13) {
+	        event.preventDefault();
+	        $("form").submit();
+	    }
+	});
+	
+	</script>
+
+	
+	<p:sidebar id="equipSearchDialog"
+		widgetVar="equipmentSearchDialogWidget" styleClass="searchTabs"
+		style="width:640px; padding:.5em 0em;" position="right">
+
+		<p:panel header="Asset Hierarchy Search">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('equipmentSearchDialogWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:tabView>
+
+			<p:tab title="Search">
+
+				<h:form >
+					
+					
+					<p:panelGrid id="equipmentInnerContent" width="100%">
+						<p:focus context="equipmentInnerContent"></p:focus>
+						<p:row>
+
+							<p:column>
+								<p:outputLabel value="Equipment Number" />
+							</p:column>
+
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="equipmentNumber" value="#{equipmentSearch.equipmentNo}" maxlength="30" 
+								style="width:240px" autocomplete="false"
+								validatorMessage="Search values must be at least 2 characters">
+									<f:validateLength minimum="2"></f:validateLength>
+								</p:inputText>
+							</p:column>
+							
+							<p:column>
+								<p:outputLabel id="equNum" style="padding-top:5px;position: absolute;left:450px;" styleClass="tool-tip-info">
+	  								<i class="fas fa-info-circle"></i>
+	  								<p:tooltip for="equNum" value="Enter a full or partial Equipment Number, 2 characters is the minimum number required for a search" style="width:200px;"/>
+       							</p:outputLabel>
+							</p:column>
+							
+						</p:row>
+						<p:row>
+
+							<p:column>
+								<p:outputLabel value="Equipment Reference" />
+							</p:column>
+
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="equipmentReferenceNumber" value="#{equipmentSearch.equipmentReferenceNo}" maxlength="30" 
+								style="width:240px" autocomplete="false"
+								validatorMessage="Search values must be at least 2 characters">
+									<f:validateLength minimum="2"></f:validateLength>
+								</p:inputText>
+							</p:column>
+							
+							<p:column>
+								<p:outputLabel id="equRefer" style="padding-top:5px;position: absolute;left:450px;" styleClass="tool-tip-info">
+	  								<i class="fas fa-info-circle"></i>
+	  								<p:tooltip for="equRefer" value="Enter a full or partial Equipment Reference, 2 characters is the minimum number required for a search" style="width:200px;"/>
+       							</p:outputLabel>
+							</p:column>
+							
+						</p:row>
+						<p:row>
+
+							<p:column>
+								<p:outputLabel value="Equipment Type" />
+							</p:column>
+
+							<p:column styleClass="noPaddingCell" >
+								<p:inputText id="equipmentType" value="#{equipmentSearch.equipmentType}" maxlength="80" 
+								style="width:400px" autocomplete="false"
+								validatorMessage="Search values must be at least 2 characters">
+									<f:validateLength minimum="2"></f:validateLength>
+								</p:inputText>
+							</p:column>
+							
+							<p:column>
+								<p:outputLabel id="equType" style="padding-top:5px;position: absolute;left:610px;" styleClass="tool-tip-info">
+	  								<i class="fas fa-info-circle"></i>
+	  								<p:tooltip for="equType" value="Enter a full or partial Equipment Type, 2 characters is the minimum number required for a search" style="width:200px;"/>
+       							</p:outputLabel>
+							</p:column>
+							
+						</p:row>
+
+						<p:row>
+							<p:column colspan="2">
+								<p:messages id="messages" showDetail="false" closable="false" >
+								</p:messages>
+							</p:column>
+						</p:row>
+
+						<p:row>
+
+							<p:column colspan="3">
+
+								<p:commandButton value="#{msg.fdm_search_btn}" action="#{equipmentSearch.equipmentSearch}" id="saveBtn"
+									update="equipmentInnerContent" />
+
+								<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" action="#{equipmentSearch.resetSearch}"
+									oncomplete="PF('equipmentSearchDialogWidget').hide();"
+									id="cancelBtn" update="equipmentInnerContent" />
+
+								<p:commandButton style="float:right;" value="#{msg.fdm_reset_btn}"
+									action="#{equipmentSearch.resetSearch}" process="@this"
+									update="equipmentInnerContent" >
+									<p:resetInput target="equipmentInnerContent"></p:resetInput>
+									</p:commandButton>
+
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+
+				</h:form>
+			</p:tab>
+
+		</p:tabView>
+
+	</p:sidebar>
+
+</ui:composition>

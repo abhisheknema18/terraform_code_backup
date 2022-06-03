@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jee="http://www.springframework.org/schema/jee" 
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/jdbc
+		http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee 
+		http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
+
+	<!-- 
+	#################################################################
+	#																#
+	#			  FIELDREACH INSTANCE CONFIGURATION					#
+	#																#
+	#################################################################
+	-->
+	
+	
+	<!-- 
+	#################################################################
+	#																#
+	#						  TOMCAT ONLY						    #
+	#																#
+	#################################################################
+	-->
+	
+	<!--
+
+	<util:properties id="hibernateProperties">
+		<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+		<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+		<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+		<prop key="hibernate.hikari.dataSource.cachePrepStmts">true</prop>
+		<prop key="hibernate.hikari.dataSource.prepStmtCacheSize">250</prop>
+		<prop key="hibernate.hikari.maximumPoolSize">${jdbc.connectionpool.max_size}</prop>
+		<prop key="hibernate.hikari.dataSourceClassName">${jdbc.driverClassName}</prop>
+		<prop key="hibernate.connection.release_mode">after_transaction</prop>
+	</util:properties>
+	
+	<bean id="hibernateExceptionTranslator" 
+		class="org.springframework.orm.hibernate3.HibernateExceptionTranslator"/>
+	
+	-->
+	<util:properties id="hibernateProperties">
+		<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+		<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+		<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+		<prop key="hibernate.hikari.dataSource.cachePrepStmts">true</prop>
+		<prop key="hibernate.hikari.dataSource.prepStmtCacheSize">250</prop>
+		<prop key="hibernate.hikari.maximumPoolSize">${jdbc.connectionpool.max_size}</prop>
+		<prop key="hibernate.hikari.dataSourceClassName">${jdbc.driverClassName}</prop>
+		<prop key="hibernate.connection.release_mode">after_transaction</prop>
+	</util:properties>
+	
+	<bean id="hibernateExceptionTranslator" 
+		class="org.springframework.orm.hibernate3.HibernateExceptionTranslator"/>
+	<!--
+	**********************************************************************
+	 DATA SOURCE CONFIGURATION
+	**********************************************************************
+	
+	 Multiple Fieldreach instance configuration is supported. For each
+	 instance required an appropriate data source bean must be created
+	 and corresponding Hibernaate Session Factory and transaction manager 
+	 beans.
+	 
+	 For each Fieldreach instance copy the bean below and give it a unique
+	 id. It is recommended the application identifier that the Fieldreach
+	 instance the bean configuration relates to is included in the name. 
+	 eg 'fdcFieldreachDataSource' would be a sensible name for a bean
+	 configuring a datasource for the 'FDC' instance of Fieldreach.
+	 
+	 The jdbcUrl, user and password properties of the bean will have to be
+	 modified to point to the correct instance. New properties should be 
+	 created in the app.properties file.
+
+	**********************************************************************
+	-->
+	
+	<!--
+	
+    <bean id="[REPLACE_ME]" class="com.zaxxer.hikari.HikariDataSource" destroy-method="shutdown">
+    	<constructor-arg>
+	    	<bean class="com.zaxxer.hikari.HikariConfig">  
+				<property name="driverClassName" value="${jdbc.driverClassName}" />
+				<property name="jdbcUrl" value="${[REPLACE_ME].jdbc.url}" />
+				<property name="username" value="${[REPLACE_ME].jdbc.username}" />
+				<property name="password" value="${[REPLACE_ME].jdbc.password}" />
+		    	<property name="maximumPoolSize" value="${jdbc.connectionpool.max_size}" />
+		    	<property name="jdbc4ConnectionTest" value="false" />
+		    	<property name="connectionTestQuery" value="select * from softversions" />
+				<property name="autoCommit" value="false" />
+	    	</bean>
+    	</constructor-arg>
+    </bean>
+	
+	-->
+    <bean id="defaultDatasource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="shutdown">
+    	<constructor-arg>
+	    	<bean class="com.zaxxer.hikari.HikariConfig">  
+				<property name="driverClassName" value="${jdbc.driverClassName}" />
+				<property name="jdbcUrl" value="${default.jdbc.url}" />
+				<property name="username" value="${default.jdbc.username}" />
+				<property name="password" value="${default.jdbc.password}" />
+		    	<property name="maximumPoolSize" value="${jdbc.connectionpool.max_size}" />
+		    	<property name="jdbc4ConnectionTest" value="false" />
+		    	<property name="connectionTestQuery" value="select * from softversions" />
+				<property name="autoCommit" value="false" />
+	    	</bean>
+    	</constructor-arg>
+    </bean>
+	<!--
+	**********************************************************************
+	 HIBERNATE SESSION FACTORY CONFIGURATION
+	**********************************************************************
+		 
+	 For each Fieldreach data source copy the bean below and give it a 
+	 unique id. It is recommended the application identifier that the
+	 Fieldreach instance the bean configuration relates to is included in 
+	 the name. eg 'fdcSessionFactory' would be a sensible name for a bean
+	 configuring a session factory for the 'FDC' instance of Fieldreach.
+	 
+	 The 'dataSource' property should be modified to point to the id of
+	 the corresponding Fieldreach data source bean configured earlier.
+	 
+	 For each Hibernate Session Factory configured a corresponding 
+	 OpenSessionInViewFilter filter needs to be configured in the web.xml
+	 file. This is required to support hibenrates lazy loading of entities.
+	 
+	**********************************************************************
+	-->
+	
+	<!--
+	
+	<bean id="[REPLACE_ME]" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="[REPLACE_ME]"/>
+		<property name="hibernateProperties" ref="hibernateProperties" />
+		<property name="mappingResources" ref="hibernateMappings" />
+	</bean>
+	
+	-->
+	
+	<bean id="defaultSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="defaultDatasource"/>
+		<property name="hibernateProperties" ref="hibernateProperties" />
+		<property name="mappingResources" ref="hibernateMappings" />
+	</bean>
+	<!--
+	**********************************************************************
+	 TRANSACTION MANAGER CONFIGURATION
+	**********************************************************************
+	
+	 Each Hibernate Session Factory configured must have a corresponding 
+	 transaction manager configured. 
+	 
+	 For each Fieldreach Hibernate Session Factory copy the bean below and 
+	 give it a unique id. It is recommended the application identifier 
+	 that the Fieldreach instance the bean configuration relates to is 
+	 included in the name. eg 'fdcTransactionManager' would be a sensible 
+	 name for a bean that manages transactions for the 'FDC' instance of 
+	 Fieldreach.
+	 
+	 The 'sessionFactory' property of the bean must also be modified to
+	 point to the id of the corresponding Hibernate Session Factory bean
+	 that the bean will manage transactions for.
+	 
+	**********************************************************************
+	-->
+	
+	<!--
+	
+	<bean id="[REPLACE_ME]"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="[REPLACE_ME]" />
+	</bean>
+
+	-->
+	<bean id="defaultTransactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="defaultSessionFactory" />
+	</bean>
+	
+	<!-- 
+	#################################################################
+	#																#
+	#						 WEBSPHERE ONLY						    #
+	#																#
+	#################################################################
+	-->
+	
+	<!--
+	**********************************************************************
+	 DATA SOURCE CONFIGURATION
+	**********************************************************************
+	
+	 Multiple Fieldreach instance configuration is supported. For each
+	 instance required an appropriate data source bean must be created
+	 and a corresponding Hibernate Session Factory bean.
+	 
+	 For each Fieldreach instance copy the bean below and give it a unique
+	 id. It is recommended the application identifier that the Fieldreach
+	 instance the bean configuration relates to is included in the name. 
+	 eg 'fdcFieldreachDataSource' would be a sensible name for a bean
+	 configuring a datasource for the 'FDC' instance of Fieldreach.
+	 	 
+	 The jndi-name property will also have to be modified so that it 
+	 points to the JNDI name of the Fieldreach database to connect to.
+	 Ensure that a reference exists for the JNDI resource in the web.xml
+	 configuration file.
+	 
+	**********************************************************************
+	-->
+	
+	<!--
+	
+	<jee:jndi-lookup id="[REPLACE_ME]" jndi-name="[REPLACE_ME]" resource-ref="true" 
+		cache="true" lookup-on-startup="false" proxy-interface="javax.sql.DataSource" />
+ 
+	-->
+	
+	
+	<!--
+	**********************************************************************
+	 HIBERNATE SESSION FACTORY CONFIGURATION
+	**********************************************************************
+		 
+	 For each Fieldreach data source copy the pair of beans below and give 
+	 each a unique id. It is recommended the application identifier that the
+	 Fieldreach instance the bean configuration relates to is included in 
+	 the name. eg 'fdcSessionFactory' would be a sensible name for a bean
+	 configuring a session factory for the 'FDC' instance of Fieldreach, 
+	 and 'fdcHibernateProps' for the bean configuring the hibernate 
+	 properties of the corresponding session factory.
+	 
+	 The <util:properties id="[REPLACE_ME]"> bean should be modified so 
+	 that the 'hibernate.connection.datasource' property contains the JNDI
+	 name of the datasource the session factory being configured will
+	 connect to.
+	 
+	 In the remaining bean the 'dataSource' property of the should be 
+	 modified to point to the id of the corresponding Fieldreach data source 
+	 bean configured earlier, and the 'hibernateProperties' property should
+	 point to the id of the properties bean configured.
+	 
+	 For each Hibernate Session Factory configured a corresponding 
+	 OpenSessionInViewFilter filter needs to be configured in the web.xml
+	 file. This is required to support hibenrates lazy loading of entities.
+	 
+	**********************************************************************
+	-->
+	
+	<!--
+	
+	<util:properties id="[REPLACE_ME]">
+		<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+		<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+		<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+		<prop key="hibernate.connection.datasource">[REPLACE_ME]</prop>
+		<prop key="hibernate.transaction.factory_class">com.amtsybex.hibernate.transaction.JTATransactionFactory</prop>
+		<prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform</prop>  
+	</util:properties>
+	
+	<bean id="[REPLACE_ME]" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="[REPLACE_ME]"/>
+		<property name="hibernateProperties" ref="[REPLACE_ME]" />
+		<property name="mappingResources" ref="hibernateMappings" />
+	</bean>
+	
+	-->
+	
+	
+	<!--
+	**********************************************************************
+	 TRANSACTION MANAGER CONFIGURATION
+	**********************************************************************
+	
+	 Each Hibernate Session Factory configured must have a corresponding 
+	 transaction manager configured. 
+	 
+	 For each Fieldreach Hibernate Session Factory copy the bean below and 
+	 give it a unique id. It is recommended the application identifier 
+	 that the Fieldreach instance the bean configuration relates to is 
+	 included in the name. eg 'fdcTransactionManager' would be a sensible 
+	 name for a bean that manages transactions for the 'FDC' instance of 
+	 Fieldreach.
+	 
+	**********************************************************************
+	-->
+	
+	<!--
+	
+	<bean id="[REPLACE_ME]"
+		class="org.springframework.transaction.jta.WebSphereUowTransactionManager" />
+
+	-->
+	
+	
+	<!-- 
+	#################################################################
+	#																#
+	#				      TOMCAT AND WEBSPHERE						#
+	#																#
+	#################################################################
+	-->
+		
+	<!--
+	**********************************************************************
+	 FIELDREACH 'INSTANCE' CONFIGURATION
+	**********************************************************************
+	
+	 For each Fieldreach instance copy the bean below and give it a unique
+	 id. It is recommended the application identifier that the Fieldreach
+	 instance the bean configuration relates to is included in the name. 
+	 eg 'fdcFieldreachInstance' would be a sensible name for a bean
+	 configuring a datasource for the 'FDC' instance of Fieldreach.
+	 
+	 For each Fieldreach instance we need to connect to we must create a 
+	 Fieldreach 'instance' bean that contains a references to the 
+	 Hibernate session factory and transactions manager associated with 
+	 that instance.
+	 
+	**********************************************************************
+	-->
+	
+	<!--
+	
+	<bean id="[REPLACE_ME]" class="com.amtsybex.fieldreach.backend.instance.impl.InstanceImpl"
+		scope="prototype">
+		<property name="sessionFactory" ref="[REPLACE_ME]"/>
+		<property name="transactionManager" ref="[REPLACE_ME]"/>
+	</bean>
+	
+	-->
+	<bean id="defaultInstance" class="com.amtsybex.fieldreach.backend.instance.impl.InstanceImpl"
+		scope="prototype">
+		<property name="sessionFactory" ref="defaultSessionFactory"/>
+		<property name="transactionManager" ref="defaultTransactionManager"/>
+	</bean>
+	<!--
+	**********************************************************************
+	 MAP OF FIELDREACH INSTANCES
+	**********************************************************************
+	
+	 For each Fieldreach instance bean configured above a corresponding 
+	 entry must be created in the 'fieldreachInstances' bean below.
+	
+	 The key must be the application identifier that the configured 
+	 Fieldreach instance corresponds to. The value-ref property should
+	 point to the id of the Fieldreach instance bean for that instance.
+	 
+	**********************************************************************
+	-->
+	
+	<util:map id="fieldreachInstances">
+	
+		<entry key="default" value-ref="defaultInstance"/>
+		
+	</util:map>
+	
+	
+	<!--
+	**********************************************************************
+	 Fieldreach Instance Management
+	**********************************************************************
+	-->
+	
+	<bean id="backendInstanceManager" class="com.amtsybex.fieldreach.backend.instance.impl.InstanceManagerImpl"
+		scope="prototype">
+		<property name="fieldreachInstances" ref="fieldreachInstances"/>
+	</bean>
+	
+</beans>

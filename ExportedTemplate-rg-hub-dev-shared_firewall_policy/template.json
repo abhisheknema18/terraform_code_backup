@@ -1,0 +1,2335 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ipGroups_ipgroup_all_name": {
+            "defaultValue": "ipgroup-all",
+            "type": "String"
+        },
+        "actionGroups_DevGroup_name": {
+            "defaultValue": "DevGroup",
+            "type": "String"
+        },
+        "ipGroups_ipgroup_qa_all_name": {
+            "defaultValue": "ipgroup-qa-all",
+            "type": "String"
+        },
+        "ipGroups_ipgroup_aut_all_name": {
+            "defaultValue": "ipgroup-aut-all",
+            "type": "String"
+        },
+        "ipGroups_ipgroup_dev_all_name": {
+            "defaultValue": "ipgroup-dev-all",
+            "type": "String"
+        },
+        "ipGroups_ipgroup_uat_all_name": {
+            "defaultValue": "ipgroup-uat-all",
+            "type": "String"
+        },
+        "ipGroups_ipgroup_platform_name": {
+            "defaultValue": "ipgroup-platform",
+            "type": "String"
+        },
+        "bastionHosts_bastion_hub_dev_name": {
+            "defaultValue": "bastion-hub-dev",
+            "type": "String"
+        },
+        "ipGroups_ipgroup_hub_lower_ag_name": {
+            "defaultValue": "ipgroup-hub-lower-ag",
+            "type": "String"
+        },
+        "ipGroups_ipgroup_platform_ops_name": {
+            "defaultValue": "ipgroup-platform-ops",
+            "type": "String"
+        },
+        "publicIPAddresses_pip_bastion_name": {
+            "defaultValue": "pip-bastion",
+            "type": "String"
+        },
+        "azureFirewalls_fw_hub_dev_shared_name": {
+            "defaultValue": "fw-hub-dev-shared",
+            "type": "String"
+        },
+        "firewallPolicies_fwp_hub_dev_shared_name": {
+            "defaultValue": "fwp-hub-dev-shared",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_hub_dev_shared_name": {
+            "defaultValue": "vnet-hub-dev-shared",
+            "type": "String"
+        },
+        "metricalerts_Bastion___Session_Count_name": {
+            "defaultValue": "Bastion - Session Count",
+            "type": "String"
+        },
+        "publicIPAddresses_pip_fw_hub_dev_shared_01_name": {
+            "defaultValue": "pip-fw-hub-dev-shared-01",
+            "type": "String"
+        },
+        "ipGroups_ipgroup_all_externalid": {
+            "defaultValue": "/subscriptions/c5bfdb77-f143-4377-acf1-f7a7d588219e/resourceGroups/rg-hub-prod-shared/providers/Microsoft.Network/ipGroups/ipgroup-all",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_plat_dev_shared_externalid": {
+            "defaultValue": "/subscriptions/1840866c-daf9-45f5-b823-bc446ee9c6b2/resourceGroups/rg-plat-dev-shared/providers/Microsoft.Network/virtualNetworks/vnet-plat-dev-shared",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_web_dev_uksouth_externalid": {
+            "defaultValue": "/subscriptions/355afcaa-c2a3-43f0-9b97-cdf99af5ce11/resourceGroups/rg-web-dev-uksouth/providers/Microsoft.Network/virtualNetworks/vnet-web-dev-uksouth",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_glb_dev_shared_externalid": {
+            "defaultValue": "/subscriptions/355afcaa-c2a3-43f0-9b97-cdf99af5ce11/resourceGroups/rg-glb-dev-shared/providers/Microsoft.Network/virtualNetworks/vnet-glb-dev-shared",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_hub_dev_uksouth_shared_externalid": {
+            "defaultValue": "/subscriptions/a95faac2-cab9-4d56-8c6d-fc818f9cf136/resourceGroups/rg-hub-dev-uksouth-public/providers/Microsoft.Network/virtualNetworks/vnet-hub-dev-uksouth-shared",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_glb_qa_shared_externalid": {
+            "defaultValue": "/subscriptions/355afcaa-c2a3-43f0-9b97-cdf99af5ce11/resourceGroups/rg-glb-qa-shared/providers/Microsoft.Network/virtualNetworks/vnet-glb-qa-shared",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_web_qa_uksouth_externalid": {
+            "defaultValue": "/subscriptions/355afcaa-c2a3-43f0-9b97-cdf99af5ce11/resourceGroups/rg-web-qa-uksouth/providers/Microsoft.Network/virtualNetworks/vnet-web-qa-uksouth",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_glb_uat_shared_externalid": {
+            "defaultValue": "/subscriptions/355afcaa-c2a3-43f0-9b97-cdf99af5ce11/resourceGroups/rg-glb-uat-shared/providers/Microsoft.Network/virtualNetworks/vnet-glb-uat-shared",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_web_uat_uksouth_externalid": {
+            "defaultValue": "/subscriptions/355afcaa-c2a3-43f0-9b97-cdf99af5ce11/resourceGroups/rg-web-uat-uksouth/providers/Microsoft.Network/virtualNetworks/vnet-web-uat-uksouth",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_web_aut_uksouth_externalid": {
+            "defaultValue": "/subscriptions/355afcaa-c2a3-43f0-9b97-cdf99af5ce11/resourceGroups/rg-web-aut-uksouth/providers/Microsoft.Network/virtualNetworks/vnet-web-aut-uksouth",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_glb_aut_shared_externalid": {
+            "defaultValue": "/subscriptions/355afcaa-c2a3-43f0-9b97-cdf99af5ce11/resourceGroups/rg-glb-aut-shared/providers/Microsoft.Network/virtualNetworks/vnet-glb-aut-shared",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_web_cs1_uksouth_externalid": {
+            "defaultValue": "/subscriptions/c2874696-2822-4dd4-bb59-da2a3fc1aad5/resourceGroups/rg-web-cs1-uksouth/providers/Microsoft.Network/virtualNetworks/vnet-web-cs1-uksouth",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_web_cs1_ukwest_externalid": {
+            "defaultValue": "/subscriptions/c2874696-2822-4dd4-bb59-da2a3fc1aad5/resourceGroups/rg-web-cs1-ukwest/providers/Microsoft.Network/virtualNetworks/vnet-web-cs1-ukwest",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_plat_pen_shared_externalid": {
+            "defaultValue": "/subscriptions/ee8d2e5f-2c43-4b48-9189-05100928e474/resourceGroups/rg-plat-pen-shared/providers/Microsoft.Network/virtualNetworks/vnet-plat-pen-shared",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_hub_externalid": {
+            "defaultValue": "/subscriptions/c5bfdb77-f143-4377-acf1-f7a7d588219e/resourceGroups/rg-hub-prod-shared/providers/Microsoft.Network/virtualNetworks/vnet-hub",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "microsoft.insights/actionGroups",
+            "apiVersion": "2021-09-01",
+            "name": "[parameters('actionGroups_DevGroup_name')]",
+            "location": "Global",
+            "tags": {
+                "Alerts ": "Application Gateway"
+            },
+            "properties": {
+                "groupShortName": "[parameters('actionGroups_DevGroup_name')]",
+                "enabled": true,
+                "emailReceivers": [],
+                "smsReceivers": [],
+                "webhookReceivers": [],
+                "eventHubReceivers": [],
+                "itsmReceivers": [],
+                "azureAppPushReceivers": [],
+                "automationRunbookReceivers": [],
+                "voiceReceivers": [],
+                "logicAppReceivers": [],
+                "azureFunctionReceivers": [],
+                "armRoleReceivers": [
+                    {
+                        "name": "DevEmailNotification",
+                        "roleId": "749f88d5-cbae-40b8-bcfc-e573ddc772fa",
+                        "useCommonAlertSchema": true
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('firewallPolicies_fwp_hub_dev_shared_name')]",
+            "location": "uksouth",
+            "properties": {
+                "sku": {
+                    "tier": "Standard"
+                },
+                "threatIntelMode": "Alert"
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('ipGroups_ipgroup_all_name')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "192.168.42.0/23",
+                    "172.16.0.0/14",
+                    "10.16.0.0/14"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('ipGroups_ipgroup_aut_all_name')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "172.19.8.0/21",
+                    "10.19.4.32/27",
+                    "10.19.8.0/21",
+                    "172.19.4.32/27"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('ipGroups_ipgroup_dev_all_name')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "172.16.4.32/27",
+                    "10.16.8.0/21",
+                    "10.16.4.32/27",
+                    "172.16.8.0/21"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('ipGroups_ipgroup_hub_lower_ag_name')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "172.16.1.0/26",
+                    "10.16.1.0/26"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('ipGroups_ipgroup_platform_name')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "172.16.3.0/24"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('ipGroups_ipgroup_platform_ops_name')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "172.16.3.16/28"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('ipGroups_ipgroup_qa_all_name')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "10.17.8.0/21",
+                    "172.17.8.0/21",
+                    "10.17.4.32/27",
+                    "172.17.4.32/27"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('ipGroups_ipgroup_uat_all_name')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "10.18.4.32/27",
+                    "172.18.8.0/21",
+                    "10.18.8.0/21",
+                    "172.18.4.32/27"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('publicIPAddresses_pip_bastion_name')]",
+            "location": "uksouth",
+            "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+            },
+            "zones": [
+                "1",
+                "2",
+                "3"
+            ],
+            "properties": {
+                "ipAddress": "20.108.90.155",
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('publicIPAddresses_pip_fw_hub_dev_shared_01_name')]",
+            "location": "uksouth",
+            "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+            },
+            "zones": [
+                "1",
+                "2",
+                "3"
+            ],
+            "properties": {
+                "ipAddress": "20.108.90.147",
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('virtualNetworks_vnet_hub_dev_shared_name')]",
+            "location": "uksouth",
+            "tags": {
+                "environment": "dev"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "192.168.42.0/23"
+                    ]
+                },
+                "dhcpOptions": {
+                    "dnsServers": []
+                },
+                "subnets": [
+                    {
+                        "name": "snet-mgmt",
+                        "properties": {
+                            "addressPrefix": "192.168.42.0/26",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "AzureFirewallSubnet",
+                        "properties": {
+                            "addressPrefix": "192.168.42.128/26",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "GatewaySubnet",
+                        "properties": {
+                            "addressPrefix": "192.168.43.0/26",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "snet-dmz",
+                        "properties": {
+                            "addressPrefix": "192.168.42.192/26",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "AzureBastionSubnet",
+                        "properties": {
+                            "addressPrefix": "192.168.42.64/27",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [
+                    {
+                        "name": "FirewallToPlatform",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_plat_dev_shared_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.16.3.0/24"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "hub-to-dev-uksouth",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_web_dev_uksouth_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.16.8.0/21"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "hub-to-dev-glb",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_glb_dev_shared_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.16.4.32/27"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "FirewallToAppGatewayLowerUksouth",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_hub_dev_uksouth_shared_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.16.1.0/26"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "hub-to-qa-glb",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_glb_qa_shared_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.17.4.32/27"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "hub-to-qa-uksouth",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_web_qa_uksouth_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.17.8.0/21"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "hub-to-uat-glb",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_glb_uat_shared_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.18.4.32/27"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "hub-to-uat-uksouth",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_web_uat_uksouth_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.18.8.0/21"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "hub-to-aut-uksouth",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_web_aut_uksouth_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.19.8.0/21"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "hub-to-aut-glb",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_glb_aut_shared_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.19.4.32/27"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "devhub1tocs1",
+                        "properties": {
+                            "peeringState": "Disconnected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_web_cs1_uksouth_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.25.8.0/21"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "devhubtocs1ukwest",
+                        "properties": {
+                            "peeringState": "Disconnected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_web_cs1_ukwest_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "10.25.8.0/21"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "devfirewalltoplateformdev",
+                        "properties": {
+                            "peeringState": "Disconnected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_plat_pen_shared_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "172.25.3.0/24"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "devhubtopenhub",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id": "[parameters('virtualNetworks_vnet_hub_externalid')]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "192.168.40.0/23"
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "enableDdosProtection": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('firewallPolicies_fwp_hub_dev_shared_name'), '/ManualDnetRuleCollectionGroup')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies_fwp_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "priority": 100,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                        "action": {
+                            "type": "Dnat"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NatRule",
+                                "name": "build-agent-vm-ssh",
+                                "translatedAddress": "172.16.3.4",
+                                "translatedPort": "22",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "20.108.90.147"
+                                ],
+                                "destinationPorts": [
+                                    "3000"
+                                ]
+                            },
+                            {
+                                "ruleType": "NatRule",
+                                "name": "deploy-agent-vm-ssh",
+                                "translatedAddress": "172.16.3.5",
+                                "translatedPort": "22",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "20.108.90.147"
+                                ],
+                                "destinationPorts": [
+                                    "3001"
+                                ]
+                            },
+                            {
+                                "ruleType": "NatRule",
+                                "name": "build2-agent-vm-ssh",
+                                "translatedAddress": "172.16.3.8",
+                                "translatedPort": "22",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "20.108.90.147"
+                                ],
+                                "destinationPorts": [
+                                    "3002"
+                                ]
+                            },
+                            {
+                                "ruleType": "NatRule",
+                                "name": "ops-vm-rdp-access",
+                                "translatedAddress": "172.16.3.20",
+                                "translatedPort": "3389",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "20.108.90.147"
+                                ],
+                                "destinationPorts": [
+                                    "3004"
+                                ]
+                            }
+                        ],
+                        "name": "ADO-Agent-vm-access",
+                        "priority": 200
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "global",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "*"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            }
+                        ],
+                        "name": "global",
+                        "priority": 250
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/AzureBastionSubnet')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "192.168.42.64/27",
+                "serviceEndpoints": [],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/AzureFirewallSubnet')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "192.168.42.128/26",
+                "serviceEndpoints": [],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/GatewaySubnet')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "192.168.43.0/26",
+                "serviceEndpoints": [],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/snet-dmz')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "192.168.42.192/26",
+                "serviceEndpoints": [],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/snet-mgmt')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "192.168.42.0/26",
+                "serviceEndpoints": [],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/devfirewalltoplateformdev')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Disconnected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_plat_pen_shared_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.25.3.0/24"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/devhub1tocs1')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Disconnected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_web_cs1_uksouth_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.25.8.0/21"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/devhubtocs1ukwest')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Disconnected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_web_cs1_ukwest_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "10.25.8.0/21"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/devhubtopenhub')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_hub_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "192.168.40.0/23"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/FirewallToAppGatewayLowerUksouth')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_hub_dev_uksouth_shared_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.16.1.0/26"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/FirewallToPlatform')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_plat_dev_shared_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.16.3.0/24"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/hub-to-aut-glb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_glb_aut_shared_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.19.4.32/27"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/hub-to-aut-uksouth')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_web_aut_uksouth_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.19.8.0/21"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/hub-to-dev-glb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_glb_dev_shared_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.16.4.32/27"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/hub-to-dev-uksouth')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_web_dev_uksouth_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.16.8.0/21"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/hub-to-qa-glb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_glb_qa_shared_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.17.4.32/27"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/hub-to-qa-uksouth')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_web_qa_uksouth_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.17.8.0/21"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/hub-to-uat-glb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_glb_uat_shared_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.18.4.32/27"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_hub_dev_shared_name'), '/hub-to-uat-uksouth')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "peeringState": "Connected",
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('virtualNetworks_vnet_web_uat_uksouth_externalid')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "172.18.8.0/21"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "microsoft.insights/metricalerts",
+            "apiVersion": "2018-03-01",
+            "name": "[parameters('metricalerts_Bastion___Session_Count_name')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/bastionHosts', parameters('bastionHosts_bastion_hub_dev_name'))]",
+                "[resourceId('microsoft.insights/actionGroups', parameters('actionGroups_DevGroup_name'))]"
+            ],
+            "tags": {
+                "Alert-Type": "Session Count",
+                "Alerts": "Bastion"
+            },
+            "properties": {
+                "description": "Know if the number of session count on the bastion are greater than 3 then generate a alert rule. ",
+                "severity": 3,
+                "enabled": true,
+                "scopes": [
+                    "[resourceId('Microsoft.Network/bastionHosts', parameters('bastionHosts_bastion_hub_dev_name'))]"
+                ],
+                "evaluationFrequency": "PT1M",
+                "windowSize": "PT1M",
+                "criteria": {
+                    "allOf": [
+                        {
+                            "threshold": 0,
+                            "name": "Metric1",
+                            "metricNamespace": "Microsoft.Network/bastionHosts",
+                            "metricName": "sessions",
+                            "dimensions": [
+                                {
+                                    "name": "host",
+                                    "operator": "Include",
+                                    "values": [
+                                        "*"
+                                    ]
+                                }
+                            ],
+                            "operator": "GreaterThan",
+                            "timeAggregation": "Total",
+                            "criterionType": "StaticThresholdCriterion"
+                        }
+                    ],
+                    "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
+                },
+                "autoMitigate": true,
+                "targetResourceType": "Microsoft.Network/bastionHosts",
+                "targetResourceRegion": "uksouth",
+                "actions": [
+                    {
+                        "actionGroupId": "[resourceId('microsoft.insights/actionGroups', parameters('actionGroups_DevGroup_name'))]",
+                        "webHookProperties": {}
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('bastionHosts_bastion_hub_dev_name')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_pip_bastion_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_hub_dev_shared_name'), 'AzureBastionSubnet')]"
+            ],
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "dnsName": "bst-c30ca827-14d0-4246-8ab9-45debcbc1091.bastion.azure.com",
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_pip_bastion_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_hub_dev_shared_name'), 'AzureBastionSubnet')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/azureFirewalls",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('azureFirewalls_fw_hub_dev_shared_name')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_pip_fw_hub_dev_shared_01_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_hub_dev_shared_name'), 'AzureFirewallSubnet')]",
+                "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies_fwp_hub_dev_shared_name'))]"
+            ],
+            "properties": {
+                "sku": {
+                    "name": "AZFW_VNet",
+                    "tier": "Standard"
+                },
+                "threatIntelMode": "Alert",
+                "additionalProperties": {},
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf1",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_pip_fw_hub_dev_shared_01_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_hub_dev_shared_name'), 'AzureFirewallSubnet')]"
+                            }
+                        }
+                    }
+                ],
+                "networkRuleCollections": [],
+                "applicationRuleCollections": [],
+                "natRuleCollections": [],
+                "firewallPolicy": {
+                    "id": "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies_fwp_hub_dev_shared_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('firewallPolicies_fwp_hub_dev_shared_name'), '/DefaultRuleCollectionGroup')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies_fwp_hub_dev_shared_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_all_name'))]"
+            ],
+            "properties": {
+                "priority": 60000,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "domain_access_from_ado",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "*.fieldsmarttest.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "WebCategories",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [
+                                    "searchenginesandportals",
+                                    "general"
+                                ],
+                                "targetFqdns": [],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "FQDNTags",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Http",
+                                        "port": 80
+                                    },
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [
+                                    "AppServiceEnvironment",
+                                    "AzureBackup",
+                                    "WindowsDiagnostics",
+                                    "WindowsUpdate",
+                                    "AzureKubernetesService",
+                                    "MicrosoftActiveProtectionService",
+                                    "HDInsight",
+                                    "WindowsVirtualDesktop"
+                                ],
+                                "webCategories": [],
+                                "targetFqdns": [],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Common-urls",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Http",
+                                        "port": 80
+                                    },
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "hashicorp.com",
+                                    "packages.cloud.google.com",
+                                    "microsoft.com",
+                                    "ubuntu.com",
+                                    "alpinelinux.org",
+                                    "gcr.io",
+                                    "*.k8s.io",
+                                    "docker.com",
+                                    "helm.sh",
+                                    "apt.kubernetes.io",
+                                    "repo.maven.apache.org",
+                                    "repo.springsource.org",
+                                    "googleapis.com",
+                                    "repo.spring.io",
+                                    "git-scm.com",
+                                    "mcamt.eu.auth0.com",
+                                    "repository.primefaces.org",
+                                    "maven.org",
+                                    "apache.stu.edu.tw",
+                                    "github.com",
+                                    "raw.githubusercontent.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "TestRule",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Http",
+                                        "port": 80
+                                    },
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "mcamt.eu.auth0.com",
+                                    "amt.v1.fieldsmarttest.com",
+                                    "oauth.pstmn.io"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]"
+                                ]
+                            }
+                        ],
+                        "name": "Common-RuleCollection",
+                        "priority": 60200
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "Inbound",
+                                "ipProtocols": [
+                                    "Any"
+                                ],
+                                "sourceAddresses": [
+                                    "51.104.26.0/24"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "*"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "HTTPS",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "443"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "Outbound",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "13.107.6.0/24",
+                                    "13.107.43.0/24",
+                                    "13.107.9.0/24",
+                                    "13.107.42.0/24"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "443"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "acr",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[parameters('ipGroups_ipgroup_all_externalid')]"
+                                ],
+                                "destinationAddresses": [
+                                    "AzureContainerRegistry"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "443"
+                                ]
+                            }
+                        ],
+                        "name": "ADO-RuleCollection",
+                        "priority": 60100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('firewallPolicies_fwp_hub_dev_shared_name'), '/UatRuleCollectionGroup')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies_fwp_hub_dev_shared_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+            ],
+            "properties": {
+                "priority": 4000,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Web",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "*.dev.azure.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Web-domain",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "v1.fieldsmarttest.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "IdentityProvider",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "mcamt.eu.auth0.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]"
+                                ]
+                            }
+                        ],
+                        "name": "Uat-ApplicationRuleCollection",
+                        "priority": 4300
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "PING",
+                                "ipProtocols": [
+                                    "ICMP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "HTTPS",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "443"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "ACR",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_uat_all_name'))]"
+                                ],
+                                "destinationAddresses": [
+                                    "AzureContainerRegistry"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            }
+                        ],
+                        "name": "Uat-NetworkRuleCollection",
+                        "priority": 4200
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                        "action": {
+                            "type": "Dnat"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NatRule",
+                                "name": "Uat-SB-RDP",
+                                "translatedAddress": "172.18.4.36",
+                                "translatedPort": "3389",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "20.108.90.147"
+                                ],
+                                "destinationPorts": [
+                                    "5300"
+                                ]
+                            }
+                        ],
+                        "name": "Uat-DNATRuleCollection",
+                        "priority": 4100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('firewallPolicies_fwp_hub_dev_shared_name'), '/AutRuleCollectionGroup')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies_fwp_hub_dev_shared_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]"
+            ],
+            "properties": {
+                "priority": 3500,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Web",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "*.dev.azure.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Web-domain",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "v1.fieldsmarttest.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "IdentityProvider",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "mcamt.eu.auth0.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]"
+                                ]
+                            }
+                        ],
+                        "name": "Aut-ApplicationRuleCollection",
+                        "priority": 3800
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "HTTPS",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "443"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "ACR",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationAddresses": [
+                                    "AzureContainerRegistry"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "PING",
+                                "ipProtocols": [
+                                    "ICMP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_aut_all_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            }
+                        ],
+                        "name": "Aut-NetworkRuleCollection",
+                        "priority": 3700
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                        "action": {
+                            "type": "Dnat"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NatRule",
+                                "name": "Aut-SB-RDP",
+                                "translatedAddress": "172.19.4.36",
+                                "translatedPort": "3389",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "20.108.90.147"
+                                ],
+                                "destinationPorts": [
+                                    "2300"
+                                ]
+                            }
+                        ],
+                        "name": "Aut-DNATRuleCollection",
+                        "priority": 3600
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('firewallPolicies_fwp_hub_dev_shared_name'), '/DevRuleCollectionGroup')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies_fwp_hub_dev_shared_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+            ],
+            "properties": {
+                "priority": 5000,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Web-domain",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "v1.fieldsmarttest.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Web",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "*.dev.azure.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "IdentityProvider",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "mcamt.eu.auth0.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]"
+                                ]
+                            }
+                        ],
+                        "name": "Dev-ApplicationRuleCollection",
+                        "priority": 5300
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "ACR",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationAddresses": [
+                                    "AzureContainerRegistry"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "HTTPS",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "443"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "PING",
+                                "ipProtocols": [
+                                    "ICMP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_dev_all_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            }
+                        ],
+                        "name": "Dev-NetworkRuleCollection",
+                        "priority": 5200
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                        "action": {
+                            "type": "Dnat"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NatRule",
+                                "name": "Dev-SB-RDP",
+                                "translatedAddress": "172.16.4.36",
+                                "translatedPort": "3389",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "20.108.90.147"
+                                ],
+                                "destinationPorts": [
+                                    "3300"
+                                ]
+                            }
+                        ],
+                        "name": "Dev-DNATRuleCollection",
+                        "priority": 5100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('firewallPolicies_fwp_hub_dev_shared_name'), '/QaRuleCollectionGroup')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies_fwp_hub_dev_shared_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]",
+                "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+            ],
+            "properties": {
+                "priority": 4500,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Web",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "*.dev.azure.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "Web-domain",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "v1.fieldsmarttest.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]"
+                                ]
+                            },
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "IdentityProvider",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    }
+                                ],
+                                "fqdnTags": [],
+                                "webCategories": [],
+                                "targetFqdns": [
+                                    "mcamt.eu.auth0.com"
+                                ],
+                                "targetUrls": [],
+                                "terminateTLS": false,
+                                "sourceAddresses": [],
+                                "destinationAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]"
+                                ]
+                            }
+                        ],
+                        "name": "Qa-ApplicationRuleCollection",
+                        "priority": 4800
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "ACR",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_platform_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationAddresses": [
+                                    "AzureContainerRegistry"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "PING",
+                                "ipProtocols": [
+                                    "ICMP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "HTTPS",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_qa_all_name'))]",
+                                    "[resourceId('Microsoft.Network/ipGroups', parameters('ipGroups_ipgroup_hub_lower_ag_name'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "443"
+                                ]
+                            }
+                        ],
+                        "name": "Qa-NetworkRuleCollection",
+                        "priority": 4700
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                        "action": {
+                            "type": "Dnat"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NatRule",
+                                "name": "Qa-SB-RDP",
+                                "translatedAddress": "172.17.4.36",
+                                "translatedPort": "3389",
+                                "ipProtocols": [
+                                    "TCP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "20.108.90.147"
+                                ],
+                                "destinationPorts": [
+                                    "4300"
+                                ]
+                            }
+                        ],
+                        "name": "Qa-DNATRuleCollection",
+                        "priority": 4600
+                    }
+                ]
+            }
+        }
+    ]
+}

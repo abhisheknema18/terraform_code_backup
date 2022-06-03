@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- ====================================================== -->
+	<!-- Fieldreach Transaction JMS Properties					-->
+	<!-- ====================================================== -->
+	
+	<!--  JMS template to connect to Fieldreach Transaction JMS connection factory -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">  
+		<property name="connectionFactory" ref="fieldreachTransactionConnectionFactory" />  
+	</bean>
+		
+	<!--  Fieldreach Transaction JMS Controller -->
+	<bean id="fieldreachTransactionJMSController" 
+		class="com.amtsybex.fieldreach.services.jms.impl.FieldreachTransactionJMSControllerImpl">
+		<property name="jmsTemplate" ref="jmsTemplate"/>
+		<property name="workStatusQueue" ref="workStatusTransactionQueue"/>
+	</bean> 
+	
+	
+	<!-- ====================================================== -->
+	<!-- ACTIVEMQ SETTINGS										-->
+	<!-- ====================================================== -->
+	 
+	<!-- ActiveMQ Pooled Connection Factory -->
+	
+	<bean id="fieldreachTransactionConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<!--CFG|JMS broker URL for transaction retention|tcp://localhost:61616|-->
+				<property name="brokerURL" value="${BROKER_URL:tcp://localhost:61616}"/>
+			</bean>
+		</property>
+	</bean> 
+		
+	<!-- Destination queue for WORKSTATUS transactions -->
+	<bean id="workStatusTransactionQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="${frtransaction.workstatus.destination}"/>
+	</bean>
+	
+</beans>

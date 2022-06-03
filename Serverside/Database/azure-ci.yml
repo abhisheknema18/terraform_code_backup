@@ -1,0 +1,23 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+  branches:
+    include:
+      - develop
+      - main
+
+  paths:
+    include:
+      - 'Database/'
+    exclude:
+      - 'Database/azure-*.yml'
+
+pool:
+  vmImage: 'windows-2019'
+
+stages:
+    # Build database artifact
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacBuild.yml  # Template reference

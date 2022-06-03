@@ -1,0 +1,53 @@
+steps:
+- task: ExtractFiles@1
+  displayName: 'Extract files '
+  inputs:
+    archiveFilePatterns: '**\*.zip'
+    destinationFolder: '$(System.ArtifactsDirectory)\_Extracted\provisioning'
+
+variables:
+  Release.EnvironmentName: '$(Release.EnvironmentName)'
+
+steps:
+- task: jessehouwing.jessehouwing-vsts-variable-tasks.vsts-variable-transform.VariableTransformTask@1
+  displayName: 'Transform Value ''$(Release.EnvironmentName)'''
+  inputs:
+    value: '$(Release.EnvironmentName)'
+    variableName: Runtime.Core.EnvironmentNameShort
+    searchReplace: false
+    trim: false
+    slice: false
+    substring: true
+    substringType: left
+    substringLength: 1
+    casing: true
+    casingType: toLower
+    pad: false
+
+steps:
+- task: qetza.replacetokens.replacetokens-task.replacetokens@2
+  displayName: 'Replace Tokens'
+  inputs:
+    rootDirectory: '$(System.ArtifactsDirectory)\_Extracted'
+    targetFiles: '**\*.ARM.Params.json'
+    actionOnMissing: fail
+    tokenSuffix: '}'
+  continueOnError: true
+
+steps:
+- task: PowerShell@1
+  displayName: 'View Configuration'
+  inputs:
+    scriptType: inlineScript
+    inlineScript: 'Get-Content -Path $(System.ArtifactsDirectory)\_Extracted\provisioning\Core\**\ArmTemplates\Core.*.ARM.Params.json'
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Azure Deployment:Create Or Update Resource Group'
+  inputs:
+    azureResourceManagerConnection: 'NHG Digital NON-PROD (dc8ebcd8-c1cc-43d3-a734-529dc0e858b4)'
+    subscriptionId: 'dc8ebcd8-c1cc-43d3-a734-529dc0e858b4'
+    resourceGroupName: 'nhh-uks-cps-rg-appgateway-dev'
+    location: 'UK South'
+    csmFile: '$(System.ArtifactsDirectory)\_Extracted\provisioning\Core\**\ArmTemplates\Core.*.ARM.json'
+    csmParametersFile: '$(System.ArtifactsDirectory)\_Extracted\provisioning\Core\**\ArmTemplates\Core.*.ARM.Params.json'

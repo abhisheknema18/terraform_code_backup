@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<!-- 
+	#################################################################
+	# Reference Other Application Contexts							#
+	#################################################################
+	-->
+	
+	<import resource="classpath:conf/applicationContext-db.xml" />
+	<import resource="classpath:audit/applicationContext-fxlAudit.xml" />
+	
+	<!-- 
+	#################################################################
+	# Pickup Configuration											#
+	#################################################################
+	-->
+	
+	<!-- PICKUP -->
+
+	<bean id="fxl_scriptResultPickup"
+		class="com.amtsybex.fieldreach.xmlloader.core.pickup.ScriptResultPickup">
+		<property name="pickupDirectory" value="${fxl.scriptresult.pickup.dir}" />
+	</bean>
+	
+	
+	<task:scheduler id="fxl_pickupComponentScheduler" pool-size="1"/>
+	
+	<task:scheduled-tasks scheduler="fxl_pickupComponentScheduler">
+		<task:scheduled ref="fxl_scriptResultPickup" method="poll" 
+	    	fixed-delay="${fxl.scriptresult.pickup.pollinginterval}" 
+	    	initial-delay="${fxl.scriptresult.pickup.pollinginterval}"/>
+	</task:scheduled-tasks>
+	
+	
+	<!-- 
+	#################################################################
+	# Script Result Processing Beans								#
+	#################################################################
+	-->
+	
+	<bean id="fxl_scriptResultValidator"
+		class="com.amtsybex.fieldreach.xmlloader.scriptresult.impl.ValidationImpl"
+		scope="prototype">
+		<constructor-arg index="0" ref="scriptResultsService" />
+		<constructor-arg index="1" ref="scriptService" />
+	</bean>
+
+	<bean id="fxl_scriptResultLoader"
+		class="com.amtsybex.fieldreach.xmlloader.scriptresult.impl.LoadImpl"
+		scope="prototype">
+		<constructor-arg index="0" ref="scriptResultsService" />
+		<constructor-arg index="1" ref="scriptService" />
+		<constructor-arg index="2" ref="workOrderService" />
+		<constructor-arg index="3" ref="validationTypeService" />
+		<constructor-arg index="4" ref="backendInstanceManager" />
+		<constructor-arg index="5" ref="equipmentService" />
+		<property name="scriptResultDbImport" value="${fxl.scriptresult.db.import}" />
+		<property name="geometryDataDir" value="${fxl.geometry.binaryresponse.dir}" />
+		<property name="equipmentAttribLoad" value="${fxl.scriptresult.equipmentattrib.load}" />
+		<property name="equipmentAttribRefreshDays" value="${fxl.scriptresult.equipmentattrib.refreshdays}" />
+	</bean>
+		
+	<bean id="fxl_scriptResultDispatcher"
+		class="com.amtsybex.fieldreach.xmlloader.scriptresult.impl.DispatchImpl"
+		scope="prototype">
+		<constructor-arg index="0" value="${fxl.scriptresult.archive.dir}" />
+		<constructor-arg index="1" value="${fxl.scriptresult.error.dir}" />
+	</bean>
+	
+	
+	<bean id="fxl_scriptMonitor"
+		class="com.amtsybex.fieldreach.xmlloader.core.scriptmonitor.impl.ScriptResultsMonitorImpl"
+		scope="prototype">
+	</bean>	
+	
+</beans>

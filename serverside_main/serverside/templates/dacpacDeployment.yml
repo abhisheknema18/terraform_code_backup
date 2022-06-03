@@ -1,0 +1,108 @@
+parameters:
+- name: envName
+  default: 'ENVIRONMENT NOT PASSED IN'
+- name: hasSignoffTask
+  type: boolean
+  default: true
+- name: groupName
+- name: hasApprovalTask
+  type: boolean
+  default: true
+
+jobs:
+  - ${{ if eq(parameters.hasApprovalTask, true) }}:
+    - job: waitForApprovalDB
+      displayName: "${{ parameters.envName }}: Pre-deployment DB Approval"
+      pool: server
+      timeoutInMinutes: 10081 # job times out in 7 days
+      steps:
+        - task: ManualValidation@0
+          displayName: ${{ parameters.envName }} deployment approval
+          timeoutInMinutes: 10080 # task times out in 7 day
+          inputs:
+            notifyUsers: |
+              P10288133@capita.co.uk
+            instructions: "Please approve the deployment of the database into ${{ parameters.envName }} on FieldSmart Cloud SQL Server"
+            onTimeout: 'reject'
+
+  # This job performs database deployment to any given environment.
+  - job: deployDatabaseToEnvironment${{ parameters.envName }}
+    ${{ if eq(parameters.hasApprovalTask, true) }}:
+      dependsOn: waitForApprovalDB
+    condition: succeeded() 
+    displayName: "${{ parameters.envName }}: Database Deployment"
+    variables:
+    - group: ${{ parameters.groupName }}
+    pool:
+        vmImage: 'windows-latest'
+    steps:
+      # No source code required
+      - checkout: none
+
+      # Download artifacts - this allows us access to the imagetag file so we know what version to install
+      - download: 'CI-pipeline'
+        displayName: 'Download Artifacts'
+
+      # Run the FS_LOGINS.sql script
+      - task: SqlAzureDacpacDeployment@1
+        displayName: Run the FS_LOGINS.sql script
+        inputs:
+          azureSubscription: 'amt-fieldsmart-dev-01'
+          AuthenticationType: 'server'
+          ServerName: $(DB_HOSTNAME)
+          DatabaseName: 'master'
+          SqlUsername: $(DB_USERNAME)
+          SqlPassword: $(DB_PASSWORD)
+          deployType: 'SqlTask'
+          SqlFile: '$(Pipeline.Workspace)/CI-pipeline/FieldSmartSqlDatabase/FS_LOGINS.sql'
+          IpDetectionMethod: 'AutoDetect'
+          SqlAdditionalArguments: '-v FSSBCON_USERNAME="$(FSSBCON_USERNAME)", FSSBCON_PASSWORD="$(FSSBCON_PASSWORD)", FSAPP_USERNAME="$(FSAPP_USERNAME)", FSAPP_PASSWORD="$(FSAPP_PASSWORD)"'
+
+      # Deploy the DACPAC
+      - task: SqlAzureDacpacDeployment@1
+        displayName: Deploy the DACPAC
+        inputs:
+          azureSubscription: 'amt-fieldsmart-dev-01'
+          AuthenticationType: 'server'
+          ServerName: $(DB_HOSTNAME)
+          DatabaseName: $(DB_DATABASENAME)
+          SqlUsername: $(DB_USERNAME)
+          SqlPassword: $(DB_PASSWORD)
+          deployType: 'DacpacTask'
+          DeploymentAction: 'Publish'
+          DacpacFile: '$(Pipeline.Workspace)/CI-pipeline/FieldSmartSqlDatabase/FieldSmartSQLDatabase.dacpac'
+          AdditionalArguments: '/p:BlockOnPossibleDataLoss=false'
+          IpDetectionMethod: 'AutoDetect'
+
+      # Run the FS_USERS.sql script
+      - task: SqlAzureDacpacDeployment@1
+        displayName: Run the FS_USERS.sql script
+        inputs:
+          azureSubscription: 'amt-fieldsmart-dev-01'
+          AuthenticationType: 'server'
+          ServerName: $(DB_HOSTNAME)
+          DatabaseName: $(DB_DATABASENAME)
+          SqlUsername: $(DB_USERNAME)
+          SqlPassword: $(DB_PASSWORD)
+          deployType: 'SqlTask'
+          SqlFile: '$(Pipeline.Workspace)/CI-pipeline/FieldSmartSqlDatabase/FS_USERS.sql'
+          IpDetectionMethod: 'AutoDetect'
+          SqlAdditionalArguments: '-v FSSBCON_USERNAME="$(FSSBCON_USERNAME)", FSAPP_USERNAME="$(FSAPP_USERNAME)"'
+
+
+  - ${{ if eq(parameters.hasSignoffTask, true) }}:
+    - job: waitForSignoffDB
+      displayName: "${{ parameters.envName }}: Post-deployment DB Sign-off"
+      dependsOn: deployDatabaseToEnvironment${{ parameters.envName }}
+      condition: succeeded()
+      pool: server
+      timeoutInMinutes: 10081 # job times out in 7 days
+      steps:
+        - task: ManualValidation@0
+          displayName: ${{ parameters.envName }} sign-off
+          timeoutInMinutes: 10080 # task times out in 7 day
+          inputs:
+            notifyUsers: |
+              fieldsmart-notifications@amt-sybex.com
+            instructions: "Provide sign-off on database deployed to ${{ parameters.envName }} ?"
+            onTimeout: 'reject'

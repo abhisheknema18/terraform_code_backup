@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.amtsybex.fieldreach.extract.audit.model">
+
+	<class name="Redelivery" table="REDELIVERY">
+	
+		<id name="id" column="ID">
+			<generator class="assigned"/>
+		</id>
+		
+		<property name="attempts"
+				  type="integer"
+				  not-null="true"
+				  column="ATTEMPTS"/>
+		
+		<property name="message"
+				  type="string"
+				  not-null="false"
+				  column="MESSAGE"/>
+				  
+	</class>
+	
+</hibernate-mapping>

@@ -1,0 +1,61 @@
+
+# Referenced by pipeline:
+#   - https://dev.azure.com/amtsybex1/Mobile/_build?definitionId=733
+
+# This pipeline runs on a weekly schedule. A Devops Notification has been configured to trigger an email in the event that the pipeline fails for any reason.
+
+trigger:
+  - none
+
+#schedules:
+#- cron: "0 13 * * 6"
+#  displayName: Weekly Saturday build at noon UTC
+#  branches:
+#    include:
+#    - develop
+#  always: true
+
+pool: FieldSmart TFCloud (Build)
+
+name: $(TeamProject)_$(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+# Take CI artifacts from develop.
+# Once develop has been merged into main, then appropriate CI artifacts should be added below so those builds also get scanned,
+# (they cannot be added sooner, because the pipeline will error).  See Task #114668.
+resources:
+  pipelines:
+  - pipeline: intweb_build_dev
+    source: FieldSmart\IntWebSvc-CI
+    branch: develop
+
+stages:
+
+# Veracode: IntWeb
+- stage: veracode_deploy_intweb
+  displayName: 'Deploy to Veracode: IntWeb'
+  dependsOn: [] # no dependencies, so this stage can be run in parallel with other stages  
+  jobs:
+  - job: upload_and_scan_intweb
+    displayName: 'Upload and scan: IntWeb (develop)'
+    steps:
+      # No source code required
+      - checkout: none
+      # Download artifacts - 
+      - download: intweb_build_dev
+        displayName: Download build artifact ($(resources.pipeline.intweb_build_dev.runName))
+        artifact: WebServicesInt
+        patterns: '**/fieldreachws-int.war'
+      - task: Veracode@3
+        displayName: Upload and scan
+        inputs:
+          ConnectionDetailsSelection: 'Endpoint'
+          AnalysisService: 'FieldSmart-VeracodeService'
+          veracodeAppProfile: 'AMT - FieldSmart'
+          version: '{"repo":"Serverside","rev":"$(resources.pipeline.intweb_build_dev.sourceCommit)","branch":"$(resources.pipeline.intweb_build_dev.sourceBranch)","buildName":"$(build.buildNumber)","app":"intweb"}'
+          filepath: '$(Pipeline.Workspace)/intweb_build_dev/WebServicesInt/fieldreachws-int.war'
+          sandboxName: 'FieldSmartServerside.IntWeb'
+          createSandBox: true
+          createProfile: false
+          failBuildIfUploadAndScanBuildStepFails: true
+          importResults: true
+          failBuildOnPolicyFail: true

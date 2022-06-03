@@ -1,0 +1,606 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+	<style>
+	.radioBtnPageDirection .ui-radiobutton{
+		float: left !important;
+	}
+	.radioBtnPageDirection label{
+		float: left !important;
+	}
+	.ui-state-highlight .ui-icon {
+	background-image:
+		url('#{request.contextPath}/javax.faces.resource/images/ui-icons_333333_256x240.png.xhtml?ln=primefaces-bootstrap')
+		!important;
+	}
+	
+	.editResultsTreeView{
+		width: 300px;
+		overflow: auto;
+	}
+	.editResultsTreeView ul.ui-tree-container{
+		height: 400px !important;
+	}
+</style>
+
+	<h:form id="accessGroupSearchForm">
+
+		<p:sidebar id="searchAccessGroupWidget"
+			widgetVar="searchAccessGroupWidget" styleClass="searchTabs"
+			style="width:640px; padding:.5em 0em;" position="right">
+
+			<p:panel header="Access Group Search">
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('searchAccessGroupWidget').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+			</p:panel>
+
+			<p:panel>
+				<p:tabView id="accessGroupSearchTabPanel">
+
+					<p:tab id="accessGroupSearchTab" title="Search">
+						<p:panel>
+							<p:panelGrid id="innerContent" width="100%">
+								<p:row>
+									<p:column>
+										<p:outputLabel value="Application Code" />
+									</p:column>
+									<p:column styleClass="noPaddingCell">
+									<p:selectOneMenu value="#{accessGroup.selectedProgCode}"
+										style="min-width: 275px !important;">
+										<f:selectItem noSelectionOption="true" itemValue=""></f:selectItem>
+										<f:selectItem itemLabel="PORTAL" itemValue="FDM"></f:selectItem>
+										<f:selectItem itemLabel="SCRIPT-BUILDER" itemValue="SB"></f:selectItem>
+									</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="Access Group Code" />
+									</p:column>
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="accessGroupCode" maxlength="10" validatorMessage="#{msg.fdm_group_code_invalid}"
+											style="width:300px" value="#{accessGroup.selectedGroupCode}">
+										</p:inputText>
+									</p:column>
+									<p:column>
+										<p:outputLabel id="groupcodeToolTip"
+											style="padding-top:5px;position: absolute;"
+											styleClass="tool-tip-info">
+											<i class="fas fa-info-circle"></i>
+											<p:tooltip for="groupcodeToolTip"
+												value="#{msg.fdm_group_code_info_tooltip}"
+												style="width:200px;" />
+										</p:outputLabel>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="Access Group Description" style="width: 200px !important"/>
+									</p:column>
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="accessGroupDesc" maxlength="50" validatorMessage="#{msg.fdm_group_desc_invalid}"
+											style="width:300px" value="#{accessGroup.selectedGroupDesc}">
+										</p:inputText>
+									</p:column>
+									<p:column>
+										<p:outputLabel id="groupDescToolTip"
+											style="padding-top:5px;position: absolute;"
+											styleClass="tool-tip-info">
+											<i class="fas fa-info-circle"></i>
+											<p:tooltip for="groupDescToolTip"
+												value="#{msg.fdm_group_desc_info_tooltip}"
+												style="width:200px;" />
+										</p:outputLabel>
+									</p:column>
+
+								</p:row>
+
+
+								<p:row>
+									<p:column colspan="2">
+										<p:messages id="messages" showDetail="false" closable="false">
+
+										</p:messages>
+									</p:column>
+								</p:row>
+
+								<p:row>
+
+									<p:column colspan="2">
+										<p:commandButton value="#{msg.fdm_search_btn}"
+											action="#{accessGroup.searchAccessGroupsCriteria()}"
+											oncomplete="if(!args.validationFailed) {PF('searchAccessGroupWidget').hide();}"
+											update="messages" />
+
+										<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+											onclick="PF('searchAccessGroupWidget').hide();"
+											update="innerContent" />
+
+										<p:commandButton value="#{msg.fdm_reset_btn}"
+											update="innerContent" action="#{accessGroup.reset}"
+											style="float:right">
+											<p:resetInput target="innerContent" />
+										</p:commandButton>
+									</p:column>
+
+								</p:row>
+
+							</p:panelGrid>
+
+						</p:panel>
+
+					</p:tab>
+
+
+				</p:tabView>
+
+			</p:panel>
+
+		</p:sidebar>
+
+	</h:form>
+
+	<p:sidebar id="addAccessGroupWidget" widgetVar="addAccessGroupWidget"
+			styleClass="searchTabs" style="width:640px; padding:.5em 0em;"
+			position="right">
+
+			<p:panel header="#{accessGroup.accessGroupEdit ? msg.fdm_edit_access_group_header_label : msg.fdm_add_access_group_header_label}">
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('addAccessGroupWidget').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+			</p:panel>
+			<h:form id="accessGroupAddForm">
+				<p:panelGrid columns="1" width="100%" id="addEditAccessGroupPanel">
+				
+					<p:panelGrid columns="2" width="100%">
+						
+						<h:outputLabel value="Application Code"></h:outputLabel>
+						<p:inputText value="#{accessGroup.selectedAccessGroup.progCodeStr}" disabled="true"
+							style="width:350px" rendered="#{accessGroup.accessGroupEdit}">
+	
+						</p:inputText>
+						<p:selectOneMenu rendered="#{!accessGroup.accessGroupEdit}" 
+							value="#{accessGroup.selectedAccessGroup.progCode}"
+							style="min-width: 335px !important;">
+							<f:selectItem itemLabel="PORTAL" itemValue="FDM"></f:selectItem>
+							<f:selectItem itemLabel="SCRIPT-BUILDER" itemValue="SB"></f:selectItem>
+							<p:ajax event="change" listener="#{accessGroup.onChangeProgCode}" update="manageAccessGroupTabPanel manageAccessGroupTabPanel:manageGroupFunctionTab manageAccessGroupTabPanel:manageAccess saveAccessGroupForm:messages"></p:ajax>
+						</p:selectOneMenu>
+	
+						<h:outputLabel value="Access Group Code"></h:outputLabel>
+						<p:inputText value="#{accessGroup.selectedAccessGroup.groupCode}" maxlength="10" validatorMessage="#{msg.fdm_group_code_invalid}"
+							style="width:350px" required="true" requiredMessage="#{msg.fdm_group_code_invalid}">
+						</p:inputText>
+						
+						<h:outputLabel value="Access Group Description" style="width:155px;"></h:outputLabel>
+						<p:inputText value="#{accessGroup.selectedAccessGroup.groupDesc}" maxlength="50" validatorMessage="#{msg.fdm_group_desc_invalid}"
+							style="width:350px"  required="true" requiredMessage="#{msg.fdm_group_desc_invalid}">
+						</p:inputText>
+						
+					</p:panelGrid>
+					
+				</p:panelGrid>
+			</h:form>
+			
+			<p:tabView id="manageAccessGroupTabPanel" activeIndex="0" style="height:560px;border-bottom: 1px solid #c0c0c0 !important;" cache="false" >
+			
+				<p:tab id="manageGroupFunctionTab" title="Functions" >
+					<h:form id="accessGroupFunction">
+						<p:selectManyMenu value="#{accessGroup.groupFunctionsList}"
+							showCheckbox="true" style="width: 600px;" scrollHeight="480"
+							styleClass="multiPickEditResponse">
+							<f:selectItems value="#{accessGroup.systemFunctions}"
+								var="selectItem" itemLabel="#{selectItem.functionDesc}"
+								itemValue="#{selectItem.id.functionCode}"/>
+						</p:selectManyMenu>
+					</h:form>
+				</p:tab>
+				
+				<p:tab id="manageAccess" title="Access" rendered="#{accessGroup.selectedAccessGroup.progCode == 'FDM'}">
+						
+					<h:form id="accessGroupAccessForm">
+						<p:panelGrid id="accessInnerContent" width="100%">						
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_workgroup_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allWorkgroupsSelected" value="#{accessGroup.allWorkgroupsSelected}" unselectable="false">
+									<p:ajax update="workgroupSelect" listener="#{accessGroup.setWorkgroups(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Work Groups" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+
+							<p:row>
+								<p:column />
+								<p:column styleClass="noPaddingCell">
+
+									<p:panelGrid id="workgroupSelect">
+										<p:row>
+											<p:column>
+												<p:selectOneListbox scrollHeight="190"
+													disabled="#{accessGroup.allWorkgroupsSelected == true}">
+													<f:selectItems value="#{accessGroup.workgroups}" />
+												</p:selectOneListbox>
+											</p:column>
+											<p:column>
+												<p:commandButton value="Select" id="showWorkgroups"
+													action="#{accessGroup.loadSelectedWorkgroups}" immediate="true"
+													update="accessWorkgroupSelectionForm:workgroupSelection"
+													oncomplete="PF('accessWorkgroupSelectionWidget').show();">
+
+												</p:commandButton>
+											</p:column>
+										</p:row>
+										<p:row>
+											<p:column />
+
+										</p:row>
+
+									</p:panelGrid>
+								</p:column>
+
+							</p:row>
+							
+							<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_script_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allScriptsSelected" value="#{accessGroup.allScriptsSelected}" unselectable="false">
+									<p:ajax update="scriptSelect" listener="#{accessGroup.setScripts(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Scripts" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="scriptSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="200" disabled="#{accessGroup.allScriptsSelected == true}">
+										        <f:selectItems value="#{accessGroup.scripts}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select" 
+											id="showScripts" immediate="true"
+											action="#{accessGroup.loadSelectedScripts}"
+											update="accessScriptSelectionForm:scriptSelection"
+											oncomplete="PF('accessScriptSelectionWidget').show();">																														
+											</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+						
+						</p:panelGrid>
+					</h:form>
+						
+				</p:tab>
+				<p:tab id="manageEditResults" title="Edit Results" rendered="#{accessGroup.selectedAccessGroup.progCode == 'FDM'}">
+					<h:form id="accessGroupEditResults">
+					<p:panelGrid id="editResultsInnerContent" width="100%">
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Edit Results" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="resultEditStatus" value="#{accessGroup.resultEdit}" layout="pageDirection"  unselectable="false" styleClass="radioBtnPageDirection">
+									<p:ajax update="manageAccessGroupTabPanel:accessGroupEditResults" listener="#{accessGroup.setResultEditstatus}" />
+						            <f:selectItem itemLabel="No Editing of Script Results" itemValue="NE" />
+						            <f:selectItem itemLabel="Edit Own Results Only" itemValue="OR" />
+						            <f:selectItem itemLabel="Edit Accessible Results Only" itemValue="AR" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						<p:row>
+						<p:column/>
+						<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="resultStatusSelect">
+									<p:row>
+										<p:column>
+											
+												<p:tree id="viewSelectionTree" value="#{accessGroup.selectedScriptStatusRoot}" var="node"
+													styleClass="editResultsTreeView" disabled="#{accessGroup.resultEdit eq 'NE'}">
+													<p:treeNode>
+														<h:outputText
+															value="#{(node['class'].simpleName == 'ScriptStatusDef' ? node.statusValue : (node['class'].simpleName == 'Script' ? node.scriptDesc : node.scriptCatDesc))}" />
+														<h:outputText style="font-size:0.7em;font-style:italic;"
+															value="#{(node['class'].simpleName == 'Script' ? ' ('.concat(node.scriptCode).concat(')') : '')}" />
+													</p:treeNode>
+												</p:tree>
+												
+											</p:column>	
+											
+										<p:column>
+										<p:commandButton value="Select" 
+											id="showeditResultsStatus" immediate="true" disabled="#{accessGroup.resultEdit eq 'NE'}"
+											action="#{accessGroup.loadSelectedScriptsStatus}"
+											update="editResultStatusSelectionForm:scriptSelectionTree"
+											oncomplete="PF('editResultStatusSelectionWidget').show();">																														
+											</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						
+						</p:row>
+					
+					</p:panelGrid>
+					</h:form>
+					</p:tab>
+					<p:tab id="manageWorkGroups" title="Work Groups" rendered="#{accessGroup.selectedAccessGroup.progCode == 'FDM'}">
+						<h:form id="accessGroupWorkGroups">
+							<p:panelGrid id="workGroupsInnerContent" width="100%">				
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Work Group Administration" style="width:160px"/>
+								</p:column>				
+								<p:column styleClass="noPaddingCell">
+						        	<p:selectBooleanCheckbox id="wgCatSelected" value="#{accessGroup.workGroupAdmin}">
+						        		<p:ajax listener="#{accessGroup.setWorkGroupCat(null)}" update="manageAccessGroupTabPanel:accessGroupWorkGroups"></p:ajax>
+						        	</p:selectBooleanCheckbox>
+								</p:column>
+							
+							</p:row>
+							<p:row>
+							<p:column/>
+							<p:column styleClass="noPaddingCell">
+								
+									<p:panelGrid id="wgCatSelect">
+										<p:row>
+											<p:column>
+												<p:selectManyMenu disabled="#{!accessGroup.workGroupAdmin}" style="width:300px;height:400px;" >
+											        <f:selectItems value="#{accessGroup.workGroupCat}" var="sel" itemLabel="#{sel.wgCatDesc}"/>
+											    </p:selectManyMenu>
+											</p:column>	
+											<p:column>
+											<p:commandButton value="Select" disabled="#{!accessGroup.workGroupAdmin}"
+												id="showworkGroupStatus" immediate="true"
+												action="#{accessGroup.loadSelectedWorkGroupCat}"
+												oncomplete="PF('accessWorkgroupCatSelectionWidget').show();"
+												update="workgroupCatSelectionForm:workGroupCatSelector">																														
+												</p:commandButton>
+											</p:column>	
+										</p:row>
+			
+									</p:panelGrid>
+								</p:column>
+							
+							
+							</p:row>
+						
+						</p:panelGrid>
+					</h:form>
+				</p:tab>
+			</p:tabView>
+			
+			<h:form id="saveAccessGroupForm">
+				<p:panelGrid columns="1" style="width:100%">
+				
+					<p:messages id="messages" showDetail="false" closable="false">
+	
+					</p:messages>
+					<p:column style="width:100%">
+						<p:commandButton value="#{msg.fdm_save}" icon="fas fa-save" process="@form @this :addAccessGroupWidget"
+							action="#{accessGroup.saveAccessGroups()}" update="messages growl"
+							oncomplete="if(!args.validationFailed) {PF('addAccessGroupWidget').hide();}" />
+	
+						<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+							icon="fas fa-times" onclick="PF('addAccessGroupWidget').hide();"
+							immediate="true" />
+							
+						<p:commandButton value="#{msg.fdm_access_group_delete_label}" icon="far fa-trash-alt" rendered="#{accessGroup.accessGroupEdit}"
+							action="#{accessGroup.isDeleteUser()}" update="messages growl" style="float:right"/>
+					</p:column>
+				
+				</p:panelGrid>
+			</h:form>
+	</p:sidebar>
+
+	<h:form id="accessScriptSelectionForm">
+		<p:sidebar position="right" id="scriptSelection"
+			header="#{msg.fdm_search_script_dialog_label}"
+			widgetVar="accessScriptSelectionWidget" style="width:640px;">
+
+			<p:panel id="scriptSelectionP"
+				header="#{msg.fdm_search_script_dialog_label}">
+
+				<div style="height:10px;width:100%"></div>
+				
+				<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+				
+					<p:tree id="scriptSelectionTree" value="#{accessGroup.scriptRoot}" var="node" filterMatchMode="contains"
+					filterBy="#{(node['class'].simpleName == 'Script' ? node.scriptDesc.concat('(').concat(node.scriptCode).concat(')') : node)}"
+						selectionMode="checkbox" selection="#{accessGroup.selectedScriptNodes}">
+						<p:treeNode>
+							<h:outputText value="#{(node['class'].simpleName == 'Script' ? node.scriptDesc : node.scriptCatDesc)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'Script' ? ' ('.concat(node.scriptCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+					
+				</div>
+					
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('accessScriptSelectionWidget').hide();"
+						action="#{accessGroup.updateSelectedScripts()}"
+						update="manageAccessGroupTabPanel:accessGroupAccessForm manageAccessGroupTabPanel:accessGroupEditResults"/>
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{accessGroup.clearSelectedScripts()}"
+						update="scriptSelectionTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('accessScriptSelectionWidget').hide();"/>
+
+				</f:facet>
+
+			</p:panel>
+		</p:sidebar>
+
+	</h:form>
+	<h:form id="accessWorkgroupSelectionForm">
+		<p:sidebar position="right" id="workgroupSelection"
+			header="#{msg.fdm_search_script_dialog_label}"
+			widgetVar="accessWorkgroupSelectionWidget" style="width:640px;">
+
+			<p:panel id="userSelectionP"
+				header="#{msg.fdm_search_workgroup_dialog_label}">
+			
+				<div style="height:10px;width:100%"></div>
+				
+				<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+					<p:tree id="workgroupSelectTree" value="#{accessGroup.workgroupRoot}"
+						style="width:100%;" var="node" filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}" 
+						filterMatchMode="contains" selectionMode="checkbox" selection="#{accessGroup.selectedWorkgroupNodes}">
+						<p:treeNode>
+							<h:outputText value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('accessWorkgroupSelectionWidget').hide();"
+						action="#{accessGroup.updateSelectedWorkgroups()}"
+						update="manageAccessGroupTabPanel:accessGroupAccessForm"/>
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{accessGroup.clearSelectedWorkgroups()}"
+						update="workgroupSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('accessWorkgroupSelectionWidget').hide();" />
+
+				</f:facet>
+
+			</p:panel>
+
+		</p:sidebar>
+	</h:form>
+	<h:form id="editResultStatusSelectionForm">
+		<p:sidebar position="right" id="editResultStatusSelection"
+			header="#{msg.fdm_access_group_script_status_selection_header_label}"
+			widgetVar="editResultStatusSelectionWidget" style="width:640px;">
+
+			<p:panel id="resultStatusSelectionP"
+				header="#{msg.fdm_access_group_script_status_selection_header_label}">
+
+				<div style="height:10px;width:100%"></div>
+				
+				<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+				
+					<p:tree id="scriptSelectionTree" value="#{accessGroup.scriptStatusRoot}" var="node" filterMatchMode="contains"
+						filterBy="#{(node['class'].simpleName == 'Script' ? node.scriptDesc.concat('(').concat(node.scriptCode).concat(')') : node)}"
+						selectionMode="checkbox" selection="#{accessGroup.selectedScriptStatusNodes}">
+						<p:treeNode>
+							<h:outputText value="#{(node['class'].simpleName == 'ScriptStatusDef' ? node.statusValue : (node['class'].simpleName == 'Script' ? node.scriptDesc : node.scriptCatDesc))}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'Script' ? ' ('.concat(node.scriptCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+					
+				</div>
+					
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('editResultStatusSelectionWidget').hide();"
+						action="#{accessGroup.updateSelectedScriptsStatus()}"
+						update="manageAccessGroupTabPanel:accessGroupEditResults"/>
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{accessGroup.clearSelectedScriptsStatus()}"
+						update="scriptSelectionTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('editResultStatusSelectionWidget').hide();"/>
+
+				</f:facet>
+
+			</p:panel>
+		</p:sidebar>
+
+	</h:form>
+	<h:form id="workgroupCatSelectionForm">
+		<p:sidebar position="right" id="workgroupCatSelection"
+			header="#{msg.fdm_access_group_category_selection_header_label}"
+			widgetVar="accessWorkgroupCatSelectionWidget" style="width:640px;">
+
+			<p:panel id="wGCatPanel"
+				header="#{msg.fdm_access_group_category_selection_header_label}">
+			
+				<div style="height:10px;width:100%"></div>
+				<p:selectManyMenu id="workGroupCatSelector" value="#{accessGroup.selectedWorkGroupCatList}"
+							showCheckbox="true" style="width: 100%;" scrollHeight="600"
+							styleClass="multiPickEditResponse">
+							<f:selectItems value="#{accessGroup.workGroupCatList}"
+								var="selectItem" itemLabel="#{selectItem.wgCatDesc}"
+								itemValue="#{selectItem}"/>
+						</p:selectManyMenu>
+				
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('accessWorkgroupCatSelectionWidget').hide();"
+						action="#{accessGroup.updateSelectedWorkgroupCategory()}"
+						update="manageAccessGroupTabPanel:accessGroupWorkGroups"/>
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{accessGroup.clearSelectedWorkgroupCategory()}"
+						update="workGroupCatSelector" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('accessWorkgroupCatSelectionWidget').hide();" />
+
+				</f:facet>
+
+			</p:panel>
+
+		</p:sidebar>
+	</h:form>
+	
+
+
+
+</ui:composition>

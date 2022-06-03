@@ -1,0 +1,98 @@
+server:
+  port: 8071
+  servlet:
+    context-path: /integration/
+
+application:
+  version: 1.0
+  
+jdbc: 
+  driverClassName: org.h2.Driver
+  connectionpool:
+    max_size: 5
+      
+hibernate: 
+  dialect: org.hibernate.dialect.H2Dialect
+  show_sql: false
+  format_sql: true 
+
+default:
+  jdbc:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: AMTS
+    password: AMTS
+  instance:
+    key: hiddensercretkey
+     
+folder:
+  basePath: /random/path
+  
+fileType:
+  script: ${folder.basePath}/scripts/source
+  config: ${folder.basePath}/configs
+  script.reference: ${folder.basePath}/scripts/reference
+  support.resource: ${folder.basePath}/scripts/support
+  workorder: ${folder.basePath}/workorders
+  assetDb: ${folder.basePath}/databases/asset                  # The databases directory does not exist in the new file structure
+  workbankDb: ${folder.basePath}/databases/workbank            # The databases directory does not exist in the new file structure
+  resulthistoryDb: ${folder.basePath}/databases/resultshistory # The databases directory does not exist in the new file structure
+
+fileTransfer: 
+  maxDaysActive: 2 
+     
+fileDownload:
+  maxDownloadSize: 30720000
+  maxChunkSize: 1024000
+  tempDir: ${folder.basePath}/Temp/FileDownloads
+  
+geofield:
+  packages: ${folder.basePath}/Geofield/packages
+  
+file: 
+  upload:
+    maxUploadSize:
+    maxChunkSize: 1024000
+    tempDir: ${folder.basePath}/Temp/FileUploads
+    dir:
+      packages: ${folder.basePath}/packages
+      other: ${folder.basePath}/upload/iws
+
+script:
+  upload:
+    dir: ${folder.basePath}/Results/Pickup
+    
+support:
+  upload: 
+    dir: ${folder.basePath}/Results/Support
+
+assethistory:
+  search:
+    omit:
+      scriptcodes: 
+
+workorder:
+  schema:
+    filename: workorder.xsd
+      
+frtransaction:
+  workstatus:
+    destinationtype: DIR
+    destination: ${folder.basePath}/transactions
+    retainstatuslist: 
+    
+activity:
+  logging:
+    apps: 
+
+spring:
+  jackson:
+    default-property-inclusion: non-empty
+
+accesstoken:
+  key:
+    private: /mnt/secrets-store/privatePKCS8
+
+    
+#To externalize log4j properties link to an external configuration file
+#logging:
+#  config: "C:/Fieldreach/log4j2-spring.xml"

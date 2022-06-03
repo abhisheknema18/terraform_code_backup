@@ -1,0 +1,192 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/alertManager-template.xhtml">
+
+	<ui:param name="bean" value="#{alertManagerList}" />
+
+	<ui:define name="alertList-body">
+
+<style type="text/css">
+
+
+    .warnAlert.ui-datatable-odd {
+    	background-color: rgba(255, 165, 0, 0.25);
+    }
+    .warnAlert {
+        background-color: rgba(255, 165, 0, 0.2);
+    }
+
+    .priorityAlert.ui-datatable-odd {
+    	background-color: rgba(255, 0, 0, 0.25);
+    }
+    .priorityAlert {
+        background-color: rgba(255, 0, 0, 0.2);
+    }
+    
+    .disabledAlert{
+    	opacity: 0.4;
+    }
+
+</style>
+
+		<p:tabView id="searchTab">
+		
+			<p:ajax event="tabChange" update="pageInfo" />
+		
+			<p:tab id="searchResults"
+				title="#{msg.fdm_alerts_label} #{alertManagerList.alerts.size() > 0 ? '('.concat(alertManagerList.alerts.size()).concat(')') : ''}#{alertManagerList.alertsFiltered.size() > 0 ? '('.concat(alertManagerList.alertsFiltered.size()).concat(')') : ''}" >
+        
+				<f:facet name="title">
+		           <!-- <h:outputText id="theTitle" value="#{msg.fdm_work_work_results_tab_label} #{alertManagerList.alerts.size() > 0 ? '('.concat(alertManagerList.alerts.size()).concat(')') : ''}#{alertManagerList.alertsFiltered.size() > 0 ? '('.concat(alertManagerList.alertsFiltered.size()).concat(')') : ''}" /> -->
+		        	<h:outputText id="theTitle" value="#{msg.fdm_alerts_label} #{alertManagerList.alertsFiltered.size() > 0 and alertManagerList.alertsFiltered.size() lt alertManagerList.alerts.size() ? '('.concat(alertManagerList.alertsFiltered.size()).concat(' of ').concat(alertManagerList.alerts.size()).concat(')') :  alertManagerList.alerts.size() > 0 ? '('.concat(alertManagerList.alerts.size()).concat(')') : '(0)' }"  />
+		        </f:facet>
+        
+				<h:form id="alertListForm">
+				
+					<!-- bit of a hack for a primefaces bug, the update on the ajax filter is always one step behind so use oncomplete instead to update the count -->
+					<p:remoteCommand name="updateFilteredValue" action="#{alertManagerList.resetSelectionAfterFilter}" update="searchTab:theTitle searchResultsCount searchTab:alertListForm searchSideMenu"/>	
+					
+					<div style="position:absolute;height:39px;right:20px;top:0px;padding:4px; color:white"> 
+						<p:commandLink id="dynaButton" styleClass="resultNavigationButton fa fa-download" />
+						    <p:menu overlay="true" trigger="dynaButton" my="left top" at="left bottom">
+						        <p:menuitem value="Excel" icon="fa fa-file-excel" ajax="false">
+						        	<p:dataExporter type="xls" target="multiAlertListTable" fileName="Alerts" />
+						        </p:menuitem>
+						       	<p:menuitem value="PDF" icon="fa fa-file-pdf" ajax="false" >
+						       		<p:dataExporter type="pdf" target="multiAlertListTable" fileName="Alerts" preProcessor="#{download.preProcessPDF}" />
+						       	</p:menuitem>
+						    </p:menu>
+					</div>
+				
+					<p:dataTable id="multiAlertListTable" widgetVar="alertTable"
+						value="#{alertManagerList.alerts}"
+						filteredValue="#{alertManagerList.alertsFiltered}"
+						var="result" 
+						multiViewState="true"
+						rowStatePreserved="true"
+						rowSelectMode="add"
+						fixedHeader="false" 
+						filterDelay="1000"
+						selection="#{alertManagerList.selectedAlerts}" 
+						rowKey="#{result.id}" 
+						resizableColumns="true"
+						paginator="false" 
+						sortBy="#{result.alertType == 'P' ? '1' : result.alertType == 'I' ? '3' : '2'}"
+						disabledSelection = "#{result.alertStatus == 'C'}"
+						rowStyleClass="#{result.alertStatus == 'C' ? 'disabledAlert' : result.alertType == 'P' ? 'priorityAlert' : result.alertType == 'W' ? 'warnAlert' : null }"
+						style="min-width:1275px;">
+						
+						<p:ajax event="page" listener="#{searchResults.onPageChange}" />
+						<p:ajax event="rowSelect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowUnselect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowDblselect" update="searchSideMenu" process="@this" />
+						<p:ajax event="toggleSelect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowSelectCheckbox" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowUnselectCheckbox" update="searchSideMenu" process="@this" /> 
+						<p:ajax event="filter" oncomplete="updateFilteredValue();" process="@this" />
+
+						<p:column exportable="false" rendered="#{alertManagerList.alertsFiltered.size() > 0}" selectionMode="multiple" style="width:16px;text-align:center;" />
+        
+						<!-- <p:column headerText="Alert Id" style="width:60px;"
+							sortBy="#{result.id}" filterMatchMode="contains"  filterBy="#{result.id}">  
+				           <h:outputText value="#{result.id}" />
+				        </p:column> -->
+				        
+						<p:column headerText="Type" filterBy="#{result.alertType == 'P' ? 'PRIORITY' : result.alertType == 'I' ? 'INFO' : 'WARN'}" filterMatchMode="contains" sortBy="#{result.alertType == 'P' ? '1' : result.alertType == 'I' ? '3' : '2'}" style="width:65px">  
+				            <h:outputText value="#{result.alertType == 'P' ? 'PRIORITY' : result.alertType == 'I' ? 'INFO' : 'WARN'}" /> 
+				        </p:column>
+
+						<p:column headerText="#{msg.fdm_alert_text}" filterBy="#{result.alertText}" filterMatchMode="contains" sortBy="#{result.alertText}" style="width:30%">  
+				            <h:outputText value="#{result.alertText}" /> 
+				        </p:column>	
+				        
+						<p:column headerText="#{msg.fdm_eq_num_label}" filterBy="#{result.equipNo}" filterMatchMode="contains" sortBy="#{result.equipNo}" style="width:20%">  
+				            <h:outputText value="#{result.equipNo}" /> 
+				        </p:column>
+				        
+						<p:column headerText="#{msg.fdm_eq_desc_label}" filterBy="#{result.returnedScript.equipDesc}" filterMatchMode="contains" sortBy="#{result.returnedScript.equipDesc}" style="width:20%">  
+				            <h:outputText value="#{result.returnedScript.equipDesc}" /> 
+				        </p:column>
+				        
+						<!-- <p:column headerText="Alert Type" filterBy="#{result.alertType}" filterMatchMode="contains" sortBy="#{result.alertType}" style="width:30%">  
+				            <h:outputText value="#{result.alertType}" /> 
+				        </p:column>	 -->
+				        					        
+	       
+				        
+						<p:column headerText="#{msg.fdm_search_results_script_code_label}" style="width:15%"
+							sortBy="#{result.returnedScript.scriptCode}" filterMatchMode="contains"  filterBy="#{result.returnedScript.scriptCode}">  
+				           <h:outputText value="#{result.returnedScript.scriptCode}" />
+				        </p:column>
+				        
+				        
+						<p:column headerText="#{msg.fdm_work_group_label}" style="width:15%"
+							sortBy="#{result.returnedScript.workGroup}" filterMatchMode="contains"  filterBy="#{result.returnedScript.workGroup}">  
+				           <h:outputText value="#{result.returnedScript.workGroup}" />
+				        </p:column>
+				        
+						<p:column headerText="#{msg.fdm_created}" style="width:135px"
+							sortBy="#{func:combineDateTime(result.createDate,result.createTime)}" filterMatchMode="contains"  filterBy="#{func:combineDateTime(result.createDate,result.createTime)}">  
+				           <h:outputText value="#{func:intToDate(result.createDate)}" >
+				           	<f:convertDateTime dateStyle="medium" />
+				           </h:outputText> - 
+				           <h:outputText value="#{func:parseTime(result.createTime)}"/>
+				        </p:column>
+				        
+						<p:column headerText="#{msg.fdm_search_results_status_label}" style="width:80px"
+							sortBy="#{result.alertStatus}" filterMatchMode="contains"  filterBy="#{result.alertStatus == 'O' ? 'OPEN' : 'CLOSED'}">  
+				           <h:outputText value="#{result.alertStatus == 'O' ? 'OPEN' : 'CLOSED'}" />
+				        </p:column>
+				        
+					   <p:column styleClass="tableIcon" exportable="false">
+							<p:commandLink id="resultQuickViewBtn"
+								action="#{detailsQuickView.initialise(result.getReturnedScript())}"
+								update="resultQuickViewForm:detailDialog"
+								oncomplete="PF('detailDialog').show();">
+								<i class="fa fa-search" alt="Quick View"></i>
+							</p:commandLink>
+							<p:tooltip id="resultQuickView" for="resultQuickViewBtn" value="#{msg.fdm_quick_view_tool_tip_alert_result}"></p:tooltip>
+						</p:column>
+						
+						
+						<p:column styleClass="tableIcon" exportable="false" >
+							<p:commandLink id="equipmentQuickViewBtn" oncomplete="PF('assetViewWidgetVar').show();" action="#{alertManagerList.loadAssetInformation(result.equipNo)}" 
+								update="assetDialogViewId:assetViewPanel">
+							<i class="fa fa-search" alt="Quick View"></i>
+							</p:commandLink>
+							<p:tooltip id="equipmentQuickView" for="equipmentQuickViewBtn" value="#{msg.fdm_quick_view_tool_tip_alert_equipment}"></p:tooltip>
+						</p:column>
+						
+						
+					</p:dataTable>
+
+					<h:outputText id="searchResultsCount"
+						value="#{alertManagerList.alertsFiltered.size() > 0 and alertManagerList.alertsFiltered.size() lt alertManagerList.alerts.size() ? ''.concat(alertManagerList.alertsFiltered.size()).concat(' of ').concat(alertManagerList.alerts.size()) :  alertManagerList.alerts.size() > 0 ? ''.concat(alertManagerList.alerts.size()) : '0' } alerts found"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+
+				</h:form>
+
+			</p:tab>
+		</p:tabView>
+
+		<ui:include src="detailsQuickView.xhtml">
+		</ui:include>
+		
+		<h:form id="assetDialogViewId">
+
+			<ui:include src="../fdm/EquipmentInformation.xhtml">
+				<ui:param name="equipBean" value="#{equipmentHierarchy}"></ui:param>
+			</ui:include>
+
+		</h:form>
+		
+	</ui:define>
+</ui:composition>

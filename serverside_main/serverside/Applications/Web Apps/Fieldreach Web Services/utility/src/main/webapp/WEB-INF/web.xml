@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+    http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
+
+
+  <display-name>fieldreachutilsws</display-name>
+
+	
+	<!-- ====================================================== -->
+	<!-- CONFIGURATION FILES -->
+	<!-- ====================================================== -->
+	
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+			classpath:applicationContext-db.xml,
+			classpath:applicationContext-hibernate.xml,
+ 			classpath:application-webServices.xml,
+ 			classpath:applicationContext-extractEngine.xml,
+ 			classpath:springSecurityContext.xml,
+		</param-value>
+  </context-param>
+
+	
+	<!-- ====================================================== -->
+	<!-- SPRING CONTEXT LOADER -->
+	<!-- ====================================================== -->
+	
+  <listener>
+    <display-name>Spring Context Loader</display-name>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+	
+	<!-- ====================================================== -->
+	<!-- SPRING REQUEST LISTENER -->
+	<!-- ====================================================== -->
+	
+  <listener>
+    <display-name>Spring Request Context Listener</display-name>
+    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+  </listener>
+
+	
+	<!-- ====================================================== -->
+	<!-- SPRING REST SERVICES LISTENER -->
+	<!-- ====================================================== -->
+	
+  <servlet>
+    <servlet-name>restDispatcher</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>restDispatcher</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+
+	<!-- ====================================================== -->
+	<!-- HIBERNATE SESSION RETENTION							-->
+	<!-- ====================================================== -->
+	
+	<!-- Configuration to retain Hibernate sessions in the backend service for the duration
+		 of requests. This is to support lazy initialisation of associations/collection specified
+		 in Hibernate mapping files. 
+	-->
+	
+	<!-- 
+		For each Fieldreach instance configured	in the web service aplication configuration,
+		the pair of bens below must be copied and setup to point to each instance.
+		
+		The first bean should be given a unique name in the <filter-name> property. The <Param-value>
+		should be modified to point to the name of a corresponding Hibernate Session Factory
+		
+		The second bean should be modified to have the <filter-name> property set to the same value
+		as the <filter-name> property in the first bean.
+	-->
+	
+	<!--
+		<filter>
+			<filter-name><REPLACE_ME></filter-name>
+			<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+			<init-param>
+				<param-name>sessionFactoryBeanName</param-name>
+				<param-value><REPLACE_ME></param-value>         
+		  </init-param>      
+	   </filter>
+	   
+	   <filter-mapping>
+			<filter-name><REPLACE_ME></filter-name>
+			<url-pattern>/*</url-pattern>
+			<dispatcher>REQUEST</dispatcher>
+			<dispatcher>FORWARD</dispatcher>
+		</filter-mapping> 
+   	-->
+   	
+   	
+	<!-- ====================================================== -->
+	<!-- SPRING-SECURITY Entry Point -->
+	<!-- ====================================================== -->
+	
+  <filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <listener>
+    <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+  </listener>
+
+
+	<!-- ====================================================== -->
+	<!-- MISCELLANEOUS -->
+	<!-- ====================================================== -->
+
+	<!-- Disables servlet container welcome file handling. -->
+	<!-- Needed for compatibility with Servlet 3.0 and Tomcat 7.0 -->
+  <welcome-file-list>
+    <welcome-file />
+  </welcome-file-list>
+
+	<!-- 'distributable' makes the application suitable for 
+		running in an distributed environment like a tomcat cluster. -->
+	<distributable />
+
+  <!-- Session timeout in minutes -->
+  <session-config>
+    <session-timeout>10</session-timeout>
+  </session-config>
+
+	
+	<!-- ====================================================== -->
+	<!-- FIELDREACH DATABASE JNDI RESOURCE REFERENCES 			-->
+	<!-- ====================================================== -->
+		
+	<!-- 
+		If the Fieldreach data source the application is connecting to is a JNDI
+		resource, then it must be defined here using the template below
+	-->
+	
+	<!-- 
+		<resource-ref>
+			<description>Fieldreach DB Connection</description>
+			<res-ref-name><REPLACE_ME></res-ref-name>
+			<res-type>javax.sql.DataSource</res-type>
+			<res-auth>Container</res-auth>
+			<res-sharing-scope>Shareable</res-sharing-scope>
+		</resource-ref>
+	-->
+	
+	
+</web-app>

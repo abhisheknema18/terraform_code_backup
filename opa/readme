@@ -1,0 +1,47 @@
+#ingress addon is enabled:
+minikube addons enable ingress
+
+#Create a new Namespace to deploy OPA into:
+ kubectl create namespace opa
+ kubectl config set-context opa-tutorial --user minikube --cluster minikube --namespace opa
+ kubectl config use-context opa-tutorial
+
+ #Deploy OPA on top of Kubernetes:
+ openssl genrsa -out ca.key 2048
+openssl req -x509 -new -nodes -key ca.key -days 100000 -out ca.crt -subj "/CN=admission_ca"
+
+
+cat >server.conf <<EOF
+[req]
+req_extensions = v3_req
+distinguished_name = req_distinguished_name
+[req_distinguished_name]
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth, serverAuth
+EOF
+
+openssl genrsa -out server.key 2048
+openssl req -new -key server.key -out server.csr -subj "/CN=opa.opa.svc" -config server.conf
+openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 100000 -extensions v3_req -extfile server.conf
+
+
+kubectl create secret tls opa-server --cert=server.crt --key=server.key
+
+#Create admission-controller.yaml:
+kubectl apply -f admission-controller.yaml
+
+#This webhook will ignore any namespace with the label openpolicyagent.org/webhook=ignore.
+kubectl label ns kube-system openpolicyagent.org/webhook=ignore
+kubectl label ns opa openpolicyagent.org/webhook=ignore
+
+
+kubectl apply -f webhook-configuration.yaml
+kubectl logs -l app=opa -c opa
+
+#Define a policy and load it into OPA via Kubernetes
+ingress-whitelist.rego
+
+#Store the policy in Kubernetes as a ConfigMap. By default kube-mgmt will try to load policies out of configmaps in the opa namespace OR configmaps in other namespaces labelled openpolicyagent.org/policy=rego.
+kubectl create configmap ingress-whitelist --from-file=ingress-whitelist.rego

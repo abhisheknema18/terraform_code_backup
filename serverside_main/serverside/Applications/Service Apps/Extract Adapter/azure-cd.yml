@@ -1,0 +1,81 @@
+# Referenced by pipeline:
+#   - https://dev.azure.com/amtsybex1/Mobile/_build?definitionId=685
+
+# Explicitly set none for repository trigger
+trigger:
+  - none
+
+variables:
+  - name: artifactFolderName
+    value: 'CI-pipeline/ExtractAdapter'
+  - name: artifactName
+    value: extractadapter
+  - group: 'Fusion_Common'
+
+resources:
+  # List each repository that we'll need
+  repositories:
+  - repository: FusionHelmTemplate
+    type: git
+    name: Mobile/fusion-helm-template
+    ref: main
+  - repository: FusionDevOps
+    type: git
+    name: Mobile/fusion-devops
+    ref: main
+
+  pipelines:
+    - pipeline: CI-pipeline  # Name of the pipeline resource
+      source: FEAServiceApps-CI # Name of the triggering pipeline
+      trigger:
+        branches:
+          include:
+            - main
+            - develop
+
+stages:
+  # Pull and run container on AUT
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envName: 'AUT'
+      groupName: 'FusionCloudDeploymentTF_AUT_uksouth'
+      appName: 'FEA'
+
+  # Pull and run container on Dev
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envname: 'DEV'
+      groupName: 'FusionCloudDeploymentTF_DEV_uksouth'
+      appName: 'FEA'
+
+  # Pull and run container on QA
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envname: 'QA'
+      groupName: 'FusionCloudDeploymentTF_QA_uksouth'
+      appName: 'FEA'
+
+  # Pull and run container on UAT
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envname: 'UAT'
+      groupName: 'FusionCloudDeploymentTF_UAT_uksouth'
+      appName: 'FEA'
+
+  # Pull and run container on Preprod UK South
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envname: 'PREPROD'
+      groupName: 'FusionCloudPenDeployment_MultiRegion_Preprod'
+      appName: 'FEA'
+      buildPoolName: 'FieldSmart PenTestCloud(Build)'
+      deployPoolName: 'FieldSmart PenTestCloud(Deployment)'
+
+  # Pull and run container on Prod UK South
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envname: 'PROD'
+      groupName: 'FusionCloudPenDeployment_MultiRegion_Prod'
+      appName: 'FEA'
+      buildPoolName: 'FieldSmart PenTestCloud(Build)'
+      deployPoolName: 'FieldSmart PenTestCloud(Deployment)'

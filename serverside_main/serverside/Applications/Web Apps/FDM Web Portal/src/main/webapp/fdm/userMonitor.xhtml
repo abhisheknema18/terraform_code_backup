@@ -1,0 +1,155 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/work-template.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="usercode" value="#{userList.directUsercode}"
+			required="false" />
+		<f:viewParam name="workgroup" value="#{userList.directWorkGroup}"
+			required="false" />
+		<f:event type="preRenderView" listener="#{userList.searchDirect}" />
+	</f:metadata>
+
+	<ui:param name="bean" value="#{userMonitor}" />
+
+	<ui:define name="work-body">
+
+		<script src="#{request.contextPath}/scripts/mapcluster.js"></script>
+		<script	src="https://maps.googleapis.com/maps/api/js?key=#{fdmenv.systemParameters.mapKey}" >
+			
+			window.gm_authFailure = function validMapKey() {
+				element = document.getElementById('searchTabs:userListResultsForm:userStatusMap');
+				var img = document.createElement('img'); 
+				img.src = '/images/nomapfound.jpg'; 
+				element.replaceWith(img);
+				img.classList.add('noMapClassUserMonitor'); 
+			}
+			
+	     	function clusterMarkers(){
+	        	var mcOptions = {gridSize: 50, maxZoom: 15, imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};
+	        	var mc = new MarkerClusterer(PF('mapWidget').map, PF('mapWidget').map.markers,mcOptions);
+	        	PF('mapWidget').map.fitBounds = google.maps.Map.prototype.fitBounds;
+	    	}
+	     	
+	     	$(window).on('load', function() {
+	        	clusterMarkers();
+			});		
+	     	
+	     	function handleComplete(xhr, status, args) {  
+	     		
+	     		var map = PF('mapWidget').map;
+	     		if(args.lat != null){
+		     		if(map.getZoom() &lt; 13){
+		     			map.setZoom(13);
+		     		}
+		     		map.setCenter(new google.maps.LatLng(args.lat , args.lng)); 
+	     		}
+           
+	        } 
+		</script>
+		
+		
+		<p:tabView id="searchTabs">
+			
+			<p:tab id="searchResults" title="User Status #{userMonitor.userActivityStatus.size() > 0 ? '('.concat(userMonitor.userActivityStatus.size()).concat(')') : ''}">
+			<!-- disabled="#{fn:length(userList.results) == 0 and userList.activeTab == 0}"> -->
+
+				<h:form id="userListResultsForm">
+
+					<h:panelGrid columns="2" layout="grid" columnClasses="ui-g-4 ui-md-6, ui-g-4 ui-md-6">
+						<p:panel>
+							<h:panelGrid width="100%">
+							<p:dataTable id="userStatusTable"
+								value="#{userMonitor.userActivityStatus}"
+								var="result"
+								filterDelay="1000"
+								scrollable="true"
+								scrollHeight="600"
+								rowStatePreserved="true"
+								sortBy="#{func:combineDateTime(result.lastActivity.activityDate,result.lastActivity.activityTime)}"
+								nullSortOrder="-1"
+								sortOrder="descending" 
+								style="width:100%;height:700px;border: 1px solid #dddddd;"
+								selection="#{userMonitor.selectedUser}"
+								styleClass = "listHighLightTableCls"
+								resizableColumns="true" 
+								selectionMode="single"
+								rowIndexVar="rowVar"
+								rowKey="#{result}">
+
+								<p:ajax event="rowSelect" oncomplete="handleComplete(xhr, status, args)"/>
+								<p:column headerText="User Code" sortBy="#{result.id.userCode}">
+								<h:panelGroup rendered="#{result.isLocation() and (!result.getMapIconColor().contains('grey'))}" styleClass="fa fa-map-marker" style="#{result.getMapIconColor()}"></h:panelGroup>
+								<h:panelGroup rendered="#{!result.isLocation() || (result.getMapIconColor().contains('grey'))}" styleClass="fas fa-circle" style="#{result.getMapIconColor()}"> </h:panelGroup>
+								&nbsp;
+									<h:outputText value="#{result.id.userCode}" />
+								</p:column>
+								<p:column headerText="User Name"
+									sortBy="#{result.userName}"  filterMatchMode="contains" filterBy="#{result.userName}">
+									<h:outputText value="#{result.userName}" />
+								</p:column>
+								<p:column headerText="Workgroup"
+									sortBy="#{result.workGroup.workgroupDesc.concat(result.workGroup.id.workgroupCode)}"
+									filterMatchMode="contains" filterBy="#{result.workGroup.workgroupDesc.concat(result.workGroup.id.workgroupCode)}">
+									<h:outputText
+										value="#{result.workGroup.workgroupDesc}" />
+										&nbsp;
+									<h:outputText
+										value="(#{result.workGroup.id.workgroupCode})" />
+								</p:column>
+								<p:column headerText="Last Activity Date/Time"
+								sortBy="#{result.lastActivity.activityDate}">
+									<h:outputText value="#{func:intToDate(result.lastActivity.activityDate)}" style="#{result.lastActivity.activityDate==null?'display:none':''}">
+										<f:convertDateTime dateStyle="medium" />
+									</h:outputText>
+									<h:outputText value="  #{func:parseTime(result.lastActivity.activityTime)}" style="#{result.lastActivity.activityDate==null?'display:none':''}"/>
+								</p:column>
+
+								<h:outputText value="#{fn:length(userMonitor.userActivityStatus.lastActivity)} Users found"
+									class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+							</p:dataTable>
+							</h:panelGrid>
+						</p:panel>
+						<p:panel id="userStatus">
+							<h:panelGrid width="100%" rendered="#{fdmenv.systemParameters.mapKey!=null and userMonitor.showMap() == true}">
+								<p:gmap id="userStatusMap" 
+									type="ROADMAP" styleClass="mapClass" style="height:700px" widgetVar="mapWidget"
+									model="#{userMonitor.mapModel}" fitBounds="true" center="#{userMonitor.centerLocation}">
+									<p:ajax event="overlaySelect" listener="#{userMonitor.onMarkerSelect}" update="userStatusTable" />
+									<p:gmapInfoWindow id="infoWindow">
+										<p:outputPanel>
+											<p:outputLabel value="#{userMonitor.selectedMarkerInfoWindowData}" styleClass="map-info-window"/>
+										</p:outputPanel>
+									</p:gmapInfoWindow>
+
+								</p:gmap>
+							</h:panelGrid>
+							
+							<div class="noMapClassMonitor" style="#{(fdmenv.systemParameters.mapKey==null || userMonitor.showMap() ) ? 'display:none' : ''}">
+         						<h:graphicImage rendered="#{fdmenv.systemParameters.mapKey==null || userMonitor.showMap() == false}" value ="/images/nomapfound.jpg" styleClass="noMapClassUserMonitor"/>
+               				</div>
+							
+						</p:panel>
+						<p:panel>
+							<h:panelGrid columns="3" width="100%">
+							<p:commandLink><i class="fas fa-circle" style="color:green" alt="location view"></i> Online within last 60 minutes </p:commandLink>
+							<p:commandLink><i class="fas fa-circle" style="color:orange" alt="location view"></i> Online within last 24 hours  </p:commandLink>
+							<p:commandLink><i class="fas fa-circle" style="color:grey" alt="location view"></i> Not online </p:commandLink>
+							</h:panelGrid>
+						</p:panel>
+					</h:panelGrid>
+				</h:form>
+
+			</p:tab>
+		</p:tabView>
+
+	</ui:define>
+</ui:composition>

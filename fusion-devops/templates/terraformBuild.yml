@@ -1,0 +1,190 @@
+parameters:
+- name: 'container_Path'
+  default: 'Container Path Not SET'
+- name: 'artifact_Path'
+  default: 'ArtifactPath Not Yet Set'
+- name: 'application_Path'
+  default: 'application Path'
+- name: 'group_DOCKER_FBE'
+
+stages:
+- stage: BuildTestPublishArtifact
+  displayName: Build - Test - Publish Artifact
+  variables:
+  - group: ${{ parameters.group_DOCKER_FBE }}
+
+  jobs:
+    - job: Build
+      pool: 'FieldSmart TFCloud (Build)'
+      steps:
+        - script: echo $(Build.SourceBranch)
+          displayName: 'Printing the source branch'
+
+        # Setup and execute GitVersion
+        - task: gitversion/setup@0
+          displayName: 'Git Version (Setup)'
+          inputs:
+            versionSpec: '5.x'
+
+        - task: gitversion/execute@0
+          name: 'ExecuteGitVersion'
+          displayName: 'Git Version (Execute)'
+          inputs:
+            useConfigFile: true
+            configFilePath: '$(applicationBaseFolder)GitVersion.yml'
+            updateProjectFiles: false
+            additionalArguments: '/Verbosity Minimal'
+
+        # Replace tokens in the pom.xml to get the version label in
+        - task: replacetokens@3
+          displayName: "Replace Version Label Token"
+          inputs:
+            targetFiles: '$(applicationBaseFolder)pom.xml'
+            encoding: 'auto'
+            writeBOM: true
+            actionOnMissing: 'warn'
+            keepToken: false
+            tokenPrefix: '#{'
+            tokenSuffix: '}#'
+            useLegacyPattern: false
+            enableTransforms: false
+            enableTelemetry: false
+
+        # Generate token 
+        - task: MavenAuthenticate@0
+          displayName: 'Maven Authenticate'
+          inputs:
+            artifactsFeeds: fusion-backend
+
+        # Copy settings.xml and overwrite the azure file and remove it after pasting it.
+        # rm command is required so that the subsequent runs do not fail.
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              cp $HOME/.m2/settings.xml $BUILD_SOURCESDIRECTORY/settings/azure-artifact-maven-user-settings.xml
+              rm $HOME/.m2/settings.xml
+
+        # Login to ACR with Docker - we need to do this before invoking any Docker commands as 
+        # the images we're consuming are now all on a private repository.
+        - task: Bash@3
+          displayName: 'ACR Docker Login'
+          name: 'AcrDockerLogin'
+          env:
+            MAPPED_LOGIN_KEY: $(ACR_PASSWORD)
+          inputs:
+            targetType: 'inline'
+            script: |
+              echo $MAPPED_LOGIN_KEY | docker login $REGISTRY_HOST --username $USERNAME --password-stdin
+          condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+        # Build main artifact - the Docker image
+        - task: Bash@3
+          displayName: 'Build Docker image'
+          name: 'BuildDockerImage'
+          inputs:
+            targetType: 'inline'
+            script: |
+              docker image build -t $(artifactName):$(ExecuteGitVersion.GitVersion.FullSemVer) -f '$(applicationBaseFolder)Dockerfile' .
+              docker image inspect $(artifactName):$(ExecuteGitVersion.GitVersion.FullSemVer)
+          condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+        
+        # Docker task above compiles the application files. 
+        # Extract application files from Docker image and copy onto host machine for Veracode scan.
+        - task: Bash@3
+          displayName: 'Copy artifact .jar files from Docker image to host machine'
+          name: 'CopyFilesFromDockerImage'
+          inputs:
+            targetType: 'inline'
+            script: |
+              echo $(artifactName):$(ExecuteGitVersion.GitVersion.FullSemVer)
+              mkdir -p $(Build.ArtifactStagingDirectory)${{ parameters.application_Path }}
+              CONTAINER_ID_VAR=$(docker create --rm $(artifactName):$(ExecuteGitVersion.GitVersion.FullSemVer))
+              docker cp $CONTAINER_ID_VAR:${{ parameters.container_Path }} $(Build.ArtifactStagingDirectory)${{ parameters.artifact_Path }}
+              docker container rm -f $CONTAINER_ID_VAR
+              ls $(Build.ArtifactStagingDirectory)${{ parameters.application_Path }}
+          condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+        # Build and run unit tests
+        - task: Bash@3
+          displayName: 'Build Docker Test Image & Run Junit tests'
+          name: 'JunitTestsFromDockerImage'
+          inputs:
+            targetType: 'inline'
+            script: |
+              # Remove the previous test results
+              rm -r $(System.DefaultWorkingDirectory)/target
+              
+              # Build the unit test image
+              docker image build -t $(artifactName):tests \
+                --target test \
+                -f '$(applicationBaseFolder)Dockerfile' .
+              docker container rm -f $(artifactName)-tests || true
+              
+              # Run the unit tests
+              docker container run --name $(artifactName)-tests $(artifactName):tests
+              
+              # Copy the test results onto the host system
+              docker cp $(artifactName)-tests:'tmp/$(applicationBaseFolder)target' '$(System.DefaultWorkingDirectory)'
+              
+              # Delete the unit test container and the unit test image
+              docker container rm -f $(artifactName)-tests
+              docker image rm -f $(artifactName):tests
+          condition: succeeded()
+
+        # Publishes JUNIT test reports to ADO pipeline
+        - task: PublishTestResults@2
+          displayName: PublishJunitTestResults
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: "$(System.DefaultWorkingDirectory)/target/surefire-reports/TEST-*.xml"
+            failTaskOnFailedTests: true
+          condition: succeeded()
+
+        # Based on this issue https://github.com/microsoft/azure-pipelines-tasks/issues/8762
+        # We need to create a folder named summary... under jacoco directory
+        - task: Bash@3
+          displayName: 'Create temporary dir for code coverage issue'
+          name: 'CodeCoverageTempDir'
+          inputs:
+            targetType: 'inline'
+            script: |
+              mkdir -p '$(System.DefaultWorkingDirectory)/target/site/jacoco/summary$(Build.BuildId)'                        
+            workingDirectory: "$(System.DefaultWorkingDirectory)"
+          condition: succeeded()
+
+        - task: PublishCodeCoverageResults@1
+          inputs:
+            codeCoverageTool: 'JaCoCo'
+            summaryFileLocation: '$(System.DefaultWorkingDirectory)/target/site/jacoco/jacoco.xml'
+            reportDirectory: '$(System.DefaultWorkingDirectory)/target/site/jacoco'
+
+        - task: Bash@3
+          displayName: 'Tag And Push Docker image to ACR'
+          name: 'PushImageToACR'
+          env:
+            MAPPED_LOGIN_KEY: $(LOGIN_KEY)
+          inputs:
+            targetType: 'inline'
+            script: |   
+              docker image tag $(artifactName):$(ExecuteGitVersion.GitVersion.FullSemVer) $REGISTRY_HOST/$(artifactName):$(ExecuteGitVersion.GitVersion.FullSemVer)
+              docker image push $REGISTRY_HOST/$(artifactName):$(ExecuteGitVersion.GitVersion.FullSemVer)
+              docker image ls
+              echo $(ExecuteGitVersion.GitVersion.FullSemVer) > dockerImageTagName.imagetag
+          condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+        # Copying dockerImageTagName file to staging directory
+        - task: CopyFiles@2
+          displayName: 'Copying dockerImageTagName File'
+          inputs:
+            sourceFolder: '$(System.DefaultWorkingDirectory)'
+            contents: '*.imagetag'
+            targetFolder: $(Build.ArtifactStagingDirectory)${{ parameters.application_Path }}
+          condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+        # Publishing artifacts
+        - task: PublishBuildArtifacts@1
+          inputs:
+            pathToPublish: $(Build.ArtifactStagingDirectory)${{ parameters.application_Path }}
+            artifactName: $(artifactFolderName)
+          condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

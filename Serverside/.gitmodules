@@ -1,0 +1,4 @@
+[submodule "Applications/Service Apps/Geofield_Exchange/Core"]
+	path = Applications/Service Apps/Geofield_Exchange/Core
+	url = https://amtsybex1@dev.azure.com/amtsybex1/Mobile/_git/GeoField%20Pro
+	branch = staging/master

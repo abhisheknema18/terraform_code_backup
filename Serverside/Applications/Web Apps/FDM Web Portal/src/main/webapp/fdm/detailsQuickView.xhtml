@@ -1,0 +1,286 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+	
+	<h:form id="resultQuickViewForm">
+			
+		<p:dialog id="detailDialog"
+					dynamic="true"
+					styleClass="quickView"
+					widgetVar="detailDialog" 
+					resizable="false" 
+					width="700"
+					modal="true" 
+					position="right center"
+					closable="false"
+					closeOnEscape="true" 
+					draggable="true" responsive="true" fitViewport="true">
+					
+				<f:facet name="header">
+						<h:outputText value="#{msg.fdm_details_quickview_title}" styleClass="dialogheader" />
+						
+						<p:commandLink oncomplete="PF('detailDialog').hide();"
+							styleClass="downloadVideoBtn">
+							<i class="fas fa-times fa-fw"></i>
+						</p:commandLink>
+						
+				</f:facet>
+				
+				<p:panel id="details" height="100%">
+				
+					<h:panelGrid styleClass="hoverGrid" columns="1" width="100%">
+	
+						<h:panelGrid columns="2"
+							
+							rendered="#{not empty detailsQuickView.script.workOrderNo}">
+							<h:outputLabel
+								value="Work Order" />
+							<h:outputText id="workOrderNo" style="width:470px;"
+								value="#{detailsQuickView.script.workOrderNo} / #{detailsQuickView.script.workOrderDesc}" styleClass="headerText" />
+						</h:panelGrid>
+	
+						<h:panelGrid columns="2"
+							
+							rendered="#{not empty detailsQuickView.script.workOrderNo or not empty detailsQuickView.script.equipNo}">
+							<h:outputLabel for="equipmentDescription"
+								value="Equipment" />
+							<h:outputText id="equipmentDescription" style="width:470px;"
+								value="#{detailsQuickView.script.equipNo} / #{detailsQuickView.script.equipDesc}" styleClass="headerText" />
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2"
+						    
+							rendered="#{empty detailsQuickView.script.workOrderNo and empty detailsQuickView.script.equipNo}">
+							<h:outputLabel for="summaryDescription"
+								value="#{msg.fdm_details_summary_description_label}" />
+							<h:outputText id="summaryDescription" style="width:470px;"
+								value="#{detailsQuickView.script.summaryDesc}" styleClass="headerText" />
+						</h:panelGrid>
+	
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="resultStatus"
+								value="#{msg.fdm_details_result_status_label}" />
+							<h:outputText id="resultStatus" style="width:470px;"
+								value="#{detailsQuickView.script.resultStatus}" styleClass="headerText" />
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="scriptDescription"
+								value="#{msg.fdm_details_script_description_label}" />
+							<h:outputText id="scriptDescription" style="width:470px;"
+								value="#{detailsQuickView.scriptDescription}" styleClass="headerText" />
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" >
+							<h:outputLabel value="#{msg.fdm_details_completed_label}" />
+							<h:panelGroup styleClass="headerText" style="width:470px;">
+								<h:outputText id="completedDate" value="#{detailsQuickView.completeDate}">
+									<f:convertDateTime dateStyle="medium" />
+								</h:outputText>
+								<h:outputText id="completedTime" value="#{detailsQuickView.completeTime}"
+									styleClass="dateTimeText" />
+							</h:panelGroup>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="user" value="User" />
+							<h:outputText id="user" style="width:470px;"
+							value="#{detailsQuickView.script.hpcUser.userName}"  
+								styleClass="headerText" />
+						</h:panelGrid>
+	
+						 
+					</h:panelGrid>
+					<h:panelGrid id="resultSetTablePnl" columns="1" width="100%"
+						styleClass="resultSetTable">
+						
+	
+						<h:panelGrid columns="3" style="float:right; margin-bottom:10px" cellpadding="5">
+							<!-- <p:selectBooleanCheckbox value="false" itemLabel="Add to Selection" style="margin-top:3px;padding-right:5px;"/> -->
+							<h:outputText value="#{msg.fdm_details_script_question_toggle}" style="padding-right:5px; line-height:24px;"/>
+							<p:toggleSwitch id="showAll" value="#{detailsQuickView.showAllQuestions}" >
+								<p:ajax update="resultSetTable" />
+							</p:toggleSwitch>
+						</h:panelGrid>
+						
+						<p:dataTable id="resultSetTable" 
+							value="#{detailsQuickView.answers}"
+							var="result" 
+							scrollable="true" 
+							scrollHeight="550"
+							rowIndexVar="resultTableRowInd"
+							rowStyleClass="#{result.heading ? ( detailsQuickView.showAllQuestions or result.isHasAnsweredQuestions() ? 'heading' : 'hideRow') : (result.endMarker ? 'endMarker' : (result.answered ? 'answered' :(detailsQuickView.showAllQuestions ? 'notAnswered' : 'hideRow'))) }"
+							resizableColumns="true" 
+							selectionMode="single"
+							selection="#{detailsQuickView.highlightedAnswer}" 
+							rowKey="#{result.id}" 
+							widgetVar="resultSetTableVar">
+	
+							<p:column headerText="#{msg.fdm_details_script_header_label}"
+								styleClass="script" style="width:300px;'">
+								<h:outputText value="#{result.script}" />
+							</p:column>
+							
+							<p:column headerText="#{msg.fdm_details_response_header_label}"
+								styleClass="response" rendered="#{result.responseType eq 'OK' and !result.viewPII}"
+								style="#{result.bitmap or result.photograph ? 'text-align: center;' : 'text-align: left;'}">
+	
+								<p:panel styleClass="noPadding" style="width:100%; background:none; padding:0px;">
+								
+									<h:outputText value="#{result.extendedResponse != null ? result.response.concat(result.extendedResponse) : result.response}"
+										rendered="#{not result.bitmap and not result.photograph and not result.date and not result.multiPickList}" styleClass = "#{result.taskListItems != null ? 'taskItemList' : ''  }"
+										style="#{result.ootFlag != 0 ? result.otCol : result.colorMap.get(result.response)}"> 
+									</h:outputText>
+									
+									<h:outputText value="(#{result.uom})" rendered="#{result.uom != null}" style="padding-left:5px"/>
+		
+									<p:panelGrid rendered="#{result.multiPickList and result.responseType ne 'OK'}">
+										<h:outputText value="#{result.response}" />
+									</p:panelGrid>
+									<p:panelGrid rendered="#{result.multiPickList and result.responseType eq 'OK'}">
+										<ul class="multipickList">
+		
+											<li><h:outputText value="#{result.response}" style="#{result.colorMap.get(result.response)}"/></li>
+		
+											<ui:repeat value="#{result.multiPickListItems}"
+												var="countMulti">
+												<li ><h:outputText value="#{countMulti.id.response}" style="#{result.colorMap.get(countMulti.id.response)}"/></li>
+											</ui:repeat>
+		
+										</ul>
+									</p:panelGrid>
+		
+									<p:panelGrid
+										rendered="#{result.taskListItems != null and result.responseType ne 'OK'}">
+										<h:outputText value="#{result.response}" style="#{result.colorMap.get(result.response)}"/>
+									</p:panelGrid>
+									<p:panelGrid
+										rendered="#{result.taskListItems != null and result.responseType eq 'OK'}">
+										<ul class="multipickList">
+											<ui:repeat value="#{result.taskListItems}" var="countItem">
+												<li class="#{countItem.task.taskCompleteCode == 'TC' ?  'taskListComplete' : 'taskListNotComplete'}">
+												<h:outputText value="#{countItem.task.taskDesc}"  style = "#{result.colorMap.get(countItem.task.taskDesc)}"/></li>
+											</ui:repeat>
+										</ul>
+									</p:panelGrid>
+		
+									<h:outputText value="#{result.dateValue}"
+										rendered="#{result.date}">
+										<f:convertDateTime dateStyle="medium" />
+									</h:outputText>
+									<h:graphicImage value="#{result.base64Bitmap}"
+											rendered="#{result.bitmap}" />
+									<h:graphicImage value="#{result.base64Photograph}"
+											rendered="#{result.photograph and result.responseType eq 'OK'}" />
+									
+									<p:commandLink value="Play #{result.video ? 'Video' : 'Audio'}"
+										oncomplete="PF('quickAudioVideoDialogVar').show();"
+										action="#{detailsQuickView.setHighlightedAnswer(result)}"
+										rendered="#{(result.video or result.audio) and result.responseType eq 'OK'}"
+										update="quickAudioVideoDialogForm:quickAudioVideoDialog"
+										icon="#{result.video ? 'far fa-video' : 'far fa-microphone'}">
+										<f:setPropertyActionListener target="#{detailsQuickView.videoTag}"
+											value="#{result.video}" />
+									</p:commandLink>
+								
+								
+								</p:panel>
+	
+								<p:panel styleClass="noPadding" 
+								rendered="#{result.freeText != null and result.freeText.length() > 0}" 
+								style="width:100%;margin-top:5px;border-top:1px solid lightgray !important; background:none; padding:0px;white-space: normal;word-wrap: normal;">
+									<h:outputText style="color:gray; font-size=0.8em" value="#{result.freeText}" />
+								</p:panel>
+							
+							</p:column>
+
+						<p:column
+							rendered="#{result.responseType eq 'OK' and result.viewPII}">
+							<i class="fas fa-circle-hidden fa-xs fullwidth" style="#{result.responseType eq 'OK' and result.viewPII ? 'color:#666; border-color:#666;padding-top: 2px;' : 'display:none;'}" aria-hidden="true"></i>
+							<p:panel styleClass="noPadding" 
+								rendered="#{result.freeText != null and result.freeText.length() > 0}" 
+								style="width:100%;margin-top:5px;border-top:1px solid lightgray !important; background:none; padding:0px;white-space: normal;word-wrap: normal;">
+									
+									<i class="fas fa-circle-hidden fa-xs fullwidth" style="#{result.viewPII ? 'color:#666; border-color:#666;padding-top: 2px;' : 'display:none;'}" aria-hidden="true"></i>
+
+								</p:panel>
+						</p:column>
+
+						<p:column rendered="#{result.responseType ne 'OK'}" headerText="#{msg.fdm_details_response_header_label}"
+							styleClass="response">
+							<h:outputText value="#{result.responseType}" />
+							
+							<p:panel styleClass="noPadding" 
+								rendered="#{result.freeText != null and result.freeText.length() > 0}" 
+								style="width:100%;margin-top:5px;border-top:1px solid lightgray !important; background:none; padding:0px;white-space: normal;word-wrap: normal;">
+									<h:outputText style="color:gray; font-size=0.8em" value="#{result.freeText}" rendered="#{!result.viewPII}"/>
+									<i class="fas fa-circle-hidden fa-xs fullwidth" style="#{result.viewPII ? 'color:#666; border-color:#666;padding-top: 2px;' : 'display:none;'}" aria-hidden="true"></i>
+
+								</p:panel>
+						</p:column>
+							
+						</p:dataTable>
+					</h:panelGrid>
+	
+				</p:panel>
+			</p:dialog> 
+		
+	</h:form>
+	
+	<h:form  id="quickAudioVideoDialogForm">
+		<p:remoteCommand name="quickAudioVideoRecomteCloseCommand" update="quickAudioVideoDialogForm:quickAudioVideoDialog"></p:remoteCommand>
+		<p:dialog id="quickAudioVideoDialog" 
+			dynamic="true"
+			styleClass="quickView"
+			widgetVar="quickAudioVideoDialogVar" 
+			resizable="false" 
+			width="500px"  height="#{detailsQuickView.videoTag ? '500px' : '100px' }"
+			modal="true" 
+			position="center center"
+			onShow="PF('quickAudioVideoDialogVar').initPosition()" 
+			closable="false"
+			closeOnEscape="false" 
+			draggable="false"
+			onHide="quickAudioVideoRecomteCloseCommand()">
+
+			<f:facet name="header">
+
+				<h:outputText value="Media Playback" />
+				<p:commandLink oncomplete="PF('quickAudioVideoDialogVar').hide();"
+					styleClass="downloadVideoBtn" style="padding-left: 10px;">
+					<i class="fas fa-times fa-fw" style="font-size: 20px"></i>
+				</p:commandLink>
+
+
+			</f:facet>
+
+			<p:panel rendered="#{detailsQuickView.videoTag}">
+			<video id="videoContainer" controls="controls"  width="450px" height="450px" controlsList="nodownload" disablePictureInPicture="true"> 
+				<source src="#{detailsQuickView.highlightedAnswer.base64Video}" type="video/mp4"/> 
+				<source src="#{detailsQuickView.highlightedAnswer.base64Video}" type="video/quicktime"/> 
+				Your browser does not support HTML5 video.
+			</video>
+			</p:panel>
+			<p:panel rendered="#{!detailsQuickView.videoTag}">
+			
+			<audio  id="audioContainer" controls="controls" style="width:100%" controlsList="nodownload"> 
+				<source src="#{detailsQuickView.highlightedAnswer.base64Video}" type="audio/m4a"/> 
+				<source src="#{detailsQuickView.highlightedAnswer.base64Video}" type="audio/aac"/> 
+				<source src="#{detailsQuickView.highlightedAnswer.base64Video}" type="audio/wav"/> 
+				Your browser does not support HTML5 Audio.
+			</audio>
+			</p:panel>
+		</p:dialog>
+	
+	</h:form>
+	
+
+	
+</ui:composition>
+	

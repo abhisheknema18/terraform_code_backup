@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:oxm="http://www.springframework.org/schema/oxm" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd 
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-4.0.xsd
+        ">
+
+	<!-- ============================================== -->
+	<!-- Spring Managed Backing Beans					-->
+	<!-- ============================================== -->
+	
+	<bean id="workOrderController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.WorkOrderControllerImpl"
+		scope="prototype">
+		<property name="fileResourceController" ref="fileResourceController" />
+		<property name="workOrderService" ref="workOrderService" />
+		<property name="workStatuses" ref="workStatus" />
+	</bean>
+	
+	<bean id="scriptController"
+		class="com.amtsybex.fieldreach.services.endpoint.common.impl.ScriptControllerImpl"
+		scope="prototype">
+		<property name="fileResourceController" ref="fileResourceController" />
+		<property name="scriptService" ref="scriptService" />
+		<property name="scriptResultsService" ref="scriptResultsService" />
+		<!-- <property name="omitFromAHSearch" value="${assethistory.search.omit.scriptcodes}" /> -->
+	</bean>
+	
+	<bean id="workStatus" class="com.amtsybex.fieldreach.services.endpoint.common.WorkStatus" scope="prototype">
+		<property name="resultCloseApprovalStatuses" value="${portal.approval.closework}" />
+	</bean>
+	
+	<bean id="fileResourceController"
+		class="com.amtsybex.fieldreach.services.resource.impl.FileResourceControllerImpl">
+		<property name="fileTypeMapping">
+			<map>
+				<entry key="workorder" value="${portal.workorderlocation}" />
+			</map>
+		</property>
+	</bean>
+	
+	 <bean id="userInviteIdentityToken"
+        class="com.amtsybex.fieldreach.user.utils.impl.UserInviteIdentityTokenImpl">
+    </bean> 
+
+	<!--
+	
+	<bean id="openLDAPAuthenticationProvider"
+		class="com.amtsybex.fieldreach.services.authentication.ldap.openldap.impl.OpenLDAPAuthenticationProviderImpl"
+		scope="prototype">
+		<constructor-arg name="arguments">
+			<map>
+				<entry key="providerURL" value="${ldap.openldap.url}"></entry>
+				<entry key="baseDN" value="${ldap.openldap.bindArgument}"></entry>
+				<entry key="searchArgument" value="${ldap.openldap.searchArgument}"></entry>
+				<entry key="searchBase" value="${ldap.openldap.searchBase}"></entry>
+				<entry key="adminLogin" value="${ldap.openldap.adminLogin}"></entry>
+				<entry key="adminPassword" value="${ldap.openldap.adminPassword}"></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<bean id="apacheDSAuthenticationProvider"
+		class="com.amtsybex.fieldreach.services.authentication.ldap.apacheds.impl.ApacheDSAuthenticationProviderImpl"
+		scope="prototype">
+		<constructor-arg name="arguments">
+			<map>
+				<entry key="providerURL" value="${ldap.apacheds.url}"></entry>
+				<entry key="baseDN" value="${ldap.apacheds.bindArgument}"></entry>
+				<entry key="searchArgument" value="${ldap.apacheds.searchArgument}"></entry>
+				<entry key="searchBase" value="${ldap.apacheds.searchBase}"></entry>
+				<entry key="adminLogin" value="${ldap.apacheds.adminLogin}"></entry>
+				<entry key="adminPassword" value="${ldap.apacheds.adminPassword}"></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="activeDirectoryAuthenticationProvider"
+		class="com.amtsybex.fieldreach.services.authentication.ldap.activedirectory.impl.ActiveDirectoryAuthenticationProviderImpl"
+		scope="prototype">
+		<constructor-arg name="arguments">
+			<map>
+				<entry key="providerURL" value="${ldap.activedirectory.url}"></entry>
+				<entry key="baseDN" value="${ldap.activedirectory.bindArgument}"></entry>
+				<entry key="searchArgument" value="${ldap.activedirectory.searchArgument}"></entry>
+				<entry key="searchBase" value="${ldap.activedirectory.searchBase}"></entry>
+				<entry key="adminLogin" value="${ldap.activedirectory.adminLogin}"></entry>
+				<entry key="adminPassword" value="${ldap.activedirectory.adminPassword}"></entry>
+				<entry key="useSSL" value="${ldap.activedirectory.useSSL}"></entry>
+				<entry key="keyStore" value="${ldap.activedirectory.keystore}"></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="fieldReachAuthenticationProvider"
+		class="com.amtsybex.fieldreach.services.authentication.Fieldreach.impl.FieldreachAuthenticationProviderImpl"
+		scope="prototype">
+		<constructor-arg name="arguments">
+			<map></map>
+		</constructor-arg>
+	</bean>
+	
+	-->
+	
+
+	
+</beans>

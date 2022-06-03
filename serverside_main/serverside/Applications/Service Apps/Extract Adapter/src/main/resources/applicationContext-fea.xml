@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+	<!-- 
+	#################################################################
+	# Reference Other Application Contexts							#
+	#################################################################
+	-->
+	
+	<import resource="classpath:applicationContext-db.xml" />
+	<import resource="classpath:audit/applicationContext-feaAudit.xml" />
+	<import resource="classpath:applicationContext-extractEngine.xml" />
+	<!-- <import resource="classpath:extract_adapter/conf/applicationContext-feaJms.xml" /> -->
+
+	<!-- 
+	#################################################################
+	# Property Placeholder Configuration							#
+	#################################################################
+	-->
+
+	<bean id="fea_utils"
+		class="com.amtsybex.fieldreach.extract.utils.FEAUtils">
+		<property name="notificationEmail" ref="fea_notificationEmail"/>
+	</bean>
+	
+	
+	<!-- 
+	#################################################################
+	# Database Polling Configuration								#
+	#################################################################
+	-->
+
+	<bean id="fea_controller"
+		class="com.amtsybex.fieldreach.extract.core.impl.ExtractAdapterControllerImpl">
+		<property name="fieldreachInstances" ref="fieldreachInstances"/>
+	</bean>
+	
+	<task:scheduler id="fea_pickupScheduler" pool-size="1"/>
+	
+	<task:scheduled-tasks scheduler="fea_pickupScheduler">
+		<task:scheduled ref="fea_controller" method="run" 
+	    	fixed-delay="${fea.polling.interval}" 
+	    	initial-delay="${fea.polling.interval}"/>
+	</task:scheduled-tasks>
+	
+	
+	<!-- 
+	#################################################################
+	# Extracted Message Dispatch Configuration						#
+	#################################################################
+	-->
+
+	<bean id="fea_dispatcher"
+		class="com.amtsybex.fieldreach.extract.core.impl.ExtractAdapterDispatcherImpl">
+		<property name="dirDestination" value="${fea.destination}"/>
+	</bean>
+	
+	<!-- 
+	#################################################################
+	# Message Re-delivery Strategy									#
+	#################################################################
+	-->
+	
+	<bean id="fea_redeliveryStrategy"
+		class="com.amtsybex.fieldreach.extract.core.impl.ExtractAdapterRedeliveryImpl">
+		<property name="redeliveryInterval" value="${fea.redelivery.interval}" />
+		<property name="redeliveryMaxAttempts" value="${fea.redelivery.max.attempts}" />
+	</bean>
+	
+	
+	<!-- 
+	#################################################################
+	# Notification Email Configuration								#
+	#################################################################
+	-->
+	
+	<bean id="fea_notificationEmail"
+		class="com.amtsybex.fieldreach.utils.impl.EmailImpl">
+		<property name="host" value="${fea.email.server}"/>
+		<property name="port" value="${fea.email.port}"/>
+		<property name="userName" value="${fea.email.username}"/>
+		<property name="password" value="${fea.email.password}"/>
+		<property name="fromAddress" value="${fea.email.from}"/>
+		<property name="recipients" value="${fea.email.recipients}"/>
+		<property name="subject" value="${fea.email.defaultSubject}"/>
+	</bean>
+	
+	
+	<!-- 
+	#################################################################
+	# Thread Pool Configuration										#
+	#################################################################
+	-->
+	<bean id="fea_threadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	    <property name="corePoolSize" value="${fea.threadpool.size}" />
+	    <property name="maxPoolSize" value="${fea.threadpool.size}" />
+	    <property name="waitForTasksToCompleteOnShutdown" value="true" />
+	</bean>
+	
+	<bean id="fea_extractTask"
+		class="com.amtsybex.fieldreach.extract.core.tasks.ExtractTask" scope="prototype">
+		<property name="destination" value="${fea.scriptresult.destination}"/>
+		<property name="extractBinary" value="${fea.extract.binary}"/>
+		<property name="errorStatus" value="${fea.status.error}"/>
+		<property name="ignoreNaOr" value="${fea.ignore.NA.OR}"/>
+		<property name="ignoreBlankFieldRole" value="${fea.ignore.blankfieldrole}"/>
+	</bean>
+	
+</beans>

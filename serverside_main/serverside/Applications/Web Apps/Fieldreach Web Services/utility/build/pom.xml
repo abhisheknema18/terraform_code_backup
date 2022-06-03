@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>amtsybex</groupId>
+	<artifactId>futilswsproject</artifactId>
+	<version>1.0</version>
+	<name>futilsws_project</name>
+	<packaging>pom</packaging>
+	
+	<repositories>
+		<repository>
+			<id>springsource-repo</id>
+			<name>SpringSource Repository</name>
+			<url>http://repo.springsource.org/release</url>
+		</repository>
+		<repository>
+			<id>jboss-public-repository-group</id>
+			<name>JBoss Public Repository Group</name>
+			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>fusion-backend</id>
+			<url>https://pkgs.dev.azure.com/amtsybex1/Mobile/_packaging/fusion-backend/maven/v1</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>fusion-backend</id>
+			<url>https://pkgs.dev.azure.com/amtsybex1/Mobile/_packaging/fusion-backend/maven/v1</url>
+		</repository>
+	</distributionManagement>
+
+	<modules>
+		<module>../../../../../Shared Components/Fieldreach Utils</module>
+		<module>../../../../../Shared Components/Fieldreach Backend Service</module>
+		<module>../../../../../Shared Components/Fieldreach Extract Engine</module>
+		<module>../../../../../Shared Components/Fieldreach Authentication</module>
+		<module>../../common</module>
+		<module>../</module>
+	</modules>
+
+	<build>
+		<defaultGoal>clean package</defaultGoal>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.honton.chas</groupId>
+					<artifactId>exists-maven-plugin</artifactId>
+					<version>0.3.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.honton.chas</groupId>
+				<artifactId>exists-maven-plugin</artifactId>
+				<version>0.3.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>remote</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+</project>

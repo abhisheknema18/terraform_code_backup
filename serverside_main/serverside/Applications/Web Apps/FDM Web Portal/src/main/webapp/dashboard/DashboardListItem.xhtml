@@ -1,0 +1,117 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+
+			<p:panel id="dashItem#{widgetId}"
+				header="#{dashboardItem.criteriaObjs.title}" styleClass="panelStyle">
+	
+				<!--<f:facet name="actions">-->
+				<f:facet name="footer">
+	
+					<div id="listChart#{widgetId}Updated" style="position: absolute; line-height:36px; font-size: 0.7em; color: lightgrey;">
+
+						<div id="time#{widgetId}"></div>
+
+						<script>
+							var d = new Date();
+							document.getElementById('time#{widgetId}').innerHTML = "Last Updated: " + d.toLocaleTimeString();
+						</script>
+
+					</div>
+					
+					<div style="display: flex; justify-content: flex-end">
+
+						<!-- <p:commandLink id="refresh"
+							styleClass="dashboardButtonItem fa fa-redo"
+							action="#{dashboardItem.refresh}"
+							update="msgs dashyMain#{widgetId}"/> -->
+							
+						<p:commandLink id="edit"
+							styleClass="dashboardButtonItem fa fa-pencil"
+							action="#{dashboardItem.loadSelected}" resetValues="true"
+							update="msgs dashEditForm#{widgetId}:dashEditDialog#{widgetId}"
+							oncomplete="PF('dashEditDialogWidget#{widgetId}').show()" />
+							
+						<!-- <p:commandLink id="carryoutSearch"
+							styleClass="dashboardButtonItem fa fa-list"
+							action="#{dashboardItem.viewResults()}" /> -->
+					</div>
+
+				</f:facet>
+
+
+				<h:panelGroup id="dashy" >
+
+					<p:remoteCommand name="cancelEdit#{widgetId}"
+						actionListener="#{dashboardItem.cancelEdit()}"
+						update="dashy"
+						style="display: none;" />
+						
+
+			 		<p:poll widgetVar="updatePoll#{widgetId}" rendered="#{dashboard.monitorRate > 0}"
+						interval="#{dashboard.monitorRate}"
+						listener="#{dashboardItem.refresh}" update="dashyMain#{widgetId}" />
+
+
+					<div class="wrapper70">
+					<!-- 
+					<div id="headerIcon" style="position: absolute; top: -28px; width: 100%; text-align: left; font-size: 1.2em; color: black; opacity:0.2;"><span class="#{dashboardItem.criteriaObjs.xAxis == 'SCRIPT' ? 'fa fa-file' : dashboardItem.criteriaObjs.xAxis == 'WORK' ? 'fa fa-clipboard-check' : 'fa fa-users'}" /></div>
+ 					-->
+						<div class="innerContent">
+							<div id="listChartChart#{widgetId}" style="position: absolute; height: 100%; width: 100%; margin: 0 auto;">
+							
+								<div style="width:95%; margin:auto; height:100%; overflow-y:auto;">
+								
+								<p:repeat rendered="#{dashboardItem.criteriaObjs.chartType eq 'LIST'}" value="#{dashboardItem.results}" var="_entry" varStatus="status">
+	
+									<!-- <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12" style="display: table;max-height:50%; height:calc(100% / #{fn:length(dashboardItem.results)} );font-size:1.2em;color:white; padding:7px 15px;background:#{_entry.value == 0 ? '#ed4657' : '#339966'};border-bottom:3px solid white;"> -->
+									<div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12" style="display: table; font-size:1.2em; color:white; padding:7px 15px; background:#{_entry.value == 0 ? '#ed4657' : '#339966'}; border-bottom:3px solid white;">
+									
+										<div style="display: table-cell;vertical-align: middle;">
+										<table>
+	
+											<tr>
+												<td style="padding-right: 10px;" class="fa #{_entry.value eq 0 ? 'fa-exclamation-triangle' : 'fa-check'}"></td>
+												<td>#{_entry.description}</td>
+											</tr>
+											
+										</table>
+										</div>
+										
+	
+									</div>
+
+	        					</p:repeat>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+
+		</h:panelGroup>
+		</p:panel>
+
+			<p:draggable
+				scope="dashItem"
+				id="DRAG#{widgetId}" for=":dashItemForm#{widgetId}:dashItem#{widgetId}"
+				revert="true" stack=".ui-panel"/>
+
+			<p:droppable
+				scope="dashItem"
+				id="DROP#{widgetId}" for=":dashItemForm#{widgetId}:dashItem#{widgetId}"
+				tolerance="intersect" hoverStyleClass="panelHover"
+				onDrop="handleDrop">
+				<p:ajax listener="#{dashboard.onDashboardItemDrop}"
+					update="dashboardAddItem dashboardCountItems dashboardGraphItems msgs" />
+			</p:droppable>
+			
+
+	
+</ui:composition>

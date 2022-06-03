@@ -1,0 +1,524 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<url>http://maven.apache.org</url>
+
+	<groupId>amtsybex</groupId>
+	<artifactId>fdmwebportal</artifactId>
+	<packaging>war</packaging>
+	<version>#{FULLSEMVER}#</version>
+	<name>fdmwebportal</name>
+	
+	
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.5</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<org.hibernate.version>5.4.30.Final</org.hibernate.version>
+		<joinfaces.version>4.6.3</joinfaces.version>
+	</properties>
+	
+	<dependencyManagement>
+        <dependencies>
+        
+        	<!-- Log4J vulnerability fix - remove this when next updating spring boot version -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>2.17.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.joinfaces</groupId>
+                <artifactId>joinfaces-dependencies</artifactId>
+                <version>${joinfaces.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>	
+
+	<repositories>
+
+		<repository>
+			<id>springsource-repo</id>
+			<name>SpringSource Repository</name>
+			<url>https://repo.springsource.org/release</url>
+		</repository>
+		
+	    <repository>
+	        <id>prime-repo</id>
+	        <name>PrimeFaces Maven Repository</name>
+	        <url>https://repository.primefaces.org</url>
+	        <layout>default</layout>
+	    </repository>
+
+		<repository>
+			<id>fusion-backend</id>
+			<url>https://pkgs.dev.azure.com/amtsybex1/Mobile/_packaging/fusion-backend/maven/v1</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>fusion-backend</id>
+			<url>https://pkgs.dev.azure.com/amtsybex1/Mobile/_packaging/fusion-backend/maven/v1</url>
+		</repository>
+	</distributionManagement>
+
+	<dependencies>
+
+	
+		<dependency>
+			<groupId>org.jboss.weld.servlet</groupId>
+			<artifactId>weld-servlet-shaded</artifactId>
+			<version>3.1.6.Final</version>
+		</dependency>
+
+		<!-- BEGIN AMT SYBEX LIBRARIES -->
+
+		<dependency>
+			<groupId>amtsybex</groupId>
+			<artifactId>fieldreach-backend</artifactId>
+			<version>1.14.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>amtsybex</groupId>
+			<artifactId>fieldreachws_common</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>amtsybex</groupId>
+			<artifactId>fieldreach-extract-engine</artifactId>
+			<version>1.7.0</version>
+		</dependency>
+		
+		<!-- END AMT SYBEX LIBRARIES -->
+		
+		<!-- BEGIN JDBC LIBRARIES -->
+
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>3.4.5</version>
+		</dependency>
+		
+		
+		<dependency>
+		    <groupId>com.microsoft.sqlserver</groupId>
+		    <artifactId>mssql-jdbc</artifactId>
+		    <version>6.1.0.jre8</version>
+		</dependency>
+		
+		<!-- END JDBC LIBRARIES -->
+
+		<!-- BEGIN SPRING BOOT FRAMEWORK -->
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		 
+		 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+	
+		<!-- END SPRING BOOT FRAMEWORK -->
+	
+		<!-- JOIN FACES -->
+	
+		<dependency>
+			<groupId>org.joinfaces</groupId>
+			<artifactId>jsf-spring-boot-starter</artifactId>
+			<version>${joinfaces.version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.joinfaces</groupId>
+			<artifactId>primefaces-spring-boot-starter</artifactId>
+			<version>${joinfaces.version}</version>
+		</dependency>
+
+		<!-- Spring security jwt fix -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>9.0.1</version>
+		</dependency>
+
+
+		<!-- BEGIN APACHE LIBRARIES -->
+
+		<dependency>
+		    <groupId>org.apache.deltaspike.modules</groupId>
+		    <artifactId>deltaspike-jsf-module-api</artifactId>
+		    <version>1.9.5</version>
+		    <scope>compile</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.deltaspike.modules</groupId>
+		    <artifactId>deltaspike-jsf-module-impl</artifactId>
+		    <version>1.9.5</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<!-- END APACHE LIBRARIES -->
+
+
+		<!--  BEGIN JDBC LIBRARIES -->
+
+
+		<!--  BEGIN Java EE LIBRARIES -->
+		<!-- 
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.faces</artifactId>
+    <version>2.3.9</version>
+</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.myfaces.core</groupId>
+		    <artifactId>myfaces-api</artifactId>
+		    <version>2.3.4</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.myfaces.core</groupId>
+		    <artifactId>myfaces-impl</artifactId>
+		    <version>2.3.4</version>
+		</dependency>
+
+
+ 		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-api</artifactId>
+			<version>2.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-impl</artifactId>
+			<version>2.2.17</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.glassfish</groupId>
+		    <artifactId>javax.faces</artifactId>
+		    <version>2.3.8</version>
+		</dependency>
+		
+		 NON-WEBSPHERE
+		<dependency>
+		    <groupId>org.apache.myfaces.core</groupId>
+		    <artifactId>myfaces-api</artifactId>
+		    <version>2.0.10</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.myfaces.core</groupId>
+		    <artifactId>myfaces-impl</artifactId>
+		    <version>2.0.10</version>
+		</dependency>
+		
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.faces</artifactId>
+    <version>2.3.9</version>
+</dependency>
+		
+		
+		<dependency>
+		    <groupId>org.apache.myfaces.core</groupId>
+		    <artifactId>myfaces-api</artifactId>
+		    <version>2.3.4</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.myfaces.core</groupId>
+		    <artifactId>myfaces-impl</artifactId>
+		    <version>2.3.4</version>
+		</dependency>
+		
+		 -->
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.faces</artifactId>
+    <version>2.3.8</version>
+</dependency>
+
+	<dependency>
+	    <groupId>org.mockito</groupId>
+	    <artifactId>mockito-all</artifactId>
+	    <version>1.8.4</version>
+	</dependency>
+
+		<!-- 
+		<dependency>
+		    <groupId>com.oracle.cdi-enabler</groupId>
+		    <artifactId>cdi-enabler-1_0</artifactId>
+		    <version>1</version>
+		</dependency> -->
+
+
+
+		
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>jstl</artifactId>
+		<version>1.2</version>
+	</dependency>
+		  
+	<dependency>
+	    <groupId>javax.servlet</groupId>
+	    <artifactId>javax.servlet-api</artifactId>
+	    <version>3.1.0</version>
+	    <scope>provided</scope>
+	</dependency>
+	
+	<!-- NON-WEBSPHERE	
+
+<dependency>
+    <groupId>javax.enterprise</groupId>
+    <artifactId>cdi-api</artifactId>
+    <version>1.2</version>
+    <scope>provided</scope>
+</dependency>
+	 -->
+
+	<dependency>
+	    <groupId>javax.enterprise</groupId>
+	    <artifactId>cdi-api</artifactId>
+	    <version>2.0</version>
+	    <scope>provided</scope>
+	</dependency>	
+
+  	
+	<dependency>
+	     <groupId>org.webjars</groupId>
+	     <artifactId>font-awesome</artifactId>
+	     <version>5.15.2</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.primefaces.themes</groupId>
+	    <artifactId>all-themes</artifactId>
+	    <version>1.0.10</version>
+	</dependency>
+	
+		<!--  End Java EE LIBRARIES -->
+
+		
+       <dependency>
+		    <groupId>com.github.librepdf</groupId>
+		    <artifactId>openpdf</artifactId>
+		    <version>1.3.26</version>
+		</dependency>
+ 
+        
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>5.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- <dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>4.0.0</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>3.0.0-M5</version>
+		</dependency>
+		
+	</dependencies>
+
+
+
+
+	<build>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.honton.chas</groupId>
+					<artifactId>exists-maven-plugin</artifactId>
+					<version>0.3.0</version>
+				</plugin>
+			</plugins>
+
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.build.directory}/lib</outputDirectory>
+					<includeScope>runtime</includeScope>
+					<excludeScope>provided</excludeScope>
+				</configuration>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+	                		<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+			
+			<plugin>
+				<groupId>org.honton.chas</groupId>
+				<artifactId>exists-maven-plugin</artifactId>
+				<version>0.3.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>remote</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- attached to Maven test phase -->
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M5</version>
+				<configuration />
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>

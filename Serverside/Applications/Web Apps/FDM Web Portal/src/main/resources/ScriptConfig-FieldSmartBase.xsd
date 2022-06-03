@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://tempuri.org/DataSet1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="ScriptConfig">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ScriptMenu" maxOccurs="unbounded"
+					minOccurs="0">
+					<xs:complexType>
+						<xs:choice maxOccurs="unbounded" minOccurs="0">
+							<xs:element name="Type">
+								<xs:annotation>
+									<xs:documentation>This identifies what the script menu item
+										will be associated with.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="EQ" />
+										<xs:enumeration value="WO" />
+										<xs:enumeration value="SA" />
+										<xs:enumeration value="SIGNON" />
+										<xs:enumeration value="SIGNOFF" />
+										<xs:enumeration value="CLOSEWORK" />
+										<xs:enumeration value="CANTDO" />
+										<xs:enumeration value="WOR-PATROL" />
+										<xs:enumeration value="WOR-CU" />
+										<xs:enumeration value="WOR-AUDIT" />
+										<xs:enumeration value="WB-VERIFY" />
+										<xs:enumeration value="WB-CANCEL" />
+										<xs:enumeration value="WB-UPDATE" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Category" minOccurs="0" maxOccurs="1"
+								type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Denotes the script Category the script
+										belongs to.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="TargetName" minOccurs="1" maxOccurs="1"
+								type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Denotes the script code of the script that is
+										to be run.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="MenuText" minOccurs="1" maxOccurs="1"
+								type="xs:string">
+								<xs:annotation>
+									<xs:documentation>The text displayed on the Menu for the item.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="CompletionMode">
+								<xs:annotation>
+									<xs:documentation>Indicates if the script results can be
+										partially saved out (P) or must be fully (P) completed before
+										being saved out.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="P" />
+										<xs:enumeration value="F" />
+										<xs:enumeration value="" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="PropertyName" minOccurs="0"
+								maxOccurs="1" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Holds the name of property/field within the
+										Work Order/Equipment object definitions.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="PropertyVal" minOccurs="0"
+								maxOccurs="1" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Holds the expected value for the field.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="DisplayMode">
+								<xs:annotation>
+									<xs:documentation>Controls Script-Player display mode S -
+										Single Question, M - Multi Question.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="S" />
+										<xs:enumeration value="M" />
+										<xs:enumeration value="" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Mandatory" minOccurs="0" maxOccurs="1"
+								type="xs:boolean">
+								<xs:annotation>
+									<xs:documentation>Controls whether a script is defined as
+										Mandatory or Optional. Mandatory scripts must be completed
+										before a work order can be closed </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="AutoCommit" minOccurs="0" maxOccurs="1"
+								type="xs:boolean">
+								<xs:annotation>
+									<xs:documentation>Indicates whether a script will be
+										automatically committed once completed.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

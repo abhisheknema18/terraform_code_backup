@@ -1,0 +1,128 @@
+server:
+  port: 8070
+  servlet:
+    context-path: /mobile/
+  error:
+    include-message: always
+
+info:
+  app:
+    version: '@project.version@'
+  
+jdbc: 
+  driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  connectionpool:
+    max_size: 5
+      
+hibernate: 
+  dialect: org.hibernate.dialect.SQLServerDialect
+  show_sql: false
+  format_sql: true 
+
+default:
+  jdbc:
+    url: jdbc:sqlserver://myserver.ad.capita.co.uk:1433;databaseName=fieldsmart;
+    username: 
+    password: 
+  instance:
+    key: hiddensercretkey
+     
+folder:
+  basePath: /home/fusion/fieldsmart
+  
+fileType:
+  script: ${folder.basePath}/scripts/source
+  config: ${folder.basePath}/configs
+  script.reference: ${folder.basePath}/scripts/reference
+  support.resource: ${folder.basePath}/scripts/support
+  workorder: ${folder.basePath}/workorders  
+  assetDb: ${folder.basePath}/databases/asset                  # The databases directory does not exist in the new file structure
+  workbankDb: ${folder.basePath}/databases/workbank            # The databases directory does not exist in the new file structure
+  resulthistoryDb: ${folder.basePath}/databases/resultshistory # The databases directory does not exist in the new file structure
+
+fileTransfer: 
+  maxDaysActive: 2
+     
+fileDownload:
+  maxDownloadSize: 30720000
+  maxChunkSize: 1024000
+  tempDir: ${folder.basePath}/temp/filedownloads
+  
+packages:
+  dir: ${folder.basePath}/packages
+  
+file: 
+  upload:
+    maxUploadSize:
+    maxChunkSize: 1024000
+    tempDir: ${folder.basePath}/temp/fileuploads
+
+script:
+  upload:
+    dir: ${folder.basePath}/results/pickup
+    
+support:
+  upload: 
+    dir: ${folder.basePath}/results/support
+
+assethistory:
+  search:
+    omit:
+      scriptcodes: 
+
+workorder:
+  schema:
+    filename: workorder.xsd
+      
+frtransaction:
+  workstatus:
+    destinationtype: DIR
+    destination: ${folder.basePath}/transactions
+    retainstatuslist: ''
+    
+activity:
+  logging:
+    apps: 
+
+auth:
+  audience: 
+  userName: 
+  userCode: 
+  
+spring:
+  jackson:
+    default-property-inclusion: non-empty
+  security:
+    oauth2:
+      resourceserver:
+        jwt.issuer-uri: 
+
+management:
+  health:
+    defaults:
+      enabled: false
+
+accesstoken:
+  key:
+    public: /mnt/secrets-store/public
+
+#Sample for okta
+#auth0:
+#  audience: ${AUTH0_AUDIENCE:0oarrap3epweLK7tI5d6}
+#  
+#spring:
+#  jackson:
+#    default-property-inclusion: non-empty
+#  security:
+#    oauth2:
+#      resourceserver:
+#        opaquetoken:
+#          client-id: 0oarrap3epweLK7tI5d6
+#          client-secret: Yi1IKmWTgNOGwa1PIWwonrYzxMUh0y824gDBo2Dg
+#          introspection-uri: https://dev-55077234.okta.com/oauth2/v1/introspect
+#        jwt:
+#          issuer-uri: ${AUTH0_AUDIENCE:https://dev-55077234.okta.com}
+
+#To externalize log4j properties link to an external configuration file
+#logging:
+#  config: "C:/Fieldreach/log4j2-spring.xml"

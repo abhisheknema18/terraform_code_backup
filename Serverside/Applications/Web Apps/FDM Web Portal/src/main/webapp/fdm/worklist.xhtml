@@ -1,0 +1,329 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/work-template.xhtml">
+
+ 
+	<f:metadata>
+		<f:viewParam name="workorderno" value="#{workList.directWorkOrderNo}"
+			required="false" />
+		<f:viewParam name="status" value="#{workList.directStatus}"
+			required="false" />
+		<f:viewParam name="workgroup" value="#{workList.directWorkGroup}"
+			required="false" />
+		<f:event type="preRenderView" listener="#{workList.searchDirect}" />
+	</f:metadata>
+
+	<ui:param name="bean" value="#{workList}" />
+
+	<ui:define name="work-body">
+
+		<p:tabView id="searchTab">
+		
+			<p:ajax event="tabChange" update="pageInfo" />
+		
+			<p:tab id="searchResults"
+				title="#{msg.fdm_work_work_results_tab_label} #{workList.issued.size() > 0 ? '('.concat(workList.issued.size()).concat(')') : ''}#{workList.issuedFiltered.size() > 0 ? '('.concat(workList.issuedFiltered.size()).concat(')') : ''}"
+				disabled="#{fn:length(workList.issued) == 0 and workList.activeTab == 0}">
+
+				<f:facet name="title">
+		           <!-- <h:outputText id="theTitle" value="#{msg.fdm_work_work_results_tab_label} #{workList.issued.size() > 0 ? '('.concat(workList.issued.size()).concat(')') : ''}#{workList.issuedFiltered.size() > 0 ? '('.concat(workList.issuedFiltered.size()).concat(')') : ''}" /> -->
+		        	<h:outputText id="theTitle" value="#{msg.fdm_work_work_results_tab_label} #{workList.issuedFiltered.size() > 0 and workList.issuedFiltered.size() lt workList.issued.size() ? '('.concat(workList.issuedFiltered.size()).concat(' of ').concat(workList.issued.size()).concat(')') :  workList.issued.size() > 0 ? '('.concat(workList.issued.size()).concat(')') : '(0)' }"  />
+		        </f:facet>
+        
+				<h:form id="workListResultsForm">
+				
+					<!-- bit of a hack for a primefaces bug, the update on the ajax filter is always one step behind so use oncomplete instead to update the count -->
+					<p:remoteCommand name="updateFilteredValue" action="#{workList.resetSelectionAfterFilter}" update="searchTab:theTitle searchResultsCount searchTab:workListResultsForm searchSideMenu"/>	
+					
+					<div style="position:absolute;height:39px;right:20px;top:0px;padding:4px; color:white"> 
+						<p:commandLink id="dynaButton" styleClass="resultNavigationButton fa fa-download" />
+						    <p:menu overlay="true" trigger="dynaButton" my="left top" at="left bottom">
+						        <p:menuitem value="Excel" icon="fa fa-file-excel" ajax="false">
+						        	<p:dataExporter type="xls" target="#{workList.workViewMode == 'ALLOCATION' ? 'multiWorkListTable' : 'singleWorkListTable'}" fileName="WorkOrders" />
+						        </p:menuitem>
+						       	<p:menuitem value="PDF" icon="fa fa-file-pdf" ajax="false" >
+						       		<p:dataExporter type="pdf" target="#{workList.workViewMode == 'ALLOCATION' ? 'multiWorkListTable' : 'singleWorkListTable'}" fileName="WorkOrders" preProcessor="#{download.preProcessPDF}" />
+						       	</p:menuitem>
+						    </p:menu>
+					</div>
+				
+					<p:dataTable id="multiWorkListTable" widgetVar="workorderTable"
+						rendered="#{workList.workViewMode == 'ALLOCATION'}"
+						value="#{workList.issued}"
+						filteredValue="#{workList.issuedFiltered}"
+						var="result" 
+						multiViewState="true"
+						rowStatePreserved="true"
+						rowSelectMode="add"
+						fixedHeader="false" 
+						filterDelay="1000"
+						selection="#{workList.selectedWorks}" 
+						rowKey="#{result.id}" 
+						resizableColumns="true"
+						paginator="false" 
+						style="min-width:1275px;">
+						
+						<p:ajax event="page" listener="#{searchResults.onPageChange}" />
+						<p:ajax event="rowSelect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowUnselect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowDblselect" update="searchSideMenu" process="@this" />
+						<p:ajax event="toggleSelect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowSelectCheckbox" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowUnselectCheckbox" update="searchSideMenu" process="@this" /> 
+						<p:ajax event="filter" oncomplete="updateFilteredValue();" process="@this" />
+
+						<p:column exportable="false" rendered="#{workList.issuedFiltered.size() > 0}" selectionMode="multiple" style="width:16px;text-align:center;" />
+
+
+
+						<!-- <p:column rendered="#{workList.workViewMode != 'ALLOCATION'}" selectionMode="multiple" style="width:16px;display:none;" /> -->
+						
+						<!-- <p:column rendered="#{workList.workViewMode == 'ALLOCATION'}" selectionMode="multiple" style="width:16px;text-align:center;#{result == null || workList.isWorkorderEditable(result) ? '' : 'border: 0px solid white; display:none;'}" />
+						
+						<p:column rendered="#{workList.workViewMode == 'ALLOCATION'}"   style="width:16px;text-align:center;#{result == null || workList.isWorkorderEditable(result) ? 'border: 0px solid white; display:none;' : ''}" />
+ 						-->
+        
+						<p:column headerText="Work Order" style="width:100px;"
+							sortBy="#{result.id.workOrderNo}" filterMatchMode="contains"  filterBy="#{result.id.workOrderNo}">  
+				           <h:outputText value="#{result.id.workOrderNo}" />
+				        </p:column>
+				        
+						<!-- <p:column headerText="District Code" sortBy="#{result.id.districtCode}" filterBy="#{result.id.districtCode}" filterMatchMode="contains">  
+				            <h:outputText value="#{result.id.districtCode}" />
+				        </p:column> -->
+						<p:column headerText="Description" id="woDescCol" filterBy="#{result.workOrderDesc}" filterMatchMode="contains" sortBy="#{result.workOrderDesc}" style="width:30%">  
+				            <h:outputText value="#{result.workOrderDesc}" /> 
+				        </p:column>
+				     	<p:column headerText="Issued" id="woiDateCol" filterBy="#{func:intToDateString(result.issuedDate)}" filterMatchMode="contains"  styleClass="dateField"
+							sortBy="#{func:intToDate(result.issuedDate)}">
+							<h:outputText id="issuedDate"
+								value="#{func:intToDateString(result.issuedDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Work Group" style="width:20%"
+							sortBy="#{result.workgroupCode}"
+							filterBy="#{result.workgroupCode}" filterMatchMode="contains">  
+				            <h:outputText value="#{result.workgroupCode}" /> 
+				        </p:column>
+						<p:column headerText="User" style="width:20%"
+							sortBy="#{result.user.id.userCode}"
+							filterBy="#{result.user.id.userCode}" filterMatchMode="contains">  
+				            <h:outputText value="#{result.user.id.userCode}" />
+				        </p:column>
+						<p:column headerText="Plan Start" filterBy="#{func:intToDateString(result.planStartDate)}" filterMatchMode="contains"  styleClass="dateField"
+							sortBy="#{func:intToDate(result.planStartDate)}">
+							<h:outputText id="planStartDate"
+								value="#{func:intToDateString(result.planStartDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Req. Finish" filterBy="#{func:intToDateString(result.reqFinishDate)}" filterMatchMode="contains"  style="width:90px;"
+                            sortBy="#{func:intToDate(result.reqFinishDate)}">
+							<h:outputText id="reqFinishDate"
+								value="#{func:intToDateString(result.reqFinishDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Equipment Description" filterBy="#{result.equipDesc}" filterMatchMode="contains"  sortBy="#{result.equipDesc}" style="width:30%">  
+				            <h:outputText value="#{result.equipDesc}" /> 
+				        </p:column>
+						<p:column headerText="Type" style="width:90px;"
+							sortBy="#{result.woType}" filterBy="#{result.woType}"
+							filterMatchMode="contains">  
+				            <h:outputText value="#{result.woType}" /> 
+				        </p:column>
+						<p:column headerText="Status" style="width:90px;"
+							sortBy="#{result.workStatus}" filterBy="#{result.workStatus}"
+							filterMatchMode="contains">  
+				            <h:outputText value="#{result.workStatus}" />
+				        </p:column>
+				         <p:column styleClass="tableIcon" exportable="false">
+							<p:commandLink id="workDetailViewBtn" action="#{workList.findWorkByRowDetails(result)}" update="searchSideMenu">
+								<i class="fa fa-external-link" ></i>
+							</p:commandLink>
+							<p:tooltip id="workDetailedView" for="workDetailViewBtn" value="#{msg.fdm_detailed_view_tool_tip}"></p:tooltip>
+						</p:column>
+					</p:dataTable>
+					
+					
+					<p:dataTable id="singleWorkListTable" widgetVar="workorderTable"
+						rendered="#{workList.workViewMode != 'ALLOCATION'}"
+						value="#{workList.issued}"
+						filteredValue="#{workList.issuedFiltered}"
+						var="result" 
+						filterDelay="1000"
+						rowStatePreserved="true"
+						multiViewState="true"
+						selectionMode="single"
+						fixedHeader="false" 
+						selection="#{workList.selectedWork}" 
+						rowKey="#{result.id}" 
+						resizableColumns="true"
+						paginator="false"
+						style="min-width:1275px;">
+						<!-- rows="#{workList.numRows}" -->
+						<!-- disabledSelection="#{result.workStatus == 'CLOSED' || result.workStatus == 'CANCELLED'}" -->
+
+						<p:ajax event="toggleSelect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowSelectCheckbox" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowUnselectCheckbox" update="searchSideMenu" process="@this" /> 
+
+						<p:ajax event="filter" oncomplete="updateFilteredValue();" />
+
+
+						<!-- <p:column rendered="#{workList.workViewMode != 'ALLOCATION'}" selectionMode="multiple" style="width:16px;display:none;" /> -->
+						
+						<!-- <p:column rendered="#{workList.workViewMode == 'ALLOCATION'}" selectionMode="multiple" style="width:16px;text-align:center;#{result == null || workList.isWorkorderEditable(result) ? '' : 'border: 0px solid white; display:none;'}" />
+						
+						<p:column rendered="#{workList.workViewMode == 'ALLOCATION'}"   style="width:16px;text-align:center;#{result == null || workList.isWorkorderEditable(result) ? 'border: 0px solid white; display:none;' : ''}" />
+ 						-->
+				        
+				       
+				        
+						<p:column headerText="Work Order" style="width:100px;"
+							sortBy="#{result.id.workOrderNo}" filterMatchMode="contains" filterBy="#{result.id.workOrderNo}">  
+				            <h:outputText value="#{result.id.workOrderNo}" />
+				        </p:column>
+						<!-- <p:column headerText="District Code" sortBy="#{result.id.districtCode}" filterBy="#{result.id.districtCode}" filterMatchMode="contains">  
+				            <h:outputText value="#{result.id.districtCode}" />
+				        </p:column> -->
+						<p:column headerText="Description" id="woDescCol" filterBy="#{result.workOrderDesc}" filterMatchMode="contains"  sortBy="#{result.workOrderDesc}" style="width:30%;">  
+				            <h:outputText value="#{result.workOrderDesc}" /> 
+				        </p:column>
+				     	<p:column headerText="Issued" id="woiDateCol" filterBy="#{func:intToDateString(result.issuedDate)}" filterMatchMode="contains"  styleClass="dateField"
+							sortBy="#{func:intToDate(result.issuedDate)}">
+							<h:outputText id="issuedDate"
+								value="#{func:intToDateString(result.issuedDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Work Group" style="width:20%;"
+							sortBy="#{result.workgroupCode}"
+							filterBy="#{result.workgroupCode}" filterMatchMode="contains">  
+				            <h:outputText value="#{result.workgroupCode}" /> 
+				        </p:column>
+						<p:column headerText="User" style="width:20%;"
+							sortBy="#{result.user.id.userCode}"
+							filterBy="#{result.user.id.userCode}" filterMatchMode="contains">  
+				            <h:outputText value="#{result.user.id.userCode}" />
+				        </p:column>	
+						<p:column headerText="Plan Start" filterBy="#{func:intToDateString(result.planStartDate)}" filterMatchMode="contains"  styleClass="dateField"
+							sortBy="#{func:intToDate(result.planStartDate)}">
+							<h:outputText id="planStartDate"
+								value="#{func:intToDateString(result.planStartDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Req. Finish" filterBy="#{func:intToDateString(result.reqFinishDate)}" filterMatchMode="contains"  style="width:90px;"
+							sortBy="#{func:intToDate(result.reqFinishDate)}">
+							<h:outputText id="reqFinishDate"
+								value="#{func:intToDateString(result.reqFinishDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Equipment Description" filterBy="#{result.equipDesc}" filterMatchMode="contains"  sortBy="#{result.equipDesc}" style="width:30%;">  
+				            <h:outputText value="#{result.equipDesc}" /> 
+				        </p:column>
+						<p:column headerText="Type" style="width:90px;"
+							sortBy="#{result.woType}" filterBy="#{result.woType}"
+							filterMatchMode="contains">  
+				            <h:outputText value="#{result.woType}" /> 
+				        </p:column>
+						<p:column headerText="Status" style="width:90px;"
+							sortBy="#{result.workStatus}" filterBy="#{result.workStatus}"
+							filterMatchMode="contains">  
+				            <h:outputText value="#{result.workStatus}" />
+				        </p:column>
+				        <p:column styleClass="tableIcon" exportable="false">
+							<p:commandLink id="workDetailViewBtn" action="#{workList.findWorkByRowDetails(result)}" update="searchSideMenu">
+								<i class="fa fa-external-link" ></i>
+							</p:commandLink>
+							<p:tooltip id="workDetailedView" for="workDetailViewBtn" value="#{msg.fdm_detailed_view_tool_tip}"></p:tooltip>
+						</p:column>
+					</p:dataTable>
+
+					<h:outputText id="searchResultsCount"
+						value="#{workList.issuedFiltered.size() > 0 and workList.issuedFiltered.size() lt workList.issued.size() ? ''.concat(workList.issuedFiltered.size()).concat(' of ').concat(workList.issued.size()) :  workList.issued.size() > 0 ? ''.concat(workList.issued.size()) : '0' } work orders found"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+
+				</h:form>
+
+			</p:tab>
+		</p:tabView>
+
+
+		<h:form id="assignWorkForm">
+		
+			<p:sidebar id="assignWorkDialog" widgetVar="assignWorkDialogWidget" position="right" style="width:830px;" baseZIndex="10000">
+				
+ 				<p:panel header="#{msg.fdm_work_assign}">
+			
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('assignWorkDialogWidget').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+					
+	                <p:panelGrid styleClass="whiteGrid" style="width:100%; ">
+	                
+	                <p:row>
+	                 <p:column style="width:440px; padding:5px;">
+	                    <p:outputPanel style="width: 430px;overflow: auto;display: block">
+	                    	<p:panel header="Workgroup Select" />
+		                    <p:tree id="workgroupSelectTree" value="#{workList.workgroupAssignedRoot}"
+									var="node" filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}"
+									selectionMode="single" filterMatchMode="contains"
+									selection="#{workList.selectedAssignedWorkgroupNode}">
+									<p:treeNode>
+										<h:outputText value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+										<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+									</p:treeNode>
+									<p:ajax event="select" update="assignWorkForm:userSelectionTree" />
+							</p:tree>
+						</p:outputPanel>
+	                </p:column>
+	                <p:column style="width:340px; padding:5px;">
+	                	<p:outputPanel style="width: 330px;overflow: auto;display: block">
+	                		<p:panel header="User Select" />
+							 <p:tree id="userSelectionTree" value="#{workList.userAssignedRoot}"
+									var="userNode" filterMatchMode="contains"
+									disabled="#{not (workList.isUserWorkAssignmentEnabled())}"
+									filterBy="#{userNode.userName.concat('(').concat(userNode.id.userCode).concat(')')}"
+									selectionMode="single"
+									selection="#{workList.selectedAssigneduserNode}">
+									<p:treeNode>
+										<h:outputText value="#{userNode.userName}" />
+										<h:outputText style="font-size:0.7em;font-style:italic;" value=" (#{userNode.id.userCode})" />
+									</p:treeNode>
+									<p:ajax event="select" update="" />
+							</p:tree>
+						</p:outputPanel>
+	                </p:column>
+	                </p:row>
+	                
+						
+	                </p:panelGrid>
+	                
+	                <f:facet name="footer">	
+	
+		                <p:commandButton icon="fa fa-save" value="#{msg.fdm_work_assign_btn}" actionListener="#{workList.assignSaveWorks(false)}" update="searchTab sideMenuForm:leftMenu msgs" oncomplete="PF('assignWorkDialogWidget').hide();" />
+						<p:commandButton icon="fa fa-arrow-circle-right" value="#{msg.fdm_work_assign_dispatch_btn}" actionListener="#{workList.assignSaveWorks(true)}" update="searchTab sideMenuForm:leftMenu msgs" oncomplete="PF('assignWorkDialogWidget').hide();" />
+						<p:commandButton icon="fa fa-remove" value="#{msg.fdm_search_dialog_cancel_label}" onclick="PF('assignWorkDialogWidget').hide();" />
+								
+	                </f:facet>
+	                
+	            </p:panel>
+
+			</p:sidebar>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

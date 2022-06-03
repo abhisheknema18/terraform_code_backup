@@ -1,0 +1,39 @@
+﻿<x:unwrap xmlns:x="http://www.sigmaseven.co.uk/xml/x"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- This Task group contains the process for File-based datasets -->
+  <Task xsi:type="SigmaSeven.Exchange.SequentialTaskGroup"
+        x:if="FILES">
+    <!-- Define common parameters -->
+    <Task xsi:type="SigmaSeven.Exchange.LogTextTask" Text="1.  BRINGING IN COMMON PARAMETERS" />
+    <Task xsi:type="SigmaSeven.Exchange.IncludeTask" FileName="common.xml" />
+    <Task xsi:type="SigmaSeven.Exchange.IncludeTask" FileName="common-files.xml" />
+
+    <!-- Test to see if the state file exists -->
+    <Task xsi:type="SigmaSeven.Exchange.LogTextTask" Text="2.  STATE FILE EXISTS, COMPUTING DIFFERENCES" />
+    <Task xsi:type="SigmaSeven.Exchange.Incremental.DeltaCreateTask">
+      <!-- Database Delta Generator -->
+      <Generator xsi:type="SigmaSeven.Exchange.Incremental.GeoField5DirectoryDeltaGenerator"
+                 SourcePath="{InputFolder}"
+                 OutputPath="{UpdateInstructionsFolder}" />
+
+      <!-- Database Delta Version Service -->
+      <VersionService xsi:type="SigmaSeven.Exchange.Incremental.DirectoryDeltaVersionService"
+                      SourcePath="{InputFolder}"
+                      VersionPath="{StateFilePath}">
+      </VersionService>
+
+      <!-- Text Log Service -->
+      <LogService xsi:type="SigmaSeven.Exchange.Incremental.TextLogService"
+                  Path="{LogFilePath}" />
+    </Task>
+
+    <!-- Package creation -->
+    <Task xsi:type="SigmaSeven.Exchange.LogTextTask" Text="3.  CREATING PACKAGE(S)" />
+    <Task xsi:type="SigmaSeven.Exchange.Packaging.PackageFileBasedDatasetAndDiffTask"
+          FullBaselineDir="{InputFolder}"
+          UpdatesDir="{UpdateInstructionsFolder}"
+          PackagesDir="{Packages}"
+          PackageId="{PackageId}"
+          MajorVersion="{MajorVersion}" />
+  </Task>
+</x:unwrap>

@@ -1,0 +1,87 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ds="http://deltaspike.apache.org/jsf" contentType="text/html">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<meta http-equiv="cache-control"
+		content="no-cache, no-store, must-revalidate" />
+	<!-- Stop Microsoft Edge showing number sequences as phone numbers -->
+	<meta name="format-detection" content="telephone=no" />
+	<title>#{msg.fdm_title}</title>
+	<link rel="shortcut icon" type="image/png"
+		href="#{request.contextPath}/images/favicon.png" />
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/5.15.2/css/all.min-jsf.css" />
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/5.15.2/css/v4-shims.min-jsf.css" />
+
+	<f:metadata>
+		<f:viewParam name="inviteToken"
+			value="#{systemUserInvitationHandler.token}" required="true" />
+
+		<f:event type="preRenderView"
+			listener="#{systemUserInvitationHandler.processInvitation}" />
+	</f:metadata>
+
+	<style>
+.shadow {
+	border: 1px solid #efefef !important;
+	box-shadow: 0px 0.175em 0.5em rgba(2, 8, 20, 0.1), 0px 0.085em 0.175em
+		rgba(2, 8, 20, 0.08);
+}
+
+.outer {
+	display: table;
+	position: absolute;
+	top: 15%;
+	left: 0;
+	height: 60%;
+	width: 100%;
+}
+
+.middle {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.inner {
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	width: 600px;
+	padding: 15px;
+	margin: auto;
+	border: 1px solid gray;
+	text-align: center;
+}
+</style>
+</h:head>
+
+<h:body>
+
+	<div class="outer">
+		<div class="middle">
+			<div class="inner shadow">
+				<img src="../images/logo.png" style="width: 60%; margin: 0;" />
+
+				<p />
+				<h1>#{msg.fdm_invite_error_header}</h1>
+				<div style="text-align: center; width: 100%; margin: auto;">
+					<span style="font-size: 1.3em;">#{systemUserInvitationHandler.errorMessage}</span>
+					<p />
+				</div>  
+			</div>
+		</div>
+	</div>
+
+	<ds:windowId />
+</h:body>
+</html>

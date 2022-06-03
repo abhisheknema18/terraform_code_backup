@@ -1,0 +1,32 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+<h:panelGroup id="dashyMain#{widgetId}">
+
+	<div class="#{dashboardItem.criteriaObjs.fullWidth ? 'ui-g-12 ui-md-12 ui-lg-12 ui-xl-12' : 'ui-g-12 ui-md-12 ui-lg-6 ui-xl-4'} dashboardItem">
+
+
+			<h:form id="dashItemForm#{widgetId}" >
+			
+				<ui:include src="#{dashboardItem.criteriaObjs.chartType eq 'LIST' ? '../dashboard/DashboardListItem.xhtml' : '../dashboard/DashboardChartItem.xhtml'}">
+					<ui:param name="dashboardItem" value="#{dashboardItem}" />
+					<ui:param name="widgetId" value="#{dashboardItem.order}" />
+				</ui:include>
+				
+			</h:form>
+
+		<ui:include src="../dashboard/DashboardEditSideBar.xhtml">
+			<ui:param name="dashboardItem" value="#{dashboardItem}" />
+		</ui:include>
+		
+	</div>
+
+</h:panelGroup>
+	
+</ui:composition>

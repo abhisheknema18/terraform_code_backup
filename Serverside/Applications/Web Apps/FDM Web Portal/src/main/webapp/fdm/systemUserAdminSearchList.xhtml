@@ -1,0 +1,146 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/admin-template.xhtml">
+	<ui:param name="bean" value="#{systemUserAdmin}" />
+	<ui:define name="admin-body">
+
+		<p:tabView id="adminSearchTabs">
+			<p:tab id="adminSearchResults"
+				title="#{msg.fdm_search_search_results_tab_label} #{systemUserAdmin.users.size() > 0 ? '('.concat(systemUserAdmin.users.size()).concat(')') : ''}#{systemUserAdmin.filteredSystemUsers.size() > 0 ? '('.concat(systemUserAdmin.filteredSystemUsers.size()).concat(')') : ''} "
+				>
+
+				<f:facet name="title">
+					<h:outputText id="theTitle"
+						value="#{msg.fdm_search_search_results_tab_label} #{systemUserAdmin.filteredSystemUsers.size() > 0 and systemUserAdmin.filteredSystemUsers.size() lt systemUserAdmin.users.size() ? '('.concat(systemUserAdmin.filteredSystemUsers.size()).concat(' of ').concat(systemUserAdmin.users.size()).concat(')') : systemUserAdmin.users.size() > 0 ? '('.concat(systemUserAdmin.users.size()).concat(')') : '(0)' } " />
+				</f:facet>
+
+				<h:form id="systemUserAdminSearchListForm">
+				
+					<div style="position:absolute;height:39px;right:20px;top:0px;padding:4px; color:white" > 
+						<p:commandLink id="nonAjax" rendered="#{systemUserAdmin.navigateAccessGroup}"
+						action="#{systemUserAdmin.navigateReturn}" update="@all"
+						title="Return to Access Groups" styleClass="resultNavigationButton fa fa-list" />
+					</div>
+					
+					<p:remoteCommand name="updateFilteredValue"
+						action="#{systemUserAdmin.resetSelectionAfterFilter}"
+						update="adminSearchTabs adminSearchTabs:systemUserAdminSearchListForm" />
+
+					<p:dataTable id="userList" value="#{systemUserAdmin.users}" var="user"
+						filterDelay="1000" rowStatePreserved="true"
+						style="width:100%"
+						selection="#{systemUserAdmin.selectedSystemUser}"
+						styleClass="listHighLightTableCls" 
+						resizableColumns="true"
+						rowIndexVar="rowVar" 
+						rowKey="#{user}"
+						rowStyleClass="#{user.revoked == 1 ? 'grey-row':''}"
+						filteredValue="#{systemUserAdmin.filteredSystemUsers}">
+						<p:ajax event="filter" oncomplete="updateFilteredValue();"
+							process="@all" />
+
+						<p:column headerText="#{msg.fdm_system_user_admin_user_code_label}" style="width:130px"
+							filterMatchMode="contains" filterBy="#{user.id}"
+							sortBy="#{user.id}">
+							<h:outputText value="#{user.id}" />
+						</p:column>
+
+						<p:column headerText="#{msg.fdm_system_user_admin_user_name_label}" style="width:100%"
+							filterMatchMode="contains" filterBy="#{user.userName}"
+							sortBy="#{user.userName}">
+							<h:outputText value="#{user.userName}" />
+						</p:column>
+						
+						<p:column headerText="#{msg.fdm_system_user_admin_portal_access_label}" style="width:50%"
+							filterMatchMode="contains" filterBy="#{user.fdmGroupCode}"
+							sortBy="#{user.fdmGroupCode}">
+							<h:outputText value="#{user.fdmGroupCode}" />
+						</p:column>
+
+						<p:column headerText="#{msg.fdm_system_user_admin_sb_access_label}" style="width:50%"
+							filterMatchMode="contains" filterBy="#{user.sbGroupCode}"
+							sortBy="#{user.sbGroupCode}">
+							<h:outputText value="#{user.sbGroupCode}" />
+						</p:column>
+						
+						<p:column headerText="#{msg.fdm_system_user_admin_user_class_label}" style="width:100%"
+							filterMatchMode="contains" filterBy="#{user.userClass}"
+							sortBy="#{user.userClass}">
+							<h:outputText value="#{user.userClass}" />
+						</p:column>
+
+						<p:column headerText="#{msg.fdm_system_user_admin_windows_user_label}" style="width:130px"
+							filterMatchMode="contains" filterBy="#{user.winLogin}"
+							sortBy="#{user.winLogin}">
+							<h:outputText value="#{user.winLogin}" />
+						</p:column>
+
+						<p:column headerText="#{msg.fdm_system_user_admin_admin_user_label}" style="width:35px;text-align: center;">
+							<h:panelGroup rendered="#{user.adminUser==1}" styleClass="fas fa-check" ></h:panelGroup>
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="editUser"
+								oncomplete="PF('systemUserAdminWidget').show();"
+								action="#{systemUserAdmin.editSystemUser(user)}"
+								update="addSystemUserForm systemUserAdminWidget">
+								<f:setPropertyActionListener value="true"
+									target="#{systemUserAdmin.isEditUser}" />
+								<i class="far fa-edit" alt="edit"></i>
+								<p:tooltip for="editUser" value="Edit User"></p:tooltip>
+							</p:commandLink>
+						</p:column>
+
+					</p:dataTable>
+					
+					<h:outputText 
+						value="#{systemUserAdmin.filteredSystemUsers.size() > 0 and systemUserAdmin.filteredSystemUsers.size() lt systemUserAdmin.users.size() ? ''.concat(systemUserAdmin.filteredSystemUsers.size()).concat(' of ').concat(systemUserAdmin.users.size()) :  systemUserAdmin.users.size() > 0 ? ''.concat(systemUserAdmin.users.size()) : '0' } #{msg.fdm_search_results_results_found_label}"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+					
+					
+				</h:form>
+			</p:tab>
+
+		</p:tabView>
+		
+		<h:form>
+        
+        
+        <p:dialog id="deleteDialogId" dynamic="true"
+            widgetVar="deleteDialogVar" resizable="false" width="340px"
+            modal="true" position="center center"
+            onShow="PF('deleteDialogVar').initPosition()" closable="false"
+            closeOnEscape="false">
+            <f:facet name="header">
+                <h:outputText value="Delete User" styleClass="dialogheader" />
+            </f:facet>
+            <p:panelGrid columns="1" width="100%">
+                <h:outputText value="Are you sure you wish to delete this User" />
+
+ 
+
+            </p:panelGrid>
+            <f:facet name="footer">
+                <p:commandButton value="#{msg.fdm_action_no}"
+                    onclick="PF('deleteDialogVar').hide();" 
+                    styleClass="ui-confirmdialog-no" >
+                </p:commandButton>
+                <p:commandButton value="#{msg.fdm_action_yes}"
+                    action="#{systemUserAdmin.deleteSystemUser()}"
+                    oncomplete="PF('systemUserAdminWidget').hide();"
+                    onclick="PF('deleteDialogVar').hide();" 
+                    />
+            </f:facet>
+        </p:dialog>
+        
+        
+        </h:form>
+
+	</ui:define>
+</ui:composition>

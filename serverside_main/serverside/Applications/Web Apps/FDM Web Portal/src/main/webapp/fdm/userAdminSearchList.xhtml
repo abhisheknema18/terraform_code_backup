@@ -1,0 +1,136 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/admin-template.xhtml">
+	<ui:param name="bean" value="#{userAdmin}" />
+	<ui:define name="admin-body">
+
+		<p:tabView id="adminSearchTabs">
+			<p:tab id="adminSearchResults"
+				title="#{msg.fdm_search_search_results_tab_label} #{userAdmin.users.size() > 0 ? '('.concat(userAdmin.users.size()).concat(')') : ''}#{userAdmin.filteredMobileUser.size() > 0 ? '('.concat(userAdmin.filteredMobileUser.size()).concat(')') : ''} "
+				>
+
+				<f:facet name="title">
+					<h:outputText id="theTitle"
+						value="#{msg.fdm_search_search_results_tab_label} #{userAdmin.filteredMobileUser.size() > 0 and userAdmin.filteredMobileUser.size() lt userAdmin.users.size() ? '('.concat(userAdmin.filteredMobileUser.size()).concat(' of ').concat(userAdmin.users.size()).concat(')') : userAdmin.users.size() > 0 ? '('.concat(userAdmin.users.size()).concat(')') : '(0)' } " />
+				</f:facet>
+
+				<h:form id="userAdminSearchListForm">
+
+					<div style="position:absolute;height:39px;right:20px;top:0px;padding:4px; color:white" > 
+						<p:commandLink id="nonAjax" rendered="#{userAdmin.navigateWorkGroup}"
+						action="#{userAdmin.navigateReturn}" update="@all"
+						title="Return to Mobile Work Group" styleClass="resultNavigationButton fa fa-list" />
+					</div>
+
+					<p:remoteCommand name="updateFilteredValue"
+						action="#{userAdmin.resetSelectionAfterFilter}"
+						update="adminSearchTabs adminSearchTabs:userAdminSearchListForm" />
+
+					<p:dataTable id="userList" value="#{userAdmin.users}" var="user"
+						filterDelay="1000" rowStatePreserved="true"
+						style="width:100%"
+						selection="#{userAdmin.selectedMobileUser}"
+						styleClass="listHighLightTableCls" resizableColumns="true"
+						selectionMode="single" rowIndexVar="rowVar" rowKey="#{user}"
+						rowStyleClass="#{user.revoked == 1 ? 'grey-row':''}"
+						filteredValue="#{userAdmin.filteredMobileUser}">
+						<p:ajax event="filter" oncomplete="updateFilteredValue();"
+							process="@all" />
+
+						<p:column headerText="User Code" style="width:130px"
+							filterMatchMode="contains" filterBy="#{user.id.userCode}"
+							sortBy="#{user.id.userCode}">
+							<h:outputText value="#{user.id.userCode}" />
+						</p:column>
+
+						<p:column headerText="User Name" style="width:200px"
+							filterMatchMode="contains" filterBy="#{user.userName}"
+							sortBy="#{user.userName}">
+							<h:outputText value="#{user.userName}" />
+						</p:column>
+
+						<p:column headerText="Work Group" style="width:25%"
+							filterMatchMode="contains" filterBy="#{user.workGroup.workgroupDesc.concat(' ('.concat(user.workGroup.id.workgroupCode).concat(') '))}"
+							sortBy="#{user.id.workgroupCode}">
+							<h:outputText value="#{user.workGroup.workgroupDesc.concat(' ('.concat(user.workGroup.id.workgroupCode).concat(') '))}" />
+						</p:column>
+
+						<p:column headerText="User Class" style="width:150px"
+							filterMatchMode="contains" filterBy="#{user.userClass}"
+							sortBy="#{user.userClass}">
+							<h:outputText value="#{user.userClass}" />
+						</p:column>
+
+						<p:column headerText="Alternative Reference" style="width:150px"
+							filterMatchMode="contains" filterBy="#{user.altRef}"
+							sortBy="#{user.altRef}">
+							<h:outputText value="#{user.altRef}" />
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="editUser"
+								oncomplete="PF('adminUserEditWidget').show();"
+								action="#{userAdmin.EditMobileUser(user)}"
+								update="addUserForm adminUserEditWidget">
+								<f:setPropertyActionListener value="true"
+									target="#{userAdmin.isEditUser}" />
+								<i class="far fa-edit" alt="edit"></i>
+								<p:tooltip for="editUser" value="Edit User"></p:tooltip>
+							</p:commandLink>
+						</p:column>
+
+					</p:dataTable>
+					
+					<h:outputText 
+						value="#{userAdmin.filteredMobileUser.size() > 0 and userAdmin.filteredMobileUser.size() lt userAdmin.users.size() ? ''.concat(userAdmin.filteredMobileUser.size()).concat(' of ').concat(userAdmin.users.size()) :  userAdmin.users.size() > 0 ? ''.concat(userAdmin.users.size()) : '0' } #{msg.fdm_search_results_results_found_label}"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />					
+					
+				</h:form>
+			</p:tab>
+
+		</p:tabView>
+		
+		<h:form>
+        
+        
+        <p:dialog id="deleteDialogId" dynamic="true"
+            widgetVar="deleteDialogVar" resizable="false" width="340px"
+            modal="true" position="center center"
+            onShow="PF('deleteDialogVar').initPosition()" closable="false"
+            closeOnEscape="false">
+            <f:facet name="header">
+                <h:outputText value="Delete User" styleClass="dialogheader" />
+            </f:facet>
+            <p:panelGrid columns="1" width="100%">
+                <h:outputText value="Are you sure you wish to delete this User" />
+
+ 
+
+            </p:panelGrid>
+            <f:facet name="footer">
+                <p:commandButton value="#{msg.fdm_action_no}"
+                    onclick="PF('deleteDialogVar').hide();" 
+                    styleClass="ui-confirmdialog-no" >
+                </p:commandButton>
+                <p:commandButton value="#{msg.fdm_action_yes}"
+                    action="#{userAdmin.deleteMobileUser()}" update="adminSearchTabs:userAdminSearchListForm"
+                    oncomplete="PF('adminUserEditWidget').hide();"
+                    onclick="PF('deleteDialogVar').hide();" 
+                    />
+
+ 
+
+            </f:facet>
+        </p:dialog>
+        
+        
+        </h:form>
+
+	</ui:define>
+</ui:composition>

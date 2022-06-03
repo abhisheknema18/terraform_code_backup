@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Task xsi:type="SigmaSeven.Exchange.SequentialTaskGroup"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:x="http://www.sigmaseven.co.uk/xml/x">
+  <!-- Include the script for Tabular datasets -->
+  <!-- Execute with:
+  
+       _build-part2.xml /P InputFolder "D:\Geofield-Exchange\Data\1. Tabular Extracts" 
+                        /P SqliteName "Assets"
+                        /P PackageId "amt-assets"
+                        /P MajorVersion "1"
+                        /DEFINE TABULAR
+                                             -->
+  <x:include Source="_build-part2-tabular.xml" />
+
+  <!-- Include the script for File-based datasets -->
+  <!-- Execute with:
+  
+       _build-part2.xml /P InputFolder "D:\Geofield-Exchange\Data\1. File Based Extracts" 
+                        /P PackageId "amt-rasters"
+                        /P MajorVersion "1"
+                        /DEFINE FILES
+                                             -->
+  <x:include Source="_build-part2-files.xml" />
+</Task>

@@ -1,0 +1,90 @@
+# Referenced by pipeline:
+#   - https://dev.azure.com/amtsybex1/Mobile/_build?definitionId=682
+
+# Explicitly set none for repository trigger
+trigger:
+  - none
+
+variables:
+  - name: applicationBaseFolder
+    value: 'Applications/Web Apps/Fieldreach Web Services/integration/'
+  - name: automationTestRootFolder
+    value: 'Test Automation/'
+  - name: artifactFolderName
+    value: 'CI-pipeline/WebServicesInt'
+  - name: artifactName
+    value: integrationservice
+  - group: 'Fusion_Common'
+
+resources:
+  # List each repository that we'll need
+  repositories:
+  - repository: FusionHelmTemplate
+    type: git
+    name: Mobile/fusion-helm-template
+    ref: main
+  - repository: FusionDevOps
+    type: git
+    name: Mobile/fusion-devops
+    ref: main
+
+
+  pipelines:
+    - pipeline: CI-pipeline  # Name of the pipeline resource
+      source: IntWebSvc-CI # Name of the triggering pipeline
+      trigger:
+        branches:
+          include:
+            - main
+            - develop
+
+stages:
+  # Pull and run container on AUT
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envName: 'AUT'
+      groupName: 'FusionCloudDeploymentTF_AUT_uksouth'
+      appName: 'IWS'
+
+  # Pull and run container on Dev
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envName: 'DEV'
+      groupName: 'FusionCloudDeploymentTF_DEV_uksouth'
+      appName: 'IWS'
+
+  # Pull and run container on QA
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envName: 'QA'
+      groupName: 'FusionCloudDeploymentTF_QA_uksouth'
+      appName: 'IWS'
+
+  # Pull and run container on UAT
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelm.yml  # Template reference
+    parameters:
+      envName: 'UAT'
+      groupName: 'FusionCloudDeploymentTF_UAT_uksouth'
+      appName: 'IWS'
+
+    # Pull and run container on Preprod UK South & UK West
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelmMultiRegion.yml  # Template reference
+    parameters:
+      envname: 'PREPROD'
+      envNameSouth: 'PREPROD_UKSOUTH'
+      envNameWest: 'PREPROD_UKWEST'
+      groupName: 'FusionCloudPenDeployment_MultiRegion_Preprod'
+      appName: 'IWS'
+      buildPoolName: 'FieldSmart PenTestCloud(Build)'
+      deployPoolName: 'FieldSmart PenTestCloud(Deployment)'
+
+    # Pull and run container on Prod UK South & UK West
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploymentViaHelmMultiRegion.yml  # Template reference
+    parameters:
+      envname: 'PROD'
+      envNameSouth: 'PROD_UKSOUTH'
+      envNameWest: 'PROD_UKWEST'
+      groupName: 'FusionCloudPenDeployment_MultiRegion_Prod'
+      appName: 'IWS'
+      buildPoolName: 'FieldSmart PenTestCloud(Build)'
+      deployPoolName: 'FieldSmart PenTestCloud(Deployment)'

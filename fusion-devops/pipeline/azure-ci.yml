@@ -1,0 +1,283 @@
+# Referenced by pipeline:
+#   - https://dev.azure.com/amtsybex1/Mobile/_build?definitionId=681
+
+trigger:
+  branches:
+    include:
+      - develop
+      - main
+
+  paths:
+    include:
+      - 'pipeline/'
+      - 'templates/'
+    exclude:
+      - 'configs/'
+
+pool: FieldSmart PenTestCloud(Build)
+variables:
+- group: 'Infra-Variables-fusion-devops'
+#- name: AKSRef
+#  ${{ if eq($(fusion-tf-module-aks-ref-pipeline-variable), '') }}:
+#    value: refs/$(fusion-tf-module-aks-ref)
+#  ${{ else }}:
+#    value: $(fusion-tf-module-aks-ref-pipeline-variable) }}
+
+resources:
+  repositories:
+  - repository: fusion-tf-module-aks
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-aks
+    ref: refs/$(fusion-tf-module-aks-ref)
+  - repository: fusion-tf-module-helm-chart
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-helm-chart
+    ref: refs/$(fusion-tf-module-helm-chart-ref) 
+  - repository: fusion-tf-module-routetable
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-routetable
+    ref: refs/$(fusion-tf-module-routetable-ref) 
+  - repository: fusion-tf-module-blobstorage
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-blobstorage
+    ref: refs/$(fusion-tf-module-blobstorage-ref) 
+  - repository: fusion-tf-module-elasticpool
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-elasticpool
+    ref: refs/$(fusion-tf-module-elasticpool-ref) 
+  - repository: fusion-tf-module-naming
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-naming
+    ref: refs/$(fusion-tf-module-naming-ref) 
+  - repository: fusion-tf-module-network
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-network
+    ref: refs/$(fusion-tf-module-network-ref) 
+  - repository: fusion-tf-module-nsg
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-nsg
+    ref: refs/$(fusion-tf-module-nsg-ref) 
+  - repository: fusion-tf-module-sqldatabase
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-sqldatabase
+    ref: refs/$(fusion-tf-module-sqldatabase-ref) 
+  - repository: fusion-tf-module-sqlserver
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-sqlserver
+    ref: refs/$(fusion-tf-module-sqlserver-ref) 
+  - repository: fusion-tf-module-ssh-key
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-ssh-key
+    ref: refs/$(fusion-tf-module-ssh-key-ref) 
+  - repository: fusion-tf-module-tagging
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-tagging
+    ref: refs/$(fusion-tf-module-tagging-ref) 
+  - repository: fusion-tf-module-vm
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-vm
+    ref: refs/$(fusion-tf-module-vm-ref) 
+  - repository: fusion-tf-module-fileshare
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-fileshare
+    ref: refs/$(fusion-tf-module-fileshare-ref) 
+  - repository: fusion-tf-module-keyvault
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-keyvault
+    ref: refs/$(fusion-tf-module-keyvault-ref) 
+  - repository: fusion-tf-module-firewall
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-firewall
+    ref: refs/$(fusion-tf-module-firewall-ref) 
+  - repository: fusion-tf-module-firewall-collection
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-firewall-collection
+    ref: refs/$(fusion-tf-module-firewall-collection-ref) 
+  - repository: fusion-tf-module-ipgroup
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-ipgroup
+    ref: refs/$(fusion-tf-module-ipgroup-ref) 
+  - repository: fusion-tf-module-appgateway
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-appgateway
+    ref: refs/$(fusion-tf-module-appgateway-ref) 
+  - repository: fusion-tf-module-trafficmanager
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-module-trafficmanager
+    ref: refs/$(fusion-tf-module-trafficmanager-ref) 
+  - repository: fusion-tf-hub
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-hub
+    ref: refs/$(fusion-tf-hub-ref) 
+  - repository: fusion-tf-platform
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-platform
+    ref: refs/$(fusion-tf-platform-ref) 
+  - repository: fusion-tf-tenant-shared
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-tenant-shared
+    ref: refs/$(fusion-tf-tenant-shared-ref) 
+  - repository: fusion-tf-tenant-sqldb
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-tenant-sqldb
+    ref: refs/$(fusion-tf-tenant-sqldb-ref) 
+  - repository: fusion-tf-tenant-main
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-tenant-main
+    ref: refs/$(fusion-tf-tenant-main-ref)
+  - repository: fusion-tf-tenant-cluster-foundation
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-tenant-cluster-foundation
+    ref: refs/$(fusion-tf-tenant-cluster-foundation-ref)
+  - repository: fusion-tf-tenant-hub
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-tenant-hub
+    ref: refs/$(fusion-tf-tenant-hub-ref)
+  - repository: fusion-tf-tenant-gateway
+    type: git
+    endpoint: harshTestRepoClone
+    name: Mobile/fusion-tf-tenant-gateway
+    ref: refs/$(fusion-tf-tenant-gateway-ref) 
+
+
+steps:
+- checkout: fusion-tf-module-aks
+  path: s/modules/aks
+  clean: false
+- checkout: fusion-tf-module-helm-chart
+  path: s/modules/cluster-foundation
+  clean: false
+- checkout: fusion-tf-module-routetable
+  path: s/modules/routetable
+  clean: false
+- checkout: fusion-tf-module-blobstorage
+  path: s/modules/storage
+  clean: false
+- checkout: fusion-tf-module-elasticpool
+  path: s/modules/elasticpool
+  clean: false
+- checkout: fusion-tf-module-naming
+  path: s/modules/naming
+  clean: false
+- checkout: fusion-tf-module-network
+  path: s/modules/network
+  clean: false
+- checkout: fusion-tf-module-nsg
+  path: s/modules/nsg
+  clean: false
+- checkout: fusion-tf-module-sqldatabase
+  path: s/modules/sqldb
+  clean: false
+- checkout: fusion-tf-module-sqlserver
+  path: s/modules/sqlserver
+  clean: false
+- checkout: fusion-tf-module-ssh-key
+  path: s/modules/sshkey
+  clean: false
+- checkout: fusion-tf-module-tagging
+  path: s/modules/tagging
+  clean: false
+- checkout: fusion-tf-module-vm
+  path: s/modules/vm
+  clean: false
+- checkout: fusion-tf-module-fileshare
+  path: s/modules/fileshare
+  clean: false
+- checkout: fusion-tf-module-keyvault
+  path: s/modules/keyvault
+  clean: false
+- checkout: fusion-tf-module-firewall
+  path: s/modules/firewall
+  clean: false
+- checkout: fusion-tf-module-firewall-collection
+  path: s/modules/firewallcollection
+  clean: false
+- checkout: fusion-tf-module-ipgroup
+  path: s/modules/ipgroup
+  clean: false
+- checkout: fusion-tf-module-appgateway
+  path: s/modules/appgateway
+  clean: false
+- checkout: fusion-tf-module-trafficmanager
+  path: s/modules/trafficmanager
+  clean: false
+- checkout: fusion-tf-hub
+  path: s/hub
+  clean: false
+- checkout: fusion-tf-platform
+  path: s/platform
+  clean: false
+- checkout: fusion-tf-tenant-shared
+  path: s/tenant-shared
+  clean: false
+- checkout: fusion-tf-tenant-sqldb
+  path: s/tenant-sqldb
+  clean: false
+- checkout: fusion-tf-tenant-main
+  path: s/tenant-main
+  clean: false
+- checkout: fusion-tf-tenant-hub
+  path: s/tenant-hub
+  clean: false
+- checkout: fusion-tf-tenant-cluster-foundation
+  path: s/tenant-cluster-foundation
+  clean: false
+- checkout: fusion-tf-tenant-gateway
+  path: s/tenant-gateway
+  clean: false
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your commands he
+      cd $(System.DefaultWorkingDirectory)
+      rm -rf  *.zip
+
+  
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+
+# Copying dockerImageTagName file to staging directory
+- task: CopyFiles@2
+  displayName: 'Copying ZIP File'
+  inputs:
+    sourceFolder: '$(System.DefaultWorkingDirectory)'
+    contents: '*.zip'
+    targetFolder: $(Build.ArtifactStagingDirectory)/Container
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/Container'
+    ArtifactName: 'drop'

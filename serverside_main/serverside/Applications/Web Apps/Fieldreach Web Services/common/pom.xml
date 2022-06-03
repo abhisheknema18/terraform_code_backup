@@ -1,0 +1,178 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>amtsybex</groupId>
+	<artifactId>fieldreachws_common</artifactId>
+	<version>1.2.0</version>
+	<packaging>jar</packaging>
+
+	<name>fieldreachws_common</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<org.springframework.version>5.3.4</org.springframework.version>
+	</properties>
+
+	<repositories>
+
+		<repository>
+			<id>springsource-repo</id>
+			<name>SpringSource Repository</name>
+			<url>http://repo.springsource.org/release</url>
+		</repository>
+
+		<repository>
+			<id>fusion-backend</id>
+			<url>https://pkgs.dev.azure.com/amtsybex1/Mobile/_packaging/fusion-backend/maven/v1</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>fusion-backend</id>
+			<url>https://pkgs.dev.azure.com/amtsybex1/Mobile/_packaging/fusion-backend/maven/v1</url>
+		</repository>
+	</distributionManagement>
+
+	<dependencies>
+		<!-- BEGIN AMT-SYBEX LIBRARIES -->
+		
+		<dependency>
+			<groupId>amtsybex</groupId>
+			<artifactId>fieldreach-utils</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>amtsybex</groupId>
+			<artifactId>fieldreach-backend</artifactId>
+			<version>1.14.1</version>
+		</dependency>
+		
+		<!-- END AMT-SYBEX LIBRARIES -->
+		
+		
+		<!-- BEGIN SPRING FRAMEWORK LIBRARIES -->
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-boot-starter</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		
+		<!-- END SPRING FRAMEWORK LIBRARIES -->
+		
+		
+		<!-- BEGIN APACHE LIBRARIES -->
+				
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.13</version>
+		</dependency>
+		
+		<!-- END SPRING APACHE LIBRARIES -->
+		
+		
+		<!-- BEGIN XML MARSHALLING LIBRARIES -->
+		
+		<dependency>
+		    <groupId>com.thoughtworks.xstream</groupId>
+		    <artifactId>xstream</artifactId>
+		    <version>1.4.16</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>2.11.4</version>
+		</dependency>
+		<!-- END XML MARSHALLING LIBRARIES -->
+		
+
+		<!-- BEGIN MISCELLANEOUS LIBRARIES -->
+		
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>4.0.1</version>
+		    <scope>provided</scope>
+		</dependency>
+
+        <!-- END MISCELLANEOUS LIBRARIES -->
+		
+	</dependencies>
+
+	<build>
+		<defaultGoal>clean install</defaultGoal>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.honton.chas</groupId>
+					<artifactId>exists-maven-plugin</artifactId>
+					<version>0.3.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-compiler-plugin</artifactId>
+			    <version>3.8.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							**/.dm/**
+						</exclude>
+					</excludes>
+				</configuration>
+				<version>2.6</version>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.honton.chas</groupId>
+				<artifactId>exists-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>remote</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>

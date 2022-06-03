@@ -1,0 +1,463 @@
+parameters:
+- name: envName
+  default: 'ENVIRONMENT NOT PASSED IN'
+#- name: hasSignoffTask
+#  type: boolean
+#  default: true
+#- name: appName
+#  default: 'appName NOT PASSED IN'
+- name: buildPoolName
+  default: 'FieldSmart TFCloud (Build)'
+- name: deployPoolName
+  default: 'FieldSmart TFCloud (Deployment)'
+- name: TenantClusterFoundation
+- name: TenantHub
+- name: TenantMain
+- name: TenantSQLDB
+- name: TenantSharedLower
+- name: HubNonProd
+- name: PlatformNonProd
+- name: TenantGatewayLower
+
+stages:
+
+- stage: DeployTerraform${{ parameters.envName }}
+  displayName: Deploy ${{ parameters.envName }} environment
+  variables:
+  - group: ${{ parameters.TenantClusterFoundation }}
+  - group: ${{ parameters.TenantHub }}
+  - group: ${{ parameters.TenantMain }}
+  - group: ${{ parameters.TenantSQLDB }}
+  - group: ${{ parameters.TenantSharedLower }}
+  - group: ${{ parameters.HubNonProd }}
+  - group: ${{ parameters.PlatformNonProd }}
+  - group: ${{ parameters.TenantGatewayLower }}
+  
+  jobs:
+    # This task does the deployment of azure rm resources onto cloud on any environment.
+    - job: deployToEnvironment${{ parameters.envName }}
+      displayName: "${{ parameters.envName }}: Azure Deployment"
+      pool: ${{ parameters.deployPoolName }}
+      steps:
+
+        - task: Bash@3
+          displayName: 'Clean Repository'
+          name: 'CleanRepoDrop'
+          inputs:
+            targetType: 'inline'
+            script: |
+              pwd
+              cd $(Pipeline.Workspace)/fusion-devops/drop
+              rm -rf *.* 
+              ls -l
+             
+
+        - download: 'fusion-devops'
+          displayName: 'Download Artifacts'
+
+        - task: Bash@3
+          displayName: 'Clean Repository'
+          name: 'CleanRepo'
+          inputs:
+            targetType: 'inline'
+            script: |
+              pwd
+              cd $(System.DefaultWorkingDirectory)/repo
+              rm -rf *.* 
+              ls -l
+          
+        - task: CopyFiles@2
+          displayName: 'Copy Files to: $(Pipeline.Workspace)/fusion-devops/drop'
+          inputs:
+            SourceFolder: '$(Pipeline.Workspace)/fusion-devops/drop'
+            Contents: '**/*.zip'
+            TargetFolder: '$(System.DefaultWorkingDirectory)/repo'
+            CleanTargetFolder: true
+
+        # AZ Login
+        - task: Bash@3
+          displayName: 'Unzip Repository'
+          name: 'Unzip'
+          inputs:
+            targetType: 'inline'
+            script: |
+              pwd
+              cd $(System.DefaultWorkingDirectory)/repo
+              unzip *.zip -d $(System.DefaultWorkingDirectory)/repo
+              ls -l
+
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+          displayName: 'Replace tokens in **/variables.tfvars hub'
+          inputs:
+            targetFiles: '**/hub/variables.tfvars'
+            tokenPattern: custom
+            tokenPrefix: '$('
+            tokenSuffix: ')#'              
+
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+          displayName: 'Replace tokens in **/variables.tfvars platform'
+          inputs:
+            targetFiles: '**/platform/variables.tfvars'
+            tokenPattern: custom
+            tokenPrefix: '$('
+            tokenSuffix: ')#'
+        
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+          displayName: 'Replace tokens in **/variables.tfvars tenant-shared'
+          inputs:
+            targetFiles: '**/tenant-shared/variables.tfvars'
+            tokenPattern: custom
+            tokenPrefix: '$('
+            tokenSuffix: ')#'
+        
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+          displayName: 'Replace tokens in **/variables.tfvars tenant-sqldb'
+          inputs:
+            targetFiles: '**/tenant-sqldb/variables.tfvars'
+            tokenPattern: custom
+            tokenPrefix: '$('
+            tokenSuffix: ')#'
+        
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+          displayName: 'Replace tokens in **/tenant-main/variables.tfvars'
+          inputs:
+            targetFiles: '**/tenant-main/variables.tfvars'
+            tokenPattern: custom
+            tokenPrefix: '$('
+            tokenSuffix: ')#'
+        
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+          displayName: 'Replace tokens in **/variables.tfvars tenant-hub'
+          inputs:
+            targetFiles: '**/tenant-hub/variables.tfvars'
+            tokenPattern: custom
+            tokenPrefix: '$('
+            tokenSuffix: ')#'
+        
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+          displayName: 'Replace tokens in **/variables.tfvars tenant-cluster-foundation'
+          inputs:
+            targetFiles: '**/tenant-cluster-foundation/variables.tfvars'
+            tokenPattern: custom
+            tokenPrefix: '$('
+            tokenSuffix: ')#'
+        
+        - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+          displayName: 'Replace tokens in **/variables.tfvars tenant-gateway'
+          inputs:
+            targetFiles: '**/tenant-gateway/variables.tfvars'
+            tokenPattern: custom
+            tokenPrefix: '$('
+            tokenSuffix: ')#'
+        
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+          displayName: 'Install Terraform 1.1.7'
+          inputs:
+            terraformVersion: 1.1.7
+        
+        # AZ Set Subscription
+        - task: Bash@3
+          displayName: 'Bash Script hub'
+          name: 'BashScripthub'
+          env:
+            ARM_CLIENT_ID: $ARM_CLIENT_ID
+            ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+            ARM_TENANT_ID: "$ARM_TENANT_ID"
+            ARM_SUBSCRIPTION_ID: "$ARM_SUBSCRIPTIONID_HUB"
+          inputs:
+            targetType: 'inline'
+            script: |
+              az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+              az account set --subscription $ARM_SUBSCRIPTIONID_HUB
+   
+              export ARM_CLIENT_ID=$ARM_CLIENT_ID
+              export ARM_CLIENT_SECRET="$ARM_CLIENT_SECRET"
+              export ARM_TENANT_ID="$ARM_TENANT_ID"
+              export ARM_SUBSCRIPTION_ID="$ARM_SUBSCRIPTIONID_HUB" 
+   
+              az account show
+    
+              echo $ARM_CLIENT_ID
+              echo $ARM_SUBSCRIPTION_ID 
+              cat $(System.DefaultWorkingDirectory)/repo/s/hub/variables.tfvars
+
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+          displayName: 'Terraform : init hub'
+          inputs:
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/hub'
+            backendServiceArm: 'harshtestTFpipeline-StateFile'
+            backendAzureRmResourceGroupName: terraform
+            backendAzureRmStorageAccountName: tfamtfieldsmartdev
+            backendAzureRmContainerName: hub
+            backendAzureRmKey: nonprod.tfstate
+        
+        - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+          displayName: 'terraform plan hub'
+          inputs:
+            command: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/hub'
+            environmentServiceName: 'harshtestTFpipeline-hub'
+            commandOptions: '-var-file=variables.tfvars'
+        
+       # AZ Set Subscription
+        - task: Bash@3
+          displayName: 'Bash Script platform'
+          name: 'BashScriptplatform'
+          env:
+            ARM_CLIENT_ID: $ARM_CLIENT_ID
+            ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+            ARM_TENANT_ID: "$ARM_TENANT_ID"
+            ARM_SUBSCRIPTION_ID: "ARM_SUBSCRIPTIONID_PLATFORM"
+          inputs:
+            targetType: 'inline'
+            script: |
+              az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+              az account set --subscription $ARM_SUBSCRIPTIONID_HUB
+          
+              export ARM_CLIENT_ID=$ARM_CLIENT_ID
+              export ARM_CLIENT_SECRET="$ARM_CLIENT_SECRET"
+              export ARM_TENANT_ID="$ARM_TENANT_ID"
+              export ARM_SUBSCRIPTION_ID="$ARM_SUBSCRIPTIONID_HUB" 
+          
+              az account show
+          
+              echo $ARM_CLIENT_ID
+              echo $ARM_SUBSCRIPTION_ID 
+              cat $(System.DefaultWorkingDirectory)/repo/s/platform/variables.tfvars
+
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+          displayName: 'Terraform : init platform'
+          inputs:
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/platform'
+            backendServiceArm: 'harshtestTFpipeline-StateFile'
+            backendAzureRmResourceGroupName: terraform
+            backendAzureRmStorageAccountName: tfamtfieldsmartdev
+            backendAzureRmContainerName: platform
+            backendAzureRmKey: nonprod.tfstate
+            
+        - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+          displayName: 'terraform plan platform'
+          inputs:
+            command: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/platform'
+            environmentServiceName: 'harshtestTFpipeline-StateFile'
+            commandOptions: '-var-file=variables.tfvars'
+        
+       # AZ Set Subscription
+        - task: Bash@3
+          displayName: 'Bash Script Spoke Tenant'
+          name: 'BashScriptspokeTenant'
+          env:
+            ARM_CLIENT_ID: $ARM_CLIENT_ID
+            ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+            ARM_TENANT_ID: "$ARM_TENANT_ID"
+            ARM_SUBSCRIPTION_ID: "$ARM_SUBSCRIPTIONID_SPOKETENANT"
+          inputs:
+            targetType: 'inline'
+            script: |
+              az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+              az account set --subscription $ARM_SUBSCRIPTIONID_SPOKETENANT
+              export ARM_CLIENT_ID=$ARM_CLIENT_ID
+              export ARM_CLIENT_SECRET="$ARM_CLIENT_SECRET"
+              export ARM_TENANT_ID="$ARM_TENANT_ID"
+              export ARM_SUBSCRIPTION_ID="$ARM_SUBSCRIPTIONID_SPOKETENANT"  
+              
+              az account show
+               
+              echo $ARM_CLIENT_ID
+              echo $ARM_SUBSCRIPTION_ID
+              echo $tenant_hub_tfstate
+              cat $(System.DefaultWorkingDirectory)/repo/s/tenant-main/variables.tfvars
+              cat $(System.DefaultWorkingDirectory)/repo/s/tenant-shared/variables.tfvars
+              cat $(System.DefaultWorkingDirectory)/repo/s/tenant-sqldb/variables.tfvars
+
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+          displayName: 'Terraform : init tenant-shared'
+          inputs:
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-shared'
+            backendServiceArm: 'harshtestTFpipeline-StateFile'
+            backendAzureRmResourceGroupName: terraform
+            backendAzureRmStorageAccountName: tfamtfieldsmartdev
+            backendAzureRmContainerName: 'tenant-shared'
+            backendAzureRmKey: lower.tfstate
+        
+        - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+          displayName: 'terraform plan tenant-shared'
+          inputs:
+            command: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-shared'
+            environmentServiceName: 'harshtestTFpipeline-Spoke'
+            commandOptions: '-var-file=variables.tfvars'
+            
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+          displayName: 'Terraform : init tenant-sqldb'
+          inputs:
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-sqldb'
+            backendServiceArm: 'harshtestTFpipeline-StateFile'
+            backendAzureRmResourceGroupName: terraform
+            backendAzureRmStorageAccountName: tfamtfieldsmartdev
+            backendAzureRmContainerName: 'tenant-sqldb'
+            backendAzureRmKey: internal/$tenant_hub_tfstate.tfstate
+        
+        - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+          displayName: 'terraform plan tenant-sqldb'
+          inputs:
+            command: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-sqldb'
+            environmentServiceName: 'harshtestTFpipeline-Spoke'
+            commandOptions: '-var-file=variables.tfvars'
+        
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+          displayName: 'Terraform : init tenant-main'
+          inputs:
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-main'
+            backendServiceArm: 'harshtestTFpipeline-StateFile'
+            backendAzureRmResourceGroupName: terraform
+            backendAzureRmStorageAccountName: tfamtfieldsmartdev
+            backendAzureRmContainerName: 'tenant-main'
+            backendAzureRmKey: internal/$tenant_hub_tfstate.tfstate
+        
+        - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+          displayName: 'terraform plan tenant-main'
+          inputs:
+            command: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-main'
+            environmentServiceName: 'harshtestTFpipeline-Spoke'
+            commandOptions: '-var-file=variables.tfvars'
+
+       # AZ Set Subscription
+        - task: Bash@3
+          displayName: 'Bash Script Spoke'
+          name: 'BashScriptspoke'
+          env:
+            ARM_CLIENT_ID: $ARM_CLIENT_ID
+            ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+            ARM_TENANT_ID: "$ARM_TENANT_ID"
+            ARM_SUBSCRIPTION_ID: "$ARM_SUBSCRIPTIONID_HUB"
+          inputs:
+            targetType: 'inline'
+            script: |
+              az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+              az account set --subscription $ARM_SUBSCRIPTIONID_HUB
+              
+              export ARM_CLIENT_ID=$ARM_CLIENT_ID
+              export ARM_CLIENT_SECRET="$ARM_CLIENT_SECRET"
+              export ARM_TENANT_ID="$ARM_TENANT_ID"
+              export ARM_SUBSCRIPTION_ID="$ARM_SUBSCRIPTIONID_HUB" 
+              
+              az account show
+               
+              echo $ARM_CLIENT_ID
+              echo $ARM_SUBSCRIPTION_ID 
+              
+              cat $(System.DefaultWorkingDirectory)/repo/s/tenant-hub/variables.tfvars
+
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+          displayName: 'Terraform : init tenant-hub'
+          inputs:
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-hub'
+            backendServiceArm: 'harshtestTFpipeline-StateFile'
+            backendAzureRmResourceGroupName: terraform
+            backendAzureRmStorageAccountName: tfamtfieldsmartdev
+            backendAzureRmContainerName: 'tenant-hub'
+            backendAzureRmKey: internal/$tenant_hub_tfstate.tfstate
+        
+        - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+          displayName: 'terraform plan tenant-hub'
+          inputs:
+            command: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-hub'
+            environmentServiceName: 'harshtestTFpipeline-hub'
+            commandOptions: '-var-file=variables.tfvars'
+        
+       # AZ Set Subscription
+        - task: Bash@3
+          displayName: 'Bash Script main Spoke'
+          name: 'BashScriptmainspoke'
+          env:
+            ARM_CLIENT_ID: $ARM_CLIENT_ID
+            ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+            ARM_TENANT_ID: "$ARM_TENANT_ID"
+            ARM_SUBSCRIPTION_ID: "$ARM_SUBSCRIPTIONID_SPOKETENANT"
+          inputs:
+            targetType: 'inline'
+            script: |
+              az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+              az account set --subscription $ARM_SUBSCRIPTIONID_SPOKETENANT
+              export ARM_CLIENT_ID=$ARM_CLIENT_ID
+              export ARM_CLIENT_SECRET="$ARM_CLIENT_SECRET"
+              export ARM_TENANT_ID="$ARM_TENANT_ID"
+              export ARM_SUBSCRIPTION_ID="$ARM_SUBSCRIPTIONID_SPOKETENANT"  
+              
+              az account show
+               
+              echo $ARM_CLIENT_ID
+              echo $ARM_SUBSCRIPTION_ID
+              
+              cat $(System.DefaultWorkingDirectory)/repo/s/tenant-cluster-foundation/variables.tfvars
+              
+
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+          displayName: 'Terraform : init tenant-cluster-foundation'
+          inputs:
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-cluster-foundation'
+            backendServiceArm: 'harshtestTFpipeline-StateFile'
+            backendAzureRmResourceGroupName: terraform
+            backendAzureRmStorageAccountName: tfamtfieldsmartdev
+            backendAzureRmContainerName: 'tenant-cluster-foundation'
+            backendAzureRmKey: internal/$tenant_hub_tfstate.tfstate
+        
+        - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+          displayName: 'terraform plan tenant-cluster-foundation'
+          inputs:
+            command: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-cluster-foundation'
+            environmentServiceName: 'harshtestTFpipeline-Spoke'
+            commandOptions: '-var-file=variables.tfvars'
+        
+        
+       # AZ Set Subscription
+        - task: Bash@3
+          displayName: 'Bash Script Tenant-Gateway'
+          name: 'BashScripttenantgateway'
+          env:
+            ARM_CLIENT_ID: $ARM_CLIENT_ID
+            ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+            ARM_TENANT_ID: "$ARM_TENANT_ID"
+            ARM_SUBSCRIPTION_ID: "$ARM_SUBSCRIPTIONID_HUB"
+          inputs:
+            targetType: 'inline'
+            script: |
+               az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+               az account set --subscription $ARM_SUBSCRIPTIONID_HUB
+               
+               export ARM_CLIENT_ID=$ARM_CLIENT_ID
+               export ARM_CLIENT_SECRET="$ARM_CLIENT_SECRET"
+               export ARM_TENANT_ID="$ARM_TENANT_ID"
+               export ARM_SUBSCRIPTION_ID="$ARM_SUBSCRIPTIONID_HUB" 
+               
+               az account show
+                
+               echo $ARM_CLIENT_ID
+               echo $ARM_SUBSCRIPTION_ID 
+               
+               cat $(System.DefaultWorkingDirectory)/repo/s/tenant-gateway/variables.tfvars
+
+        - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+          displayName: 'Terraform : init tenant-gateway'
+          inputs:
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-gateway'
+            backendServiceArm: 'harshtestTFpipeline-StateFile'
+            backendAzureRmResourceGroupName: terraform
+            backendAzureRmStorageAccountName: tfamtfieldsmartdev
+            backendAzureRmContainerName: 'tenant-gateway'
+            backendAzureRmKey: public/lower.tfstate
+        
+        - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+          displayName: 'terraform plan tenant-gateway'
+          inputs:
+            command: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/repo/s/tenant-gateway'
+            environmentServiceName: 'harshtestTFpipeline-hub'
+            commandOptions: '-var-file=variables.tfvars'
+        

@@ -1,0 +1,990 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+
+<style>
+.maxheightscroll{
+	min-height:40px;
+	max-height:100px;
+	overflow: auto; 
+	
+}
+
+.maxheightscroll .ui-selectlistbox-listcontainer{
+	height:100% !important;
+}
+
+</style>
+ 	<p:sidebar id="resultSearchDialog" widgetVar="resultSearchDialog" styleClass="searchTabs" style="width:640px; padding:.5em 0em;" position="right">
+
+ 	<p:panel header="Script Result Search">
+ 		<div class="ui-icon-close-override">
+			<span class="fa fa-angle-right" style="padding-left:.25em;cursor:pointer;" onclick="PF('resultSearchDialog').hide();"/>
+		</div>
+		<div style="height:10px;width:100%"></div>
+ 	</p:panel>
+ 	
+ 	
+ 	
+		<p:tabView id="resultSearchTabs" dynamic="true" cache="false">
+			
+			<p:tab id="searchCriteria" title="General">
+
+				<h:form id="searchForm">
+
+					<p:defaultCommand target="saveBtn" />
+					
+					<p:panelGrid id="innerContent" width="100%">
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_script_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allScriptsSelected" value="#{search.searchCriteria.allScriptsSelected}" unselectable="false">
+									<p:ajax update="scriptSelect" listener="#{search.searchCriteria.setScripts(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Scripts" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="scriptSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{search.searchCriteria.allScriptsSelected == true}">
+										        <f:selectItems value="#{search.searchCriteria.scripts}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select" 
+											id="showScripts"
+											action="#{search.loadSelectedScripts}"
+											update="scriptSelectionForm:scriptSelection"
+											oncomplete="PF('scriptSelectionWidget').show();">	
+											<f:setPropertyActionListener value="false" target="#{search.manageViewPage}"></f:setPropertyActionListener>																					
+											</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+						
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_workgroup_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allWorkgroupsSelected" value="#{search.searchCriteria.allWorkgroupsSelected}" unselectable="false">
+									<p:ajax update="workgroupSelect" listener="#{search.searchCriteria.setWorkgroups(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Work Groups" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="workgroupSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{search.searchCriteria.allWorkgroupsSelected == true}">
+										        <f:selectItems value="#{search.searchCriteria.workgroups}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select"
+											id="showWorkgroups"
+											action="#{search.loadSelectedWorkgroups}"
+											update="resultWorkgroupSelectionForm:workgroupSelection"
+											oncomplete="PF('workgroupSelectionWidget').show();">
+											<f:setPropertyActionListener value="false" target="#{search.manageViewPage}"></f:setPropertyActionListener>	
+										</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+						
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_user_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allUsersSelected" value="#{search.searchCriteria.allUsersSelected}" unselectable="false">
+									<p:ajax update="userSelect" listener="#{search.searchCriteria.setUsers(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Users" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="userSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{search.searchCriteria.allUsersSelected == true}">
+										        <f:selectItems value="#{search.searchCriteria.users}" var="user" itemLabel="#{user.userName}" itemValue="#{user}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select"
+											id="showUsers"
+											action="#{search.loadSelectedUsers}"
+											update="resultUserSelectionForm:userSelection"
+											oncomplete="PF('userSelectionWidget').show();">
+											<f:setPropertyActionListener value="false" target="#{search.manageViewPage}"></f:setPropertyActionListener>	
+											</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+
+						<p:row>
+                            <p:column>
+                                <p:outputLabel value="#{msg.fdm_search_result_status_label}" />
+                            </p:column>               
+                            <p:column styleClass="noPaddingCell">
+                                <p:selectOneRadio id="allResultsSelected" value="#{search.searchCriteria.allResultsSelected}" unselectable="false">
+                                    <p:ajax update="resultSelect" listener="#{search.searchCriteria.setResultStatuses(null)}" />
+                                    <f:selectItem itemLabel="All" itemValue="true" />
+                                    <f:selectItem itemLabel="Selected Statuses" itemValue="false" />
+                                </p:selectOneRadio>
+                            </p:column>
+                       
+                        </p:row>
+                       
+                        <p:row>
+                            <p:column/>           
+                            <p:column styleClass="noPaddingCell">
+                           
+                                <p:panelGrid id="resultSelect">
+                                    <p:row>
+                                        <p:column>
+                                            <p:selectOneListbox scrollHeight="80" disabled="#{search.searchCriteria.allResultsSelected == true}">
+                                                <f:selectItems value="#{search.searchCriteria.resultStatuses}" />
+                                            </p:selectOneListbox>
+                                        </p:column>   
+                                        <p:column>
+                                        <p:commandButton value="Select"
+                                            id="showResults"
+                                            action="#{search.loadSelectedResults}"
+                                            update="resultStatusSelectionForm:statusSelection"
+                                            oncomplete="PF('statusSelectionWidget').show();">    
+                                            <f:setPropertyActionListener value="false" target="#{search.manageViewPage}"></f:setPropertyActionListener>	                        
+                                            </p:commandButton>
+                                        </p:column>   
+                                    </p:row>
+       
+                                </p:panelGrid>
+							</p:column>
+						
+						</p:row>
+						
+<!--
+						<p:row>
+							<p:column>
+								<p:outputLabel for="fromDate"
+									value="#{msg.fdm_search_from_date_label}" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid>
+									<p:row>
+										<p:column styleClass="noPaddingCell">
+											<p:datePicker id="fromDate" selectionMode="range" value="#{search.searchCriteria.dateRange}" 
+							 					pages="3" pattern="#{msg.date_pattern}" readonlyInput="false" showButtonBar="true" showIcon="true" />
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+
+							</p:column>
+						</p:row>
+ --> 
+						<p:row>
+							<p:column>
+								<p:outputLabel
+									value="#{msg.fdm_search_from_date_label}" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+								<p:calendar id="fromDate" value="#{search.searchCriteria.fromDate}"
+									showOn="button"
+									converterMessage="#{msg.fdm_search_invalid_date_format}"
+									pattern="#{msg.date_pattern}" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel
+									value="#{msg.fdm_search_to_date_label}" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+								<p:calendar id="toDate" value="#{search.searchCriteria.toDate}"
+									showOn="button"
+									converterMessage="#{msg.fdm_search_invalid_date_format}"
+									pattern="#{msg.date_pattern}" />
+
+							</p:column>
+						</p:row>
+			
+						<p:row>
+						<p:column colspan="2">
+							<p:messages id="messages" showDetail="false" closable="false">
+						    </p:messages>
+						</p:column>
+						</p:row>
+				
+						<p:row>
+							<p:column colspan="3">
+									<p:commandButton value="#{msg.fdm_search_btn}" action="#{search.search}" id="saveBtn" update="innerContent" />
+										
+									<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" action="#{search.cancel}" oncomplete="PF('resultSearchDialog').hide();" id="cancelBtn" update="innerContent" />
+
+									<p:commandButton id="resetBtn" style="float:right;" value="#{msg.fdm_reset_btn}" action="#{search.reset}" process="@this" update="innerContent" >
+										<p:resetInput target="innerContent"/>
+									</p:commandButton>
+							
+							</p:column>
+						</p:row>
+
+					</p:panelGrid>
+
+
+
+				</h:form>
+
+
+			</p:tab>
+				
+			<p:tab id="searchReference" title="Equipment" rendered="#{fdmenv.equipmentView}">
+            
+                <p:panel>
+                
+                    <h:form id="searchReferenceForm">
+                    
+                        <p:defaultCommand target="equipmentReferenceNumber" />
+                        
+                        <p:panelGrid id="innerContent">
+    
+                            <p:row>
+                                
+                                <p:column>
+                                    <h:outputLabel for="equipmentReferenceNumber" value="#{msg.fdm_equipment_information_equipment_reference_label}" style="width:2px;" />
+                                </p:column>
+                                <p:focus for="equipmentReferenceNumber"/>    
+                                <p:column>
+                                    <p:inputText id="equipmentReferenceNumber" value="#{search.searchCriteria.equipmentReferenceNumber}"
+                                    required="true" requiredMessage="#{msg.fdm_min_search_eq_num_length_label}" style="width:250px;margin-left:50px;"/>
+                                </p:column>    
+                                
+                              	<p:column>
+									<p:outputLabel id="equipRef" style="padding-top:5px;position: absolute;left:375px;" styleClass="tool-tip-info">
+	 									<i class="fas fa-info-circle"></i>
+										<p:tooltip for="equipRef" value="Enter full Equipment number or Equipment Reference for asset" style="width:200px;"/>
+  									</p:outputLabel>
+								</p:column>
+                                
+                                <p:column style="width:600px" />
+
+ 
+
+                            </p:row>
+                            
+                            <p:row>
+                            <p:column colspan="3">
+                                <p:messages id="messages" showDetail="false" closable="false">
+                                </p:messages>
+                            </p:column>
+                            </p:row>
+
+ 
+
+                        
+                            <p:row>
+                            
+                                <p:column colspan="3">    
+                                <p:commandButton  id="saveBtn" value="#{msg.fdm_search_btn}" action="#{search.searchReference}"  update="innerContent" process="searchReferenceForm"/>                                       
+                                <p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" action="#{search.cancel}" oncomplete="PF('resultSearchDialog').hide();" update="innerContent" immediate="true"/>
+                                <p:commandButton value="#{msg.fdm_reset_btn}" style="float:right;left:200px;" action="#{search.reset}" process="@this" update="innerContent" >
+                                <p:resetInput target="innerContent"/>
+                                </p:commandButton>
+                                
+                                </p:column>
+                            
+                            </p:row>
+                                
+                        </p:panelGrid>
+
+ 
+
+                                        
+                    </h:form>
+                
+                </p:panel>
+                
+            </p:tab>
+
+			<p:tab id="personalViewTab" title="Personal View" rendered="#{fdmenv.personalView}">
+
+				<p:panel style="width:100%">
+
+					<h:form id="personalViewForm" >
+						
+							<p:dataTable value="#{search.personalViewList}" var="personalView" 
+								styleClass="personalViewTable" scrollable="true" scrollHeight="520"
+								style="width:100%;" 
+								selection="#{search.selectedPersonalViews}"
+								selectionMode="single" rowIndexVar="viewId" rowKey="#{personalView.id}" >
+								
+								<p:ajax event="rowSelect" listener="#{search.searchThroughPersonalView()}" oncomplete="PF('resultSearchDialog').hide();" ></p:ajax>
+
+
+								<p:column style="padding-bottom: 10px;padding-top: 10px;font-size: 15px;">
+									
+									<span class="fas fa-search addImage" style="color:black; border-color:black;"></span>
+									<h:outputText value="#{personalView.viewName}" style="padding-left: 10px;"></h:outputText>
+									
+								</p:column>
+
+							</p:dataTable>
+							
+							<p:commandButton value="Manage Personal Views" oncomplete="PF('managePersonalViewsVar').show();" style="float:right;margin-top:20px;"/>
+						
+					</h:form>	
+
+				</p:panel>
+
+			</p:tab>
+
+
+			<p:tab id="searchUniqueReference" title="#{msg.fdm_search_unique_reference_number_label}" rendered="#{fdmenv.uniqueReferenceView}">
+            
+                <p:panel>
+                
+                    <h:form id="searchUniqueReferenceForm">
+                    
+                        <p:defaultCommand target="returnIdReferenceNumber" />
+                        
+                        <p:panelGrid id="innerContent">
+    
+                            <p:row>
+                                
+                                <p:column>
+                                    <h:outputLabel for="returnIdReferenceNumber" value="#{msg.fdm_search_unique_reference_number_label}" />
+                                </p:column>
+                                <p:focus for="returnIdReferenceNumber"/>    
+                                <p:column>
+                                    <p:inputText id="returnIdReferenceNumber" value="#{search.searchCriteria.returnIdReferenceNumber}"
+                                    required="true" requiredMessage="#{msg.fdm_min_search_num_length_label}" maxlength="10" converterMessage="Enter numeric value only"/>
+                                </p:column>    
+                                
+                                <p:column style="width:600px" />
+
+ 
+
+                            </p:row>
+                            
+                            <p:row>
+                            <p:column colspan="3">
+                                <p:messages id="messages" showDetail="false" closable="false">
+                                </p:messages>
+                            </p:column>
+                            </p:row>
+
+ 
+
+                        
+                            <p:row>
+                            
+                                <p:column colspan="3">    
+                                <p:commandButton  id="saveBtn" value="#{msg.fdm_search_btn}" action="#{search.referenceUniqueNumber}"  update="innerContent" process="searchUniqueReferenceForm "/>        
+                                
+                                <p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" action="#{search.cancel}" oncomplete="PF('resultSearchDialog').hide();" update="innerContent" immediate="true"/>
+
+ 
+
+                                <p:commandButton value="#{msg.fdm_reset_btn}" style="float:right" action="#{search.reset}" process="@this" update="innerContent" >
+                                    <p:resetInput target="innerContent"/>
+                                </p:commandButton>
+                                
+                                </p:column>
+                            
+                            </p:row>
+                                
+                        </p:panelGrid>
+
+ 
+
+                                        
+                    </h:form>
+                
+                </p:panel>
+                
+            </p:tab>
+			
+			
+		</p:tabView>		
+	</p:sidebar>
+
+	<h:form id="managePersonalViewForm">
+
+		<p:sidebar position="right" id="managePersonalViews"
+			header="Manage Personal Views"
+			widgetVar="managePersonalViewsVar" style="width:640px;">
+
+			<p:panel header="Manage Personal Views">
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('managePersonalViewsVar').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+
+				<p:dataTable value="#{search.personalViewList}" var="personalView" id="personalViewTable" scrollable="true" scrollHeight="520"
+					style="width:100%;" styleClass="sideBarScrollTable" selection="#{search.selectedEditPersonalViews}" selectionMode="single" rowKey="#{personalView.id}" rowIndexVar="key">
+
+					<p:column style="font-size: 18px;width:85%;line-height:1.4"
+						headerText="Personal View">
+						
+							<h:outputText value="#{personalView.viewName}" />
+							<br></br>
+							<h:outputText style="color:gray; font-size:0.8em" value="#{personalView.viewDesc}" />
+
+					</p:column>
+					<p:column style="width:15%;vertical-align: middle;">
+						<f:facet name="header">
+							<p:commandLink oncomplete="PF('editPersonalViewsVar').show()" action="#{search.initiateNewPersonalView()}" 
+							style="font-size: 1.3em;" update="editPersonalViewForm">
+								<i class="far fa-plus-square" alt="add"
+									style="font-size: 1.2em;"></i>
+									
+							</p:commandLink>
+						</f:facet>
+ 
+						<p:panel >
+							<p:commandLink oncomplete="PF('editPersonalViewsVar').show()" action="#{search.initiateEditPersonalView()}" 
+							style="padding-left: 10px;font-size: 1.3em;" update="editPersonalViewForm managePersonalViewForm:personalViewTable">
+								<i class="far fa-edit" alt="edit"></i>
+								<f:setPropertyActionListener value="#{personalView}" target="#{search.selectedEditPersonalViews}"></f:setPropertyActionListener>
+							</p:commandLink >
+
+							<p:commandLink style="padding-left: 10px;font-size: 1.3em;" update="managePersonalViewForm:deleteViewDlg managePersonalViewForm:personalViewTable" oncomplete="PF('deleteViewDlgVar').show()">
+								<f:setPropertyActionListener value="#{personalView}" target="#{search.selectedEditPersonalViews}"></f:setPropertyActionListener>
+								<i class="far fa-trash-alt" alt="delete"></i>
+							</p:commandLink>
+						</p:panel>
+
+					</p:column>
+
+				</p:dataTable>
+
+			</p:panel>
+		</p:sidebar>
+		
+				<p:dialog 	id="deleteViewDlg" 
+					dynamic="true"					
+					widgetVar="deleteViewDlgVar" 
+					resizable="false" 
+					width="400px"   
+					modal="true"
+					position="center center" onShow="PF('deleteViewDlgVar').initPosition()"
+					closable="false"
+					closeOnEscape="false"> 
+					<f:facet name="header">
+						<h:outputText value="Delete Personal View" styleClass="dialogheader" />
+					</f:facet>
+		    <p:panelGrid columns="1" width="100%">
+		    <h:outputText value="Are you sure you want to delete this Personal View?" />
+				
+			</p:panelGrid>
+				<f:facet name="footer">
+					<p:commandButton value="#{msg.fdm_action_no}"
+						onclick="PF('deleteViewDlgVar').hide();"
+						styleClass="ui-confirmdialog-no">
+					</p:commandButton>
+					<p:commandButton value="#{msg.fdm_action_yes}"
+						action="#{search.deletePersonalView}"
+						onclick="PF('deleteViewDlgVar').hide();"
+						update="managePersonalViewForm:personalViewTable resultSearchTabs:personalViewForm menuForm" />
+
+				</f:facet>
+			</p:dialog> 
+		
+		</h:form>
+		
+		<h:form id="editPersonalViewForm">
+		
+		<p:sidebar position="right" id="editPersonalViews"
+			header="Edit Personal Views" styleClass="searchTabs"
+			widgetVar="editPersonalViewsVar" style="width:640px;">
+
+			<p:panel header="#{search.newPersonalView ? 'Add Personal View' : 'Edit Personal Views'}" id="editPersonalViewsPanel">
+				<div class="ui-icon-close-override">
+					<span class="fa fa-angle-right"
+						style="padding-left: .25em; cursor: pointer;"
+						onclick="PF('editPersonalViewsVar').hide();" />
+				</div>
+				<div style="height: 10px; width: 100%"></div>
+				
+				<p:panelGrid id="innerContent" width="100%">
+						<p:row>
+							<p:column>
+								<p:outputLabel  value="View Name" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="viewName" value="#{search.personalViewSearchCriteria.viewName}" required="true" requiredMessage="View Name cannot be empty." maxlength="30" style="width: 280px;"></p:inputText>
+							</p:column>					
+						</p:row>
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="View Description" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="viewDesc" value="#{search.personalViewSearchCriteria.viewDesc}" style="width: 400px;" required="true" requiredMessage="View Description cannot be empty." maxlength="50"></p:inputText>
+							</p:column>					
+						</p:row>
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Show on Menu" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+								<p:selectBooleanCheckbox id="showOnMenu" value="#{search.personalViewSearchCriteria.searchOnMenu}"/>
+							</p:column>					
+						</p:row>
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_script_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allScriptsSelected" value="#{search.personalViewSearchCriteria.allScriptsSelected}" unselectable="false">
+									<p:ajax update="scriptSelect" listener="#{search.personalViewSearchCriteria.setScripts(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Scripts" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+			  		<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="scriptSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{search.personalViewSearchCriteria.allScriptsSelected == true}">
+										        <f:selectItems value="#{search.personalViewSearchCriteria.scripts}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select" 
+											id="showScripts" immediate="true"
+											action="#{search.loadSelectedScripts}"
+											update="scriptSelectionForm:scriptSelection"
+											oncomplete="PF('scriptSelectionWidget').show();">	
+											<f:setPropertyActionListener value="true" target="#{search.manageViewPage}"></f:setPropertyActionListener>																					
+											</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+				
+						</p:row>
+						
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_workgroup_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allWorkgroupsSelected" value="#{search.personalViewSearchCriteria.allWorkgroupsSelected}" unselectable="false">
+									<p:ajax update="workgroupSelect" listener="#{search.personalViewSearchCriteria.setWorkgroups(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Work Groups" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="workgroupSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{search.personalViewSearchCriteria.allWorkgroupsSelected == true}">
+										        <f:selectItems value="#{search.personalViewSearchCriteria.workgroups}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select"
+											id="showWorkgroups" immediate="true"
+											action="#{search.loadSelectedWorkgroups}"
+											update="resultWorkgroupSelectionForm:workgroupSelection"
+											oncomplete="PF('workgroupSelectionWidget').show();">
+											<f:setPropertyActionListener value="true" target="#{search.manageViewPage}"></f:setPropertyActionListener>
+										</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+						
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_user_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allUsersSelected" value="#{search.personalViewSearchCriteria.allUsersSelected}" unselectable="false">
+									<p:ajax update="userSelect" listener="#{search.personalViewSearchCriteria.setUsers(null)}" />
+						            <f:selectItem itemLabel="All" itemValue="true" />
+						            <f:selectItem itemLabel="Selected Users" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row>
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="userSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{search.personalViewSearchCriteria.allUsersSelected == true}">
+										        <f:selectItems value="#{search.personalViewSearchCriteria.users}" var="user" itemLabel="#{user.userName}" itemValue="#{user}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="Select"
+											id="showUsers" immediate="true"
+											action="#{search.loadSelectedUsers}"
+											update="resultUserSelectionForm:userSelection"
+											oncomplete="PF('userSelectionWidget').show();">
+											<f:setPropertyActionListener value="true" target="#{search.manageViewPage}"></f:setPropertyActionListener>
+											</p:commandButton>
+										</p:column>	
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+
+						<p:row>
+                            <p:column>
+                                <p:outputLabel value="#{msg.fdm_search_result_status_label}" />
+                            </p:column>               
+                            <p:column styleClass="noPaddingCell">
+                                <p:selectOneRadio id="allResultsSelected" value="#{search.personalViewSearchCriteria.allResultsSelected}" unselectable="false">
+                                    <p:ajax update="resultSelect" listener="#{search.personalViewSearchCriteria.setResultStatuses(null)}" />
+                                    <f:selectItem itemLabel="All" itemValue="true" />
+                                    <f:selectItem itemLabel="Selected Statuses" itemValue="false" />
+                                </p:selectOneRadio>
+                            </p:column>
+                       
+                        </p:row>
+                       
+                        <p:row>
+                            <p:column/>           
+                            <p:column styleClass="noPaddingCell">
+                           
+                                <p:panelGrid id="resultSelect">
+                                    <p:row>
+                                        <p:column>
+                                            <p:selectOneListbox scrollHeight="80" disabled="#{search.personalViewSearchCriteria.allResultsSelected == true}">
+                                                <f:selectItems value="#{search.personalViewSearchCriteria.resultStatuses}" />
+                                            </p:selectOneListbox>
+                                        </p:column>   
+                                        <p:column>
+                                        <p:commandButton value="Select"
+                                            id="showResults" immediate="true"
+                                            action="#{search.loadSelectedResults}"
+                                            update="resultStatusSelectionForm:statusSelection"
+                                            oncomplete="PF('statusSelectionWidget').show();">       
+                                            <f:setPropertyActionListener value="true" target="#{search.manageViewPage}"></f:setPropertyActionListener>                     
+                                            </p:commandButton>
+                                        </p:column>   
+                                    </p:row>
+       
+                                </p:panelGrid>
+							</p:column>
+						
+						</p:row>
+						
+
+						<p:row>
+							<p:column>
+								<p:outputLabel 
+									value="#{msg.fdm_search_from_date_label}" />
+							</p:column>
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="fromDate" value="#{search.personalViewSearchCriteria.personalViewFromDate}"></p:inputText>
+							<p:outputLabel id="infoFromDate" style="float:none;" styleClass="tool-tip-info">
+								<i class="fas fa-info-circle"></i>
+							</p:outputLabel>
+							<p:tooltip for="infoFromDate" position="right" style="width:200px;" styleClass="personalViewToolTip"
+								value="#{msg.fdm_personalView_help_info}" />
+						</p:column>
+
+
+					</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel 
+									value="#{msg.fdm_search_to_date_label}" />
+							</p:column>
+						<p:column styleClass="noPaddingCell" >
+							<p:inputText id="toDate" value="#{search.personalViewSearchCriteria.personalViewToDate}"></p:inputText>
+							<p:outputLabel id="infoToDate" style="float:none;" styleClass="tool-tip-info">
+								<i class="fas fa-info-circle"></i>
+							</p:outputLabel>
+							<p:tooltip for="infoToDate" position="right" style="width:200px;" styleClass="personalViewToolTip"
+								value="#{msg.fdm_personalView_help_info}" />
+
+						</p:column>
+						
+					</p:row>
+			
+						<p:row>
+						<p:column colspan="2">
+							<p:messages id="messages" showDetail="false" closable="false">
+						    </p:messages>
+						</p:column>
+						</p:row>
+				
+						<p:row>
+							<p:column colspan="3" style="padding-top:10px;">
+									<p:commandButton value="Ok"  id="saveBtn" action="#{search.updatePersonalViews()}" oncomplete="if(!args.validationFailed) { PF('editPersonalViewsVar').hide();}" update="innerContent managePersonalViewForm:personalViewTable resultSearchTabs:personalViewForm menuForm" />
+										
+									<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" oncomplete="PF('editPersonalViewsVar').hide();" id="cancelBtn" update="innerContent" immediate="true"/>
+
+									<p:commandButton id="resetBtn" style="float:right;" value="#{msg.fdm_reset_btn}" action="#{search.resetManagePersonalView}" process="@this" update="innerContent" >
+										<p:resetInput target="innerContent"/>
+									</p:commandButton>
+							
+							</p:column>
+						</p:row>
+
+					</p:panelGrid>
+				
+				
+				
+		</p:panel>
+		</p:sidebar>
+
+	</h:form>
+
+	<h:form id="scriptSelectionForm">
+		<p:sidebar position="right" id="scriptSelection"
+			header="#{msg.fdm_search_script_dialog_label}"
+			widgetVar="scriptSelectionWidget" style="width:640px;">
+
+			<p:panel id="scriptSelectionP"
+				header="#{msg.fdm_search_script_dialog_label}">
+
+				<div style="height:10px;width:100%"></div>
+				
+				<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+				
+					<p:tree id="scriptSelectionTree" value="#{search.scriptRoot}" var="node" filterMatchMode="contains"
+					filterBy="#{(node['class'].simpleName == 'Script' ? node.scriptDesc.concat('(').concat(node.scriptCode).concat(')') : node)}"
+						selectionMode="checkbox" selection="#{search.selectedScriptNodes}">
+						<p:treeNode>
+							<h:outputText value="#{(node['class'].simpleName == 'Script' ? node.scriptDesc : node.scriptCatDesc)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'Script' ? ' ('.concat(node.scriptCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+					
+				</div>
+					
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('scriptSelectionWidget').hide();"
+						action="#{search.updateSelectedScripts()}"
+						update="resultSearchTabs:searchForm:scriptSelect scriptSelectionTree resultSearchTabs:searchForm:allScriptsSelected editPersonalViewForm:scriptSelect editPersonalViewForm:allScriptsSelected" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{search.clearSelectedScripts()}"
+						update="scriptSelectionTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('scriptSelectionWidget').hide();"
+						update="resultSearchTabs:searchForm:scriptSelect scriptSelectionTree" />
+
+				</f:facet>
+
+			</p:panel>
+		</p:sidebar>
+
+	</h:form>
+	
+
+	<h:form id="resultWorkgroupSelectionForm">
+		<p:sidebar position="right" id="workgroupSelection"
+			header="#{msg.fdm_search_script_dialog_label}"
+			widgetVar="workgroupSelectionWidget" style="width:640px;">
+
+			<p:panel id="userSelectionP"
+				header="#{msg.fdm_search_workgroup_dialog_label}">
+			
+				<div style="height:10px;width:100%"></div>
+				
+				<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+					<p:tree id="workgroupSelectTree" value="#{search.workgroupRoot}"
+						style="width:100%;" var="node" filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}" 
+						filterMatchMode="contains" selectionMode="checkbox" selection="#{search.selectedWorkgroupNodes}">
+						<p:treeNode>
+							<h:outputText value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('workgroupSelectionWidget').hide();"
+						action="#{search.updateSelectedWorkgroups()}"
+						update="resultSearchTabs:searchForm:workgroupSelect workgroupSelectTree resultSearchTabs:searchForm:allWorkgroupsSelected editPersonalViewForm:workgroupSelect editPersonalViewForm:allWorkgroupsSelected"/>
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{search.clearSelectedWorkgroups()}"
+						update="workgroupSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('workgroupSelectionWidget').hide();"
+						update="resultSearchTabs:searchForm:workgroupSelect workgroupSelectTree" />
+
+				</f:facet>
+
+			</p:panel>
+
+		</p:sidebar>
+	</h:form>
+
+	<h:form id="resultUserSelectionForm">
+
+		<p:sidebar position="right" id="userSelection"
+			widgetVar="userSelectionWidget" style="width:640px;">
+
+			<p:panel id="userSelectionP"
+				header="#{msg.fdm_search_user_dialog_label}">
+
+				<div style="height:10px;width:100%"></div>
+				<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+					<p:tree id="userSelectTree" value="#{search.userRoot}" var="node" filterMatchMode="contains"
+						style="width:100%;" selectionMode="checkbox" 
+						filterBy="#{(node['class'].simpleName == 'HPCUsers' ? node.userName.concat('(').concat(node.id.userCode).concat(')') : node)}"
+						selection="#{search.selectedUserNodes}">
+						<p:treeNode>
+							<h:outputText value="#{node}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCUsers' ? ' ('.concat(node.id.userCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('userSelectionWidget').hide();"
+						action="#{search.updateSelectedUsers()}"
+						update="resultSearchTabs:searchForm:userSelect userSelectTree resultSearchTabs:searchForm:allUsersSelected editPersonalViewForm:userSelect editPersonalViewForm:allUsersSelected"/>
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{search.clearSelectedUsers()}" update="userSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('userSelectionWidget').hide();"
+						update="resultSearchTabs:searchForm:userSelect userSelectTree" />
+
+				</f:facet>
+
+			</p:panel>
+
+		</p:sidebar>
+
+	</h:form>
+
+
+	<h:form id="resultStatusSelectionForm">
+		<p:sidebar position="right" id="statusSelection"
+			widgetVar="statusSelectionWidget" style="width:640px;">
+
+			<p:panel id="statusSelectionP"
+				header="#{msg.fdm_search_result_dialog_label}">
+			
+				<div style="height:10px;width:100%"></div>
+				<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+					<p:tree id="statusSelectTree" value="#{search.resultRoot}"
+						style="width:100%;" var="node" filterBy="#{node}" filterMatchMode="contains"
+						selectionMode="checkbox" selection="#{search.selectedResultNodes}">
+						<p:treeNode>
+							<h:outputText value="#{node}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('statusSelectionWidget').hide();"
+						action="#{search.updateSelectedResultStatuses()}"
+						update="resultSearchTabs:searchForm:resultSelect statusSelectTree resultSearchTabs:searchForm:allResultsSelected editPersonalViewForm:resultSelect editPersonalViewForm:allResultsSelected" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{search.clearSelectedResults()}"
+						update="statusSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('statusSelectionWidget').hide();"
+						update="resultSearchTabs:searchForm:resultSelect" />
+
+
+
+				</f:facet>
+
+			</p:panel>
+
+		</p:sidebar>
+	</h:form>
+
+</ui:composition>

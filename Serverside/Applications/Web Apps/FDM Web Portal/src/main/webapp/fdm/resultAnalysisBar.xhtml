@@ -1,0 +1,234 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+
+<style>
+.maxheightscroll{
+	min-height:40px;
+	max-height:100px;
+	overflow: auto; 
+	
+}
+
+.maxheightscroll .ui-selectlistbox-listcontainer{
+	height:100% !important;
+}
+
+.smallerHeight .ui-tree-container {
+	max-height:400px;
+}
+
+</style>
+ 	<p:sidebar id="resultAnalysisDialog" widgetVar="resultAnalysisDialog" styleClass="searchTabs" style="width:640px; padding:.5em 0em;" position="right">
+
+ 	<p:panel header="#{resultAnalysis.isSearchingVersionAnalysis() ? msg.fdm_script_performance_metrics : msg.fdm_result_data_set_analytics}">
+ 		<div class="ui-icon-close-override">
+			<span class="fa fa-angle-right" style="padding-left:.25em;cursor:pointer;" onclick="PF('resultAnalysisDialog').hide();"/>
+		</div>
+		<div style="height:10px;width:100%"></div>
+ 	</p:panel>
+ 	
+ 	
+ 	
+		<p:tabView id="resultAnalysisTabs">
+			
+			<p:tab id="analysisCriteria" title="#{msg.fdm_result_general}">
+
+				<h:form id="analysisForm">
+
+					<p:defaultCommand target="saveBtn" />
+					
+					<p:panelGrid id="innerContent" width="100%">
+						
+						<p:row>			
+							<p:column colspan="2" styleClass="noPaddingCell">
+							
+								<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:600px; overflow: auto">
+								
+									<p:tree id="scriptSelectionTree" 
+											value="#{resultAnalysis.scriptRoot}" 
+											var="node" 
+											styleClass="smallerHeight"
+											filterMatchMode="contains"
+											filterBy="#{(node['class'].simpleName == 'Script' ? node.scriptDesc.concat('(').concat(node.scriptCode).concat(')') : node)}"
+											selectionMode="single"
+											selection="#{resultAnalysis.selectedScriptNode}">
+										<p:treeNode>
+											<h:outputText value="#{(node['class'].simpleName == 'Script' ? node.scriptDesc : node.scriptCatDesc)}" />
+											<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'Script' ? ' ('.concat(node.scriptCode).concat(')') : '')}" />
+										</p:treeNode>
+									</p:tree>
+									<p:focus context="scriptSelectionTree" rendered="#{resultAnalysis.scriptRoot != null}"></p:focus>
+								</div>
+							</p:column>
+						
+						</p:row>
+
+						<p:row rendered="#{not resultAnalysis.isSearchingVersionAnalysis()}">
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_data_set_scope}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell verticalRadio">
+								<p:selectOneRadio id="scopeSelected" layout="grid" columns="1" value="#{resultAnalysis.searchCriteria.scopeToRecentAsset}" unselectable="false" style="margin-bottom:10px;">
+						            <f:selectItem itemLabel="#{msg.fdm_scope_all}" itemValue="false" />
+						            <f:selectItem itemLabel="#{msg.fdm_scope_asset}" itemValue="true" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row rendered="#{not resultAnalysis.isSearchingVersionAnalysis()}">
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_search_workgroup_label}" />
+							</p:column>				
+							<p:column styleClass="noPaddingCell">
+								<p:selectOneRadio id="allWorkgroupsSelected" value="#{resultAnalysis.allWorkgroupsSelected}" unselectable="false">
+									<p:ajax update="workgroupSelect" listener="#{resultAnalysis.searchCriteria.setWorkgroups(null)}" />
+						            <f:selectItem itemLabel="#{msg.fdm_all}" itemValue="true" />
+						            <f:selectItem itemLabel="#{msg.fdm_selected_work_groups}" itemValue="false" />
+					        	</p:selectOneRadio>
+							</p:column>
+						
+						</p:row>
+						
+						<p:row rendered="#{not resultAnalysis.isSearchingVersionAnalysis()}">
+							<p:column/>			
+							<p:column styleClass="noPaddingCell">
+							
+								<p:panelGrid id="workgroupSelect">
+									<p:row>
+										<p:column>
+											<p:selectOneListbox scrollHeight="80" disabled="#{resultAnalysis.allWorkgroupsSelected == true}"  style="margin-bottom:10px;">
+										        <f:selectItems value="#{resultAnalysis.searchCriteria.workgroups}" />
+										    </p:selectOneListbox>
+										</p:column>	
+										<p:column>
+										<p:commandButton value="#{msg.fdm_select}"
+											id="showWorkgroups"
+											action="#{resultAnalysis.loadSelectedWorkgroups()}"
+											update="analysisWorkgroupSelectionForm:workgroupSelection"
+											oncomplete="PF('workgroupSelectionWidget').show();">
+										</p:commandButton>
+										</p:column>
+									</p:row>
+		
+								</p:panelGrid>
+							</p:column>
+						
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel
+									value="#{msg.fdm_search_from_date_label}" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+								<p:calendar id="fromDate" value="#{resultAnalysis.searchCriteria.fromDate}"
+									showOn="button"
+									converterMessage="#{msg.fdm_search_invalid_date_format}"
+									pattern="#{msg.date_pattern}" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel
+									value="#{msg.fdm_search_to_date_label}" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+								<p:calendar id="toDate" value="#{resultAnalysis.searchCriteria.toDate}"
+									showOn="button"
+									converterMessage="#{msg.fdm_search_invalid_date_format}"
+									pattern="#{msg.date_pattern}" />
+
+							</p:column>
+						</p:row>
+			
+						<p:row>
+						<p:column colspan="2">
+							<p:messages id="messages" showDetail="false" closable="false">
+						    </p:messages>
+						</p:column>
+						</p:row>
+				
+						<p:row>
+							<p:column colspan="3">
+									<p:commandButton value="#{msg.fdm_search_btn}" action="#{resultAnalysis.search}" id="saveBtn" update="innerContent" />
+										
+									<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" action="#{resultAnalysis.cancel}" oncomplete="PF('resultAnalysisDialog').hide();" id="cancelBtn" update="innerContent" />
+
+									<p:commandButton id="resetBtn" style="float:right;" value="#{msg.fdm_reset_btn}" action="#{resultAnalysis.reset}" process="@this" update="innerContent" >
+										<p:resetInput target="innerContent"/>
+									</p:commandButton>
+							
+							</p:column>
+						</p:row>
+
+					</p:panelGrid>
+
+
+
+				</h:form>
+
+
+			</p:tab>
+				
+				
+		</p:tabView>
+
+	</p:sidebar>
+	
+	
+	<h:form id="analysisWorkgroupSelectionForm">
+		<p:sidebar position="right" id="workgroupSelection"
+			header="#{msg.fdm_search_script_dialog_label}"
+			widgetVar="workgroupSelectionWidget" style="width:640px;">
+
+			<p:panel id="userSelectionP"
+				header="#{msg.fdm_search_workgroup_dialog_label}">
+			
+				<div style="height:10px;width:100%"></div>
+				
+				<div style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;width:100%; overflow: auto">
+					<p:tree id="workgroupSelectTree" value="#{resultAnalysis.workgroupRoot}"
+						style="width:100%;" var="node" filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}" 
+						filterMatchMode="contains" selectionMode="checkbox" selection="#{resultAnalysis.selectedWorkgroupNodes}">
+						<p:treeNode>
+							<h:outputText value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('workgroupSelectionWidget').hide();"
+						action="#{resultAnalysis.updateSelectedWorkgroups()}"
+						update="resultAnalysisTabs:analysisForm:workgroupSelect workgroupSelectTree resultAnalysisTabs:analysisForm:allWorkgroupsSelected" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{resultAnalysis.clearSelectedWorkgroups()}"
+						update="workgroupSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('workgroupSelectionWidget').hide();"
+						update="resultAnalysisTabs:analysisForm:workgroupSelect workgroupSelectTree resultAnalysisTabs:analysisForm:allWorkgroupsSelected" />
+
+				</f:facet>
+
+			</p:panel>
+
+		</p:sidebar>
+	</h:form>
+
+
+</ui:composition>

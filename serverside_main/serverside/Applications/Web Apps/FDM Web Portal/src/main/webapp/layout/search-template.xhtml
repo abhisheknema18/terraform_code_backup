@@ -1,0 +1,84 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/layout/template.xhtml">
+
+	<ui:define name="main-body">
+		<div id="searchBody">
+			<h:panelGrid columns="2" class="leftTabbed" columnClasses="searchMenuCell,searchPanelCell" style="width:100%">
+				<h:panelGroup id="searchSideMenu" class="leftMenuBorder">
+					<h:form id="sideMenuForm">
+						<h:panelGrid columns="1" id="leftMenuVerticalSpacer" style="background:#69A488;padding:.2em;height:39px;width:100%;"> </h:panelGrid>
+						<h:panelGrid columns="1" class="leftMenuBorder">
+							<!-- <h:commandLink action="#{search.navigate}" value="#{msg.fdm_left_nav_search}" class="leftMenu#{view.viewId=='/fdm/search.xhtml' ? 'Selected' : ''}"/> -->
+							
+							<p:commandLink rendered="#{view.viewId=='/fdm/search.xhtml'}" disabled="#{search.searchResults.selectedResults.size() == 0  or search.searchResults.isUniqueScriptIdSelected(searchResults.isApprovalMode()) == false}" styleClass="leftMenuAction" action="#{search.searchResults.loadDetailsMultiView()}" update="msgs">
+							<i class="leftMenuLinkIcon fa fa-arrow-alt-circle-right"></i><h:outputText value="Multi View"/>
+							</p:commandLink>
+							
+							<p:commandLink rendered="#{view.viewId=='/fdm/search.xhtml'}" disabled="#{search.searchResults.selectedResults.size() == 0 or search.searchResults.isUniqueScriptIdSelected(true) == false or !search.searchResults.isResultStatusEditable()}" styleClass="leftMenuAction" action="#{detailsMultiView.loadNextStatuses(search.searchResults.selectedResults.get(0).returnedScript)}" update="statusUpdateForm:statusUpdate msgs" oncomplete="PF('statusUpdateWidget').show();">
+							<i class="leftMenuLinkIcon fa fa-cloud-upload"></i><h:outputText value="#{msg.fdm_left_nav_status_update}"/>
+							</p:commandLink>
+							
+							<p:commandLink rendered="#{view.viewId=='/fdm/search.xhtml' and fdmenv.extractCSV == true}" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" disabled="#{search.searchResults.selectedResults.size() == 0 or search.searchResults.isUniqueScriptIdSelected(false) == false}" styleClass="leftMenuAction" update="msgs">
+							<p:fileDownload value="#{search.searchResults.downloadCSV()}" />
+							<i class="leftMenuLinkIcon fas fa-file-csv"></i><h:outputText value="#{msg.fdm_left_nav_download_result}"/>
+							</p:commandLink>
+						
+						</h:panelGrid>
+					</h:form>
+				</h:panelGroup>
+				<h:panelGroup id="searchBodyContent" styleClass="searchBodyContent">
+					<h:panelGrid columns="1" id="searchPanel" styleClass="searchPanel">
+						<ui:insert name="search-body"/>
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+		
+		<h:form id="statusUpdateForm">
+
+			<p:sidebar modal="true" id="statusUpdate" widgetVar="statusUpdateWidget" position="right"> 
+					
+				<p:panel  rendered="#{search.searchResults.selectedResults.size() > 0}" header="#{msg.fdm_left_nav_status_update}" style="background:none;">
+		
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('statusUpdateWidget').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+				
+					<p:panelGrid columns="2" styleClass="noBackground">
+
+						<p:outputLabel for="currentStatus" value="#{msg.fdm_details_current_status}"/>  
+						<p:inputText id="currentStatus" value="#{search.searchResults.selectedResults.get(0).returnedScript.resultStatus}" disabled="true" style="width:100%" styleClass="disabledBlackText" />
+						
+						<p:outputLabel for="nextStatus" value="#{msg.fdm_details_next_status}"/>  
+						<p:selectOneMenu id="nextStatus" value="#{detailsMultiView.nextStatus}">
+							<f:ajax event="change" />
+				   			<f:selectItems value="#{detailsMultiView.nextStatuses}" />
+				   		</p:selectOneMenu>
+				   		
+					</p:panelGrid>	
+					
+					<f:facet name="footer">
+	
+                    	<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+                    		onclick="PF('statusUpdateWidget').hide();"
+							action="#{detailsMultiView.updateNextStatusFromSearch()}" update="searchSideMenu statusUpdate searchTabs msgs" />
+							
+						<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" onclick="PF('statusUpdateWidget').hide();" />
+
+			
+                	</f:facet>
+               	</p:panel>
+			</p:sidebar>
+	
+		</h:form>
+		
+		
+	</ui:define>
+</ui:composition>

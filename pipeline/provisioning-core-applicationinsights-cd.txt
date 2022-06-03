@@ -1,0 +1,89 @@
+steps:
+- task: ExtractFiles@1
+  displayName: 'Extract files '
+  inputs:
+    archiveFilePatterns: '$(System.ArtifactsDirectory)\**\*.zip'
+    destinationFolder: '$(System.ArtifactsDirectory)\_Extracted\provisioning'
+
+steps:
+- task: qetza.replacetokens.replacetokens-task.replacetokens@2
+  displayName: 'Replace Tokens'
+  inputs:
+    rootDirectory: '$(System.ArtifactsDirectory)\_Extracted'
+    targetFiles: '**\*.ARM.Params.json'
+    actionOnMissing: fail
+    tokenSuffix: '}'
+steps:
+- task: PowerShell@1
+  displayName: 'View Configuration'
+  inputs:
+    scriptType: inlineScript
+    inlineScript: |
+     ("`n--- ApplicationInsights.json ---")
+     Get-Content -Path $(System.ArtifactsDirectory)\_Extracted\provisioning\Core\**\ArmTemplates\Core.ApplicationInsights.ARM.Params.json
+
+ steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Azure Deployment:Create Or Update Resource Group'
+  inputs:
+    azureResourceManagerConnection: 'NHG Digital NON-PROD (dc8ebcd8-c1cc-43d3-a734-529dc0e858b4)'
+    subscriptionId: 'dc8ebcd8-c1cc-43d3-a734-529dc0e858b4'
+    resourceGroupName: 'nhh-euw-cps-rg-infrastructure-$(Release.EnvironmentName)'
+    location: 'UK South'
+    csmFile: '$(System.ArtifactsDirectory)\_Extracted\provisioning\Core\**\ArmTemplates\Core.ApplicationInsights.ARM.json'
+    csmParametersFile: '$(System.ArtifactsDirectory)\_Extracted\provisioning\Core\**\ArmTemplates\Core.ApplicationInsights.ARM.Params.json'
+
+
+variables:
+  Provisioning.ApplicationInsights.Name: 'nhh-euw-cps-ai-01-$(Release.EnvironmentName)'
+
+steps:
+- task: AzurePowerShell@5
+  displayName: 'Azure PowerShell Script: Get Application Insight Instrumentation Key'
+  inputs:
+    azureSubscription: 'NHG Digital NON-PROD (dc8ebcd8-c1cc-43d3-a734-529dc0e858b4)'
+    ScriptPath: '$(System.ArtifactsDirectory)\_Extracted\provisioning\Core\ApplicationInsights\Get-AzureAIInstrumentationKey.ps1'
+    ScriptArguments: '-targetResourceGroup ''nhh-euw-cps-rg-infrastructure-$(Release.EnvironmentName)'' -targetResourceName $(Provisioning.ApplicationInsights.Name)'
+    azurePowerShellVersion: LatestVersion
+steps:
+- task: NuGetCommand@2
+  displayName: 'NuGet Install: NHH.DevOps.Tools.PowerShell'
+  inputs:
+    command: custom
+    arguments: 'install NHH.DevOps.Tools.PowerShell -Source https://nottinghill.pkgs.visualstudio.com/_packaging/tools/nuget/v3/index.json -OutputDirectory $(System.ArtifactsDirectory)\_Extracted\Nuget\Powershell'
+
+#Your build pipeline references an undefined variable named ‘Core.ApplicationInsights.Name’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+variables:
+  Provisioning.ApplicationInsights.ReleaseAnnotationsApiKeyName: 'ReleaseAnnotations'
+
+steps:
+- task: AzurePowerShell@5
+  displayName: 'Check API Key for Release Annotation Exists'
+  inputs:
+    azureSubscription: 'NHH -  Digital Transformation NON-PROD'
+    ScriptPath: '$(System.ArtifactsDirectory)\_Extracted\Nuget\Powershell\**\Release\Assert-AppInsightsApiKeyExists.ps1'
+    ScriptArguments: '-resourceGroupName nhh-euw-cps-rg-infrastructure-$(Release.EnvironmentName) -ApplicationInsightsInstanceName $(Core.ApplicationInsights.Name) -ApiKeyDescription $(Provisioning.ApplicationInsights.ReleaseAnnotationsApiKeyName)'
+    azurePowerShellVersion: LatestVersion
+steps:
+- task: PowerShell@1
+  displayName: 'PowerShell Script: Fail Release if API Key Missing'
+  inputs:
+    scriptType: inlineScript
+    inlineScript: |
+     $ErrorActionPreference = "Stop"; 
+     Write-Error "##vso[task.logissue type=error] The App Insights Key Already Exists. Please add the variable value to the variables and scope to the environment."
+  condition: and(succeeded(), eq(variables['Runtime.ApplicationInsights.ApiKeyExists'], 'true'), not(variables['Core.ApplicationInsights.AnnotationApiKey']))
+
+  #Your build pipeline references an undefined variable named ‘Core.ApplicationInsights.Name’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+variables:
+  Provisioning.ApplicationInsights.ReleaseAnnotationsApiKeyName: 'ReleaseAnnotations'
+
+steps:
+- task: AzurePowerShell@5
+  displayName: 'New API Key for Release Annotation'
+  inputs:
+    azureSubscription: 'NHG Digital NON-PROD (dc8ebcd8-c1cc-43d3-a734-529dc0e858b4)'
+    ScriptPath: '$(System.ArtifactsDirectory)\_Extracted\Nuget\Powershell\**\Release\New-AppInsightsApiKey.ps1'
+    ScriptArguments: '-resourceGroupName nhh-euw-cps-rg-infrastructure-$(Release.EnvironmentName) -ApplicationInsightsInstanceName $(Core.ApplicationInsights.Name) -ApiKeyDescription $(Provisioning.ApplicationInsights.ReleaseAnnotationsApiKeyName) -permissions "WriteAnnotations"'
+    azurePowerShellVersion: LatestVersion
+  condition: and(succeeded(), ne(variables['Runtime.ApplicationInsights.ApiKeyExists'], 'true'))

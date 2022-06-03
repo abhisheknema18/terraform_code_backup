@@ -1,0 +1,753 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/work-template.xhtml">
+
+	<ui:param name="bean" value="#{workDetail}" />
+
+	<ui:define name="work-body">
+
+<script
+			src="https://maps.googleapis.com/maps/api/js?key=#{fdmenv.systemParameters.mapKey}" >
+			window.gm_authFailure = function validMapKey() {
+				element = document.getElementById('workDetailForm:workMapDetails');
+				var img = document.createElement('img'); 
+				img.src = '/images/nomapfound.jpg'; 
+				element.replaceWith(img);
+				img.classList.add('noMapClass');
+		}
+</script>
+<style>
+
+.ui-dialog-title{
+		width:100%
+}
+.ui-datepicker {
+	z-index:31000 !important;
+}
+	
+.workDetail .ui-tree-container{
+	background:white;
+	border:1px solid lightgrey !important;
+}
+.workDetail .ui-column-title{
+	font-weight:bold;
+}
+.workDetail .ui-datatable-tablewrapper{
+	border: 1px solid lightgrey;
+}
+
+.workDetail table .ui-datatable thead th {
+	background: #eee !important;
+}
+
+.workDetail .ui-datatable .ui-column-filter {
+	background: white !important;
+	border: 1px solid #ddd;
+}
+
+.workDetail .ui-datatable .workDetail tr.ui-datatable-even:hover, ..workDetail ui-datatable tr.ui-datatable-odd:hover {
+    border: none;
+    background: #c0efd1 !important;
+    color: black;
+    text-shadow: none;
+    box-shadow:none;
+    font-weight:normal;
+}
+
+.workDetail .ui-panel .ui-panel-titlebar {
+	padding: 5px !important;
+	font-size:1.1em;
+}
+.workDetail .headerText {
+	background: none !important;
+	width:100% !important;
+}
+
+.subText {
+	background: none !important;
+	font-size:0.8em !important;
+	padding-top: 0px !important;
+    font-style: italic !important;
+    font-weight: lighter !important;
+}
+
+.workDetail label {
+	border-bottom : 0px !important;
+	width: 100% !important;
+	margin:0px !important;
+}
+
+.workDetail .ui-widget-content TR {
+	border: 0px solid #fff;
+    border-bottom: 1px solid #eee !important;
+}
+
+.workDetail .headerText {
+	font-weight:bold;
+	padding:5px;
+	font-size:1.1em;
+	height: auto;
+	line-height:2em;
+}
+
+.workDetail .labelPanel .ui-panel-titlebar {
+	color: #999;
+	padding:5px !important;
+	font-weight:normal;
+	font-size:1.1em;
+}
+
+
+.workDetail .labelText {
+	color: #999;
+	padding:5px;
+	font-size:1.1em;
+	line-height:2em;
+}
+
+.workDetail .ui-panel .ui-panel-content{
+	padding:0px;
+}
+
+.workDetail .ui-column-title{
+font-weight:bold;
+}
+
+.workDetail .ui-datatable-tablewrapper{
+border: 1px solid lightgrey;
+}
+
+.someCustomClass .ui-datagrid-column {width: 33.33%;}
+
+.workMapClass {
+	border: 1px solid #fff;
+	float: left;
+	background-color: #eee;
+	width: calc(100%);
+	max-width: 1000px;
+	height: 375px;
+	text-align: center;
+	font-size: 50px;
+	color: gainsboro;
+}
+
+.workTimeStyle .ui-datepicker {
+	width: 110px;
+	top: 25px !important;
+}
+
+.workTimeStyle .ui-inputfield{
+	width: 110px;
+}
+
+</style>
+
+		<h:form id="workDetailForm">
+			<div id="navigationContainer" class="resultNavigationContainer" style="height:34px;padding-top:5px;">
+				<div id="navigation" class="resultNavigation">
+
+					<p:commandLink id="nonAjax" action="#{workList.navigateReturn}"
+						update="@all" title="Return to List" styleClass="resultNavigationButton fa fa-list" />
+
+					<p:commandLink id="prevNav"
+						styleClass="resultNavigationButton fa fa-arrow-left"
+						action="#{workList.navigatePrevious}"
+						disabled="#{not workList.previous}"
+						title="Previous"
+						update="@this nextNav detailsTabs workMapDetails workStatusResultAcc searchSideMenu" />
+
+					<p:commandLink id="nextNav"
+						styleClass="resultNavigationButton fa fa-arrow-right"
+						action="#{workList.navigateNext}" disabled="#{not workList.next}"
+						update="@this prevNav detailsTabs workMapDetails workStatusResultAcc searchSideMenu"
+						title="Next"
+						execute="@page" event="click" />
+
+				</div>
+			</div>
+
+			<h:panelGrid columns="2" layout="grid"
+				columnClasses="ui-g-6 ui-md-5, ui-g-12; ui-md-9">
+
+				<p:panel id= "detailsTabs">
+					<h:panelGrid id="equipmentDataId" width="100%" >
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="workOrderNo" id="workOrderNo" value="#{msg.fdm_details_work_order_no_label}" />
+							<h:outputText value="#{workList.workDetail.work.id.workOrderNo}"
+								styleClass="assetDetailheaderText" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="districtCode" id="districtCode" value="#{msg.fdm_work_district_code_label}" />
+							<h:outputText value="#{workList.workDetail.work.id.districtCode}"
+								styleClass="assetDetailheaderText" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="workOrderDesc" id="workOrderDesc"
+								value="#{msg.fdm_work_description_label}" />
+							<h:outputText value="#{workList.workDetail.work.workOrderDesc}"
+								styleClass="assetDetailheaderText" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="woType" value="#{msg.fdm_work_order_type_label}" />
+							<h:outputText id="woType"
+								value="#{workList.workDetail.work.woType}"
+								styleClass="assetDetailheaderText" />
+						</h:panelGrid>
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="equipNo" id="equipNo"
+								value="#{msg.fdm_eq_num_label}" />
+							<h:panelGroup>
+								<h:outputLabel value="#{workList.workDetail.work.equipNo}"
+									styleClass="assetDetailheaderText">
+									<p:commandLink id="equipmentQuickViewWoBtn" style="float:right;padding:5px"
+										onclick="PF('assetViewWidgetVar').show();"
+										update="assetDialogViewId:assetViewPanel"
+										rendered="#{workList.equipmentInformation.equipmentData!=null}">
+										<i class="fas fa-search" alt="edit"></i>
+									</p:commandLink>
+									<p:tooltip for="equipmentQuickViewWoBtn" value="#{msg.fdm_quick_view_tool_tip}"></p:tooltip>
+								</h:outputLabel>
+							</h:panelGroup>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="equipReference" id="equipReference"
+								value="#{msg.fdm_equipment_information_equipment_reference_label}" />
+							<h:outputText value="#{workList.workDetail.work.altEquipRef}"
+								styleClass="assetDetailheaderText" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="equipDesc" id="equipDesc"
+								value="#{msg.fdm_eq_desc_label}" />
+							<h:outputText value="#{workList.workDetail.work.equipDesc}"
+								styleClass="assetDetailheaderText" />
+						</h:panelGrid>
+
+
+						<h:panelGrid columns="3" >
+							<h:outputLabel  value="#{msg.fdm_work_start_date_label}" />
+							<h:panelGroup styleClass="assetDetailheaderText" >								
+								<h:outputText value="#{func:intToDate(workList.workDetail.work.planStartDate)}">
+									<f:convertDateTime dateStyle="medium"/>
+								</h:outputText>
+								<h:outputText value=" "></h:outputText>
+								<h:outputText 
+									value="#{func:combineDateTime(workList.workDetail.work.planStartDate,workList.workDetail.work.planStartTime)}"
+									rendered="#{workList.workDetail.work.planStartTime != null}">
+									<f:convertDateTime pattern="HH:mm"/>
+								</h:outputText>
+							</h:panelGroup>
+							
+						</h:panelGrid>
+
+						<h:panelGrid columns="3" >
+							<h:outputLabel  value="#{msg.fdm_req_finish_date_label}" />
+							<h:panelGroup styleClass="assetDetailheaderText" >
+								<h:outputText value="#{func:intToDate(workList.workDetail.work.reqFinishDate)}">
+									<f:convertDateTime dateStyle="medium" />
+								</h:outputText>
+								<h:outputText value=" "></h:outputText>
+								<h:outputText 
+									value="#{func:combineDateTime(workList.workDetail.work.reqFinishDate,workList.workDetail.work.reqFinishTime)}"
+									rendered="#{workList.workDetail.work.reqFinishTime != null}">
+									<f:convertDateTime pattern="HH:mm" />
+								</h:outputText>
+							</h:panelGroup>
+						</h:panelGrid>
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="workgroup" id="workgroup" value="#{msg.fdm_work_group_label}"/>
+							<h:outputLabel 
+                            value="#{workList.workDetail.workGroup.workgroupDesc}" styleClass="assetDetailheaderText"><h:outputText style="color:grey; margin-left:3px" rendered="#{workList.workDetail.work.workgroupCode!=null and !workList.workDetail.work.workgroupCode.isEmpty()}" value="(#{workList.workDetail.work.workgroupCode})"/></h:outputLabel>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="user" id="user" value="#{msg.fdm_user_label}" />
+							<h:outputLabel 
+                            value="#{workList.workDetail.user.userName}" styleClass="assetDetailheaderText" ><h:outputText style="color:grey; margin-left:3px" rendered="#{workList.workDetail.work.userCode!=null and !workList.workDetail.work.userCode.isEmpty()}" value="(#{workList.workDetail.work.userCode})"/></h:outputLabel>
+						</h:panelGrid>
+
+						<h:panelGrid columns="2" >
+							<h:outputLabel
+								value="#{msg.fdm_equipment_information_equipment_location_label}" />
+							<h:outputText id="locationdetailsTabs"
+								value="#{workList.workDetail.location}"
+								styleClass="assetDetailheaderText" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="2" >
+							<h:outputLabel id="workStatus" for="workStatus" value="#{msg.fdm_work_status_label}" />
+							<h:outputText value="#{workList.workDetail.work.workStatus}"
+								styleClass="assetDetailheaderText" />
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="workStatusDate" value="#{msg.fdm_work_status_date_label}" />
+							<h:outputText id="workStatusDate"
+								value="#{func:intToDate(workList.workDetail.work.workStatusDate)}"
+								styleClass="assetDetailheaderText">
+								<f:convertDateTime dateStyle="medium" />
+							</h:outputText>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="workInstruction" value="#{msg.fdm_work_additional_text_label}" />
+
+							<h:outputText id="workInstruction"
+								value="#{workList.workDetail.work.additionalText}"
+								styleClass="assetDetailheaderText">
+							</h:outputText>
+						</h:panelGrid>
+
+
+					</h:panelGrid>
+				</p:panel>
+				<p:panel id="workMapDetails">
+					<h:panelGrid width="100%"
+						rendered="#{workList.workDetail.location==null || fdmenv.systemParameters.mapKey==null}">
+						<!-- <h:outputText value="No map data found"
+							styleClass="workNoMapClass"></h:outputText> -->
+							<h:graphicImage value ="/images/nomapfound.jpg" styleClass="noMapClass"/>
+					</h:panelGrid>
+					<h:panelGrid width="100%"
+						rendered="#{workList.workDetail.location!=null and fdmenv.systemParameters.mapKey!=null}">
+						<p:gmap center="#{workList.workDetail.location}" zoom="15"
+							type="ROADMAP" styleClass="workMapClass"
+							model="#{workList.workDetail.mapModel}" ></p:gmap>
+					</h:panelGrid>
+				</p:panel>
+			</h:panelGrid>
+			<p:spacer height="15px" />
+
+			<p:panel id="workStatusResultAcc">
+				<p:accordionPanel activeIndex="-2" cache="false" multiple="true">
+				<p:tab title="Status History (#{workList.workDetail.workStatusHistory.size()})">
+						<p:dataTable
+							value="#{workList.workDetail.workStatusHistory}"
+							var="result" 
+							fixedHeader="false"
+							selectionMode="single" 
+							rowKey="#{result.id}"
+							scrollable="true"
+							scrollHeight="200"
+							styleClass="listHighLightTableCls"
+							style="width:100%;border: 1px solid #dddddd;">
+
+							<p:column headerText="#{msg.fdm_status_label}" style="width:25%">  
+								          <h:outputText value= "#{result.id.workStatus}"/>
+							</p:column>
+
+							<p:column headerText="#{msg.fdm_user_code_label}" style="width:25%">  
+								            <h:outputText value="#{result.userCode}"/>
+							</p:column>
+
+							<p:column headerText="#{msg.fdm_date_label}" styleClass="dateField">
+								<h:outputText id="workStatusDate"
+									value="#{func:intToDate(result.id.workStatusDate)}"
+									style="width:auto;">
+									<f:convertDateTime dateStyle="medium" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="#{msg.fdm_time_label}" styleClass="dateField">
+								<h:outputText id="workStatusTime2"
+									value="#{func:parseTime(result.id.workStatusTime)}"
+									style="width:auto;" />
+							</p:column>
+
+							<p:column headerText="#{msg.fdm_additional_text_label}"  style="width:50%">  
+								<h:outputText value= "#{result.additionalText}"/>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+					<p:tab title="Result History (#{workList.workDetail.resultHistory.size()})">
+						<p:dataTable value="#{workList.workDetail.resultHistory}"
+						var="result"
+						style="width:100%;border: 1px solid #dddddd;"
+						selectionMode="single"
+						rowKey="#{result.id}"
+						scrollable="true"
+						scrollHeight="300"
+						styleClass="listHighLightTableCls"
+						resizableColumns="true">
+							<p:column styleClass="dateField"
+								headerText="#{msg.fdm_search_results_date_label}"
+								filterMatchMode="contains"
+								sortBy="#{func:intToDate(result.completeDate)}"
+								filterable="false"
+								filterBy="#{func:intToDateString(result.completeDate)}">
+								<h:outputText value="#{func:intToDateString(result.completeDate)}">
+								</h:outputText>
+							</p:column>
+
+							<!-- 41092 - Front end changes to add the new column in Search results Start-->
+							<p:column style="width:25%;"
+							headerText="#{msg.fdm_search_results_script_code_label}"
+							filterMatchMode="contains"
+							filterBy="#{result.returnedScript.scriptCode.concat('/').concat(result.returnedScript.scriptVersions.versionNumberInt)}"
+							sortBy="#{result.returnedScript.scriptCode.concat('/').concat(result.returnedScript.scriptVersions.versionNumberInt)}">
+							<h:outputText value="#{result.returnedScript.scriptCode}" />
+							<h:outputText value="/#{result.returnedScript.scriptVersions.versionNumberInt}"
+								style="color:grey" />
+						</p:column>
+							<!-- 41092 - Front end changes to add the new column in Search results End-->
+							<p:column style="width:35%"
+								headerText="#{msg.fdm_search_results_script_description_label}"
+								filterMatchMode="contains" filterBy="#{result.summaryDesc}"
+								filterable="false" sortBy="#{result.summaryDesc}">
+								<h:outputText value="#{result.summaryDesc}" />
+							</p:column>
+							<p:column style="width:20%;"
+								headerText="#{msg.fdm_search_results_field_user_label}"
+								filterMatchMode="contains" filterBy="#{result.completeUser}"
+								sortBy="#{result.completeUser}">
+								<h:outputText value="#{result.completeUser}" />
+							</p:column>
+							<p:column style="width:20%;"
+								headerText="#{msg.fdm_search_results_status_label}"
+								filterMatchMode="contains" filterBy="#{result.resultStatus}"
+								sortBy="#{result.resultStatus}">
+								<h:outputText value="#{result.resultStatus}" />
+							</p:column>
+
+							<p:column styleClass="tableIcon">
+								<p:commandLink id="wOResultQuickViewBtn" action="#{detailsQuickView.initialise(result.returnedScript)}"
+									update="msgs resultQuickViewForm"
+									oncomplete="PF('detailDialog').show();">
+									<i class="fa fa-search" alt="Quick View"></i>
+								</p:commandLink>
+								<p:tooltip for="wOResultQuickViewBtn" value="#{msg.fdm_quick_view_tool_tip}"></p:tooltip>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+					
+				</p:accordionPanel>
+			</p:panel>
+
+		</h:form>
+		
+		<h:form id="assignWorkForm">
+			<p:sidebar id="assignWorkDialog" widgetVar="assignWorkDialogWidget" position="right" style="width:830px;" baseZIndex="10010">
+				
+ 				<p:panel header="Assign Work">
+			
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('assignWorkDialogWidget').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+				
+	                <p:panelGrid styleClass="whiteGrid" style="width:100%;">
+	                
+	                <p:row>
+	                <p:column style="width:440px; padding:5px;">
+	                    
+	                    <p:outputPanel style="width: 430px;overflow: auto;display: block">
+	                    	<p:panel header="Workgroup Select" />
+		                    <p:tree id="workgroupSelectTree" value="#{workList.workgroupAssignedRoot}"
+									var="node" filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}" 
+									filterMatchMode="contains" selectionMode="single"
+									selection="#{workList.selectedAssignedWorkgroupNode}">
+									<p:treeNode>
+										<h:outputText value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+										<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+									</p:treeNode>
+									<p:ajax event="select" update="assignWorkForm:userSelectionTree editWorkForm:workgroupCodeEdit editWorkForm:workgroupDescEdit reIssueWorkForm:workgroupCodeEdit reIssueWorkForm:workgroupDescEdit editWorkForm:userCodeEdit editWorkForm:userNameEdit reIssueWorkForm:userCodeEdit reIssueWorkForm:userNameEdit" />
+							</p:tree>
+	                    </p:outputPanel>
+
+						
+	                </p:column>
+	                <p:column style="width:340px; padding:5px;">
+	                	<p:outputPanel style="width: 330px;overflow: auto;display: block">
+	                		<p:panel header="User Select" />
+							 <p:tree id="userSelectionTree" value="#{workList.userAssignedRoot}"
+									var="userNode" filterMatchMode="contains"
+									disabled="#{not (workList.isUserWorkAssignmentEnabled())}"
+									filterBy="#{userNode.userName.concat('(').concat(userNode.id.userCode).concat(')')}"
+									selectionMode="single"
+									selection="#{workList.selectedAssigneduserNode}">
+									<p:treeNode>
+										<h:outputText value="#{userNode.userName}" />
+										<h:outputText style="font-size:0.7em;font-style:italic;" value=" (#{userNode.id.userCode})" />
+									</p:treeNode>
+									<p:ajax event="select" update="editWorkForm:userCodeEdit editWorkForm:userNameEdit reIssueWorkForm:userCodeEdit reIssueWorkForm:userNameEdit" />
+							</p:tree>
+						</p:outputPanel>
+						
+	                </p:column>
+	                </p:row>
+	                
+						
+	                </p:panelGrid>
+	                
+					<f:facet name="footer">	
+	                
+	                	<p:commandButton icon="fa fa-save" value="#{msg.fdm_search_dialog_ok_label}" onclick="PF('assignWorkDialogWidget').hide();" />
+						<p:commandButton icon="fa fa-remove" value="#{msg.fdm_search_dialog_cancel_label}" onclick="PF('assignWorkDialogWidget').hide();" />
+	                </f:facet>
+	                
+	            </p:panel>
+
+			</p:sidebar>
+			
+		</h:form>
+		
+		<h:form id="editWorkForm">
+
+			<p:sidebar id="editWorkPanel" widgetVar="editWorkSideBar" position="right" baseZIndex="10000">
+			
+				<p:panel id="headerPanel" header="Edit Work" closable="false">
+				
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('editWorkSideBar').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+					
+					<p:panelGrid style="width:100%">
+					
+						<p:row>
+							<p:column>
+								<h:outputLabel for="workgroupCodeEdit" styleClass="labelText" value="#{msg.fdm_work_assignment}"/>
+							</p:column>
+							<p:column style="border-bottom:1px solid #DFDFDF !important">
+								
+								<p:panel style="background:white; height:90px; width:342px;">
+								
+									<p:outputLabel id="workgroupCodeEdit" value="#{workList.workDetail.workGroup.workgroupDesc}"/>
+									<!-- <p:inputText id="workgroupCodeEdit" disabled="true" value="#{workList.workDetail.workGroup.workgroupDesc}" style="width:232px;color:black; opacity:1;"/> -->
+									<p:outputLabel id="workgroupDescEdit"
+											value="#{workList.workDetail.workGroup.id.workgroupCode}"
+											styleClass="headerText subText" />
+								
+									<p:outputLabel id="userCodeEdit" value="#{workList.workDetail.user.userName}"/>
+									<!-- <p:inputText id="userCodeEdit" disabled="true" value="#{workList.workDetail.user.userName}" style="width:232px;color:black; opacity:1;"/> -->
+									
+									<p:outputLabel id="userNameEdit"
+											value="#{workList.workDetail.user.id.userCode}"
+											styleClass="headerText subText" />
+										
+								</p:panel>
+									
+								<p:commandButton id="showUsers" value="Assign" style="float:left" icon="fa fa-ellipsis-h" oncomplete="PF('assignWorkDialogWidget').show();" />
+
+
+							</p:column>
+						</p:row>
+						
+						<p:row>
+							<p:column>
+								<h:outputLabel styleClass="labelText" value="#{msg.fdm_work_start_date_label}"/>
+							</p:column>
+							<p:column>
+								<p:calendar id="planStartDateEdit"
+								 	value="#{workList.workDetail.tempStartDate}"
+									showOn="button"
+									converterMessage="#{msg.fdm_search_invalid_date_format}"
+									pattern="#{msg.date_pattern}" />
+								<p:datePicker id="planStartTimeEdit" value="#{workList.workDetail.tempStartTime}" pattern="HH:mm"
+									converterMessage="Invalid time format" showIcon="true" autocomplete="false" 
+									timeOnly="true" style="min-width:0px;" styleClass="workTimeStyle">
+									<f:convertDateTime pattern="HH:mm"></f:convertDateTime>
+									<p:keyFilter regEx="/[0-9:]/"></p:keyFilter>
+								</p:datePicker>
+							</p:column>
+						</p:row>
+						
+						<p:row>
+							<p:column>
+								<h:outputLabel styleClass="labelText" value="#{msg.fdm_req_finish_date_label}" />
+							</p:column>
+							<p:column>
+								<p:calendar id="reqFinishDateEdit" 
+									value="#{workList.workDetail.tempFinsihDate}"  
+									showOn="button"
+									converterMessage="#{msg.fdm_search_invalid_date_format}"
+									pattern="#{msg.date_pattern}" />
+								<p:datePicker id="reqFinishTimeEdit" value="#{workList.workDetail.tempFinsihTime}" pattern="HH:mm"
+									converterMessage="Invalid time format" showIcon="true"
+									timeOnly="true" style="min-width:0px;" styleClass="workTimeStyle">
+									<f:convertDateTime pattern="HH:mm"></f:convertDateTime>
+									<p:keyFilter regEx="/[0-9:]/"></p:keyFilter>
+								</p:datePicker>
+							</p:column>
+						</p:row>
+											
+						<p:row>
+							<p:column>
+								<h:outputLabel for="additionalTextEdit" styleClass="labelText" value="#{msg.fdm_work_additional_text_label}" /> 
+							</p:column>
+							<p:column>
+								<p:inputTextarea id="additionalTextEdit" rows="10" cols="45" maxlength="500" value="#{workList.workDetail.work.additionalText}" style="width:342px"/>
+							</p:column>
+						</p:row>
+					
+					</p:panelGrid>
+						
+					<f:facet name="footer">
+						<p:messages id="validationMessages" severity="error" showDetail="false">
+							<p:autoUpdate />
+						</p:messages>
+						<p:commandButton oncomplete="if(!args.validationFailed){ PF('editWorkSideBar').hide();}" value="Save" id="saveWorkBtn" action="#{workList.assignSaveWork(false)}" update="sideMenuForm workDetailForm:detailsTabs msgs" icon="fa fa-save" />
+						<!-- <p:commandButton oncomplete="PF('editWorkSideBar').hide();" rendered="#{workList.workDetail.work.workStatus == 'RELEASED'}" disabled="#{workList.workDetail.work.workgroupCode == null}" value="Dispatch" id="dispatchWorkBtn" action="#{workList.assignSaveWork(true)}" update="sideMenuForm workDetailForm:detailsTabs msgs" icon="fa fa-share" /> -->
+	
+						<p:commandButton icon="fa fa-remove" value="#{msg.fdm_search_dialog_cancel_label}" onclick="PF('editWorkSideBar').hide();" />
+					</f:facet>
+			   	</p:panel>
+		   	</p:sidebar>
+		   	
+		</h:form>
+		
+		
+
+		<h:form id="reIssueWorkForm">
+
+			<p:sidebar id="reIssueWorkPanel" widgetVar="reIssueWorkSideBar" position="right" baseZIndex="10000" >
+
+				<p:panel id="headerPanel" header="Reissue Work">
+			
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('reIssueWorkSideBar').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+				
+					<p:messages id="validationMessages" severity="error" showDetail="false" closable="true">
+						<p:autoUpdate />
+					</p:messages>
+					
+					<p:panelGrid style="width:100%">
+					
+						<p:row>
+							<p:column>
+								<h:outputLabel for="workgroupCodeEdit" styleClass="labelText" value="#{msg.fdm_work_assignment}"/>
+							</p:column>
+							<p:column style="border-bottom:1px solid #DFDFDF !important" >
+								<p:panel style="background:white; height:90px; width:342px;">
+									<p:outputLabel id="workgroupCodeEdit" style="border-bottom:0px;" value="#{workList.workDetail.workGroup.workgroupDesc}"/>
+									<!-- <p:inputText id="workgroupCodeEdit" disabled="true" value="#{workList.workDetail.workGroup.workgroupDesc}" style="width:232px;color:black; opacity:1;"/> -->
+									<p:outputLabel id="workgroupDescEdit"
+											value="#{workList.workDetail.workGroup.id.workgroupCode}"
+											styleClass="headerText subText" />
+								
+									<p:outputLabel id="userCodeEdit" style="border-bottom:0px;" value="#{workList.workDetail.user.userName}"/>
+									<!-- <p:inputText id="userCodeEdit" disabled="true" value="#{workList.workDetail.user.userName}" style="width:232px;color:black; opacity:1;"/> -->
+									
+									<p:outputLabel id="userNameEdit"
+											value="#{workList.workDetail.user.id.userCode}"
+											styleClass="headerText subText" />
+											
+								</p:panel>
+								<p:commandButton id="showUsers" value="#{msg.fdm_work_assign_btn}" style="float:left" icon="fa fa-ellipsis-h" oncomplete="PF('assignWorkDialogWidget').show();" />
+	
+								
+							</p:column>
+						</p:row>
+						
+						
+						<p:row>
+							<p:column>
+								<h:outputLabel styleClass="labelText" value="#{msg.fdm_work_start_date_label}"/>
+							</p:column>
+							<p:column>
+								<p:calendar id="planStartDateEdit"
+								 	value="#{workList.workDetail.tempStartDate}"
+									showOn="button"
+									converterMessage="#{msg.fdm_search_invalid_date_format}"
+									pattern="#{msg.date_pattern}" />
+							</p:column>
+						</p:row>
+						
+						<p:row>
+							<p:column>
+								<h:outputLabel styleClass="labelText" value="#{msg.fdm_req_finish_date_label}" />
+							</p:column>
+							<p:column>
+								<p:calendar id="reqFinishDateEdit" 
+									value="#{workList.workDetail.tempFinsihDate}"  
+									showOn="button"
+									converterMessage="#{msg.fdm_search_invalid_date_format}"
+									pattern="#{msg.date_pattern}" />
+							</p:column>
+						</p:row>
+											
+						<p:row>
+							<p:column>
+								<h:outputLabel for="additionalTextEdit" styleClass="labelText" value="#{msg.fdm_work_additional_text_label}" /> 
+							</p:column>
+							<p:column>
+								<p:inputTextarea id="additionalTextEdit" rows="10" cols="45" maxlength="500" value="#{workList.workDetail.work.additionalText}" />
+							</p:column>
+						</p:row>
+					
+					</p:panelGrid>
+							
+					<p:commandButton oncomplete="if(args.validationErrorOccured == null){ PF('reIssueWorkSideBar').hide();}" value="#{msg.fdm_save}" id="saveWorkBtn" action="#{workList.reIssueWork()}" update="sideMenuForm workDetailForm:detailsTabs msgs" icon="fa fa-save" />
+
+					<p:commandButton icon="fa fa-remove" value="#{msg.fdm_search_dialog_cancel_label}" onclick="PF('reIssueWorkSideBar').hide();" />
+			   	</p:panel>
+		   	</p:sidebar>
+		   	
+		</h:form>
+		
+		
+		
+		
+		<h:form id="recallWorkForm">
+		
+			<p:sidebar id="recallWorkSideBar" widgetVar="recallWorkSideBarWidget" position="right" baseZIndex="10000">
+
+	            <p:panel id="headerPanelRecallWork" header="Recall Work">
+			
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('recallWorkSideBarWidget').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+				
+	                <p:panelGrid>
+
+						<p:row>
+							<p:column>
+								<h:outputLabel for="recallReason" styleClass="labelText" value="#{msg.fdm_work_recall_reason}" /> 
+							</p:column>
+							<p:column>
+								<p:inputTextarea id="recallReason" rows="10" cols="45" maxlength="500" value="#{workList.recallReason}" />
+							</p:column>
+						</p:row>
+						
+					</p:panelGrid>
+					
+					<f:facet name="footer">	
+						<p:commandButton oncomplete="PF('recallWorkSideBarWidget').hide();" value="#{msg.fdm_work_recall}" icon="fa fa-check" id="recallWorkBtn" action="#{workList.recallWork()}" update="sideMenuForm workDetailForm:detailsTabs msgs" />
+						<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" icon="fa fa-close" onclick="PF('recallWorkSideBarWidget').hide();" />
+					</f:facet>
+	                
+	            </p:panel>
+	            
+	            
+			</p:sidebar>
+		
+		</h:form>
+		
+		<h:form id = "assetDialogViewId">
+		
+		<ui:include src="../fdm/EquipmentInformation.xhtml">
+			<ui:param name="equipBean" value="#{workList}"></ui:param>
+		</ui:include>
+				
+		</h:form>
+
+		<ui:include src="detailsQuickView.xhtml">
+		</ui:include>
+		
+	</ui:define>
+</ui:composition>

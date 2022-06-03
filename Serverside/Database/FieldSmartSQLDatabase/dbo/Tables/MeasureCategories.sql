@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[MeasureCategories] (
+    [UOMCatID] INT          NOT NULL,
+    [CatName]  VARCHAR (15) NOT NULL,
+    CONSTRAINT [PK_MEASURECATEGORIES] PRIMARY KEY CLUSTERED ([UOMCatID] ASC)
+);
+

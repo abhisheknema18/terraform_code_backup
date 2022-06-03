@@ -1,0 +1,451 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:func="http://amt-sybex.com/functions">
+
+<h:form id="dashEditForm#{widgetId}">
+
+	<p:defaultCommand target="saveBtn" />
+	
+	<p:sidebar onShow="if(PrimeFaces.widgets['updatePoll#{widgetId}']){PF('updatePoll#{widgetId}').stop();}"
+		onHide="if(PrimeFaces.widgets['updatePoll#{widgetId}']){PF('updatePoll#{widgetId}').start();}"
+		id="dashEditDialog#{widgetId}"
+		widgetVar="dashEditDialogWidget#{widgetId}" 
+		position="right" baseZIndex="10000">
+		<!-- top:88px -->
+
+		<!-- <p:ajax event="close"
+					listener="#{dashboardItem.cancelEdit}" 
+					update="dashItemForm#{widgetId}:dashy" /> -->
+
+		<p:panel id="editPanel" header="#{dashboardItem.editHeaderTitle}"
+			style="background:none;margin-bottom:20px;">
+			
+			<p:focus for="title"/>
+			
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('dashEditDialogWidget#{widgetId}').hide();"/>
+			</div>
+			
+			<div style="height:30px;width:100%"></div>
+
+			
+			<p:panelGrid>
+			
+				<p:row>
+				
+					<p:column>
+						<p:outputLabel for="title" value="#{msg.fdm_chart_title}" />
+					</p:column>
+					
+					<p:column>
+						<p:inputText id="title" required="true" disabled="#{dashboardItem.criteriaObjs.chartType eq 'LIST'}" requiredMessage="Please enter a Dashboard Title" value="#{dashboardItem.criteriaObjs.title}" maxlength="40" style="height:19px;width:418px;" />
+					</p:column>
+
+				</p:row>
+				
+				<p:row rendered="#{dashboardItem.criteriaObjs.chartType ne 'LIST'}">
+				
+					<p:column>
+						<p:outputLabel value="#{msg.fdm_chart_type}" />
+					</p:column>
+					
+					<p:column>
+						<p:selectOneRadio id="chart" value="#{dashboardItem.criteriaObjs.dashType}" unselectable="false">
+							<p:ajax update="chartproperties" />
+				            <f:selectItem itemLabel="Chart" itemValue="chart" />
+				            <f:selectItem itemLabel="Count" itemValue="count" />
+			        	</p:selectOneRadio>
+					</p:column>
+
+				</p:row>
+				
+				
+				<p:row rendered="#{dashboardItem.criteriaObjs.chartType ne 'LIST'}">
+				
+					<p:column>
+						
+					</p:column>
+					
+					<p:column>
+						<h:panelGroup id="chartproperties">
+						
+							<p:panel  header="Chart Properties" style="border:1px solid #ccc !important;" styleClass="#{dashboardItem.criteriaObjs.dashType != 'chart' ? 'disabledPanel' : ''}">
+							
+								<p:panelGrid>
+								
+									<p:row>
+									
+										<p:column>
+											<p:selectOneMenu id="chartType"
+												disabled="#{dashboardItem.criteriaObjs.dashType != 'chart'}"
+												value="#{dashboardItem.criteriaObjs.chartType}">
+												<p:ajax event="change" process="@form" update="fullWidth stackedUpdate" />
+												<f:selectItem itemLabel="#{msg.fdm_chart_type_column}" itemValue="COLUMN" />
+												<f:selectItem itemLabel="#{msg.fdm_chart_type_pie}" itemValue="PIE" />
+												<f:selectItem itemLabel="#{msg.fdm_chart_type_donut}" itemValue="DONUT" />
+												
+											</p:selectOneMenu>
+										</p:column>
+										
+										<p:column>
+										
+											<h:panelGrid columns="2" style="margin-bottom:10px"
+												cellpadding="5">
+												<p:outputLabel value="#{msg.fdm_three_d}" styleClass="#{dashboardItem.criteriaObjs.dashType != 'chart' ? 'disabledLabel' : ''}" for="use3d" style="width:130px;" />
+												<!-- <p:selectBooleanCheckbox id="use3d" disabled="#{dashboardItem.criteriaObjs.dashType != 'chart'}" value="#{dashboardItem.criteriaObjs.threeD}" label="#{msg.fdm_three_d_enable}" /> -->
+												<p:toggleSwitch id="use3d" disabled="#{dashboardItem.criteriaObjs.dashType != 'chart'}" value="#{dashboardItem.criteriaObjs.threeD}" />
+											</h:panelGrid>
+											
+											<h:panelGrid columns="2" id="fullWidth" style="margin-bottom:10px"
+												cellpadding="5">
+												<p:outputLabel value="#{msg.fdm_full_width}" style="width:130px;"  styleClass="#{dashboardItem.criteriaObjs.chartType != 'COUNT' and dashboardItem.criteriaObjs.chartType != 'COLUMN' or dashboardItem.criteriaObjs.dashType != 'chart' ? 'disabledLabel' : ''}"/>
+												<!-- <p:selectBooleanCheckbox disabled="#{dashboardItem.criteriaObjs.chartType != 'COUNT' and dashboardItem.criteriaObjs.chartType != 'COLUMN' or dashboardItem.criteriaObjs.dashType != 'chart'}" value="#{dashboardItem.criteriaObjs.fullWidth}" label="#{msg.fdm_three_d_enable}" /> -->
+													<p:toggleSwitch disabled="#{dashboardItem.criteriaObjs.chartType != 'COUNT' and dashboardItem.criteriaObjs.chartType != 'COLUMN' or dashboardItem.criteriaObjs.dashType != 'chart'}" value="#{dashboardItem.criteriaObjs.fullWidth}" />
+											</h:panelGrid>
+
+										</p:column>
+									
+									</p:row>
+									<p:row>
+										<p:column colspan="2">
+									
+														
+											<h:panelGrid columns="2" style="margin-bottom:10px" rendered="#{not empty dashboardItem.criteria.xAxisOption}">
+												<p:outputLabel for="@next" value="#{msg.fdm_analyse_by}"  styleClass="#{dashboardItem.criteriaObjs.dashType != 'chart' ? 'disabledLabel' : ''}"/>
+												<p:selectOneRadio id="xAxis" value="#{dashboardItem.xAxisOption}" disabled="#{dashboardItem.criteriaObjs.dashType != 'chart'}">
+													<f:selectItems value="#{dashboardItem.xAxisStackedOptions}"
+														var="xAxisOption" itemLabel="#{xAxisOption.description}"
+														itemValue="#{xAxisOption.id}" />
+												</p:selectOneRadio>
+											</h:panelGrid>
+										
+										</p:column>
+									</p:row>
+									
+									<p:row>
+										<p:column colspan="2">
+										
+									<h:panelGrid id="stackedUpdate" columns="2" styleClass="#{dashboardItem.criteriaObjs.chartType != 'COUNT' and dashboardItem.criteriaObjs.chartType != 'COLUMN' or dashboardItem.criteriaObjs.dashType != 'chart' ? 'disabledLabel' : ''}"
+										style="margin-top:0px; margin-bottom:0px" cellpadding="0">
+						
+										<h:panelGrid id="stacked" columns="2"
+											style="margin-top:20px; margin-bottom:20px" cellpadding="5"
+											rendered="#{not empty dashboardItem.criteria.xAxisStackedValue}">
+											<p:outputLabel for="@next" value="#{msg.fdm_stacked_by}" />
+											<p:selectBooleanCheckbox value="#{dashboardItem.xAxisStacked}"
+												disabled="#{dashboardItem.criteriaObjs.chartType != 'COUNT' and dashboardItem.criteriaObjs.chartType != 'COLUMN' or dashboardItem.criteriaObjs.dashType != 'chart' ? 'disabledLabel' : ''}" itemLabel="#{dashboardItem.criteria.xAxisStackedValue}" />
+										</h:panelGrid>
+						
+									</h:panelGrid>
+									</p:column>
+									</p:row>
+									
+								</p:panelGrid>
+								
+							</p:panel>
+							
+						</h:panelGroup>
+					</p:column>
+
+				</p:row>
+				
+				<p:row rendered="#{dashboardItem.criteriaObjs.chartType ne 'LIST'}">
+				
+					<p:column>
+						<p:outputLabel value="#{dashboardItem.criteriaObjs.xAxis == 'SCRIPT' ? 'Script Types' : 'Work Groups'}" />
+					</p:column>				
+					<p:column>
+						<p:selectOneRadio id="allXSelected" value="#{dashboardItem.xAxisAllSelected}" unselectable="false">
+							<p:ajax update="xAxisSelectPanel" listener="#{dashboardItem.clearSelectedXNodes}" />
+				            <f:selectItem itemLabel="All" itemValue="true"/>
+				            <f:selectItem itemLabel="#{dashboardItem.criteriaObjs.xAxis == 'SCRIPT' ? 'Selected Script Types' : 'Selected Work Groups'}" itemValue="false" />
+			        	</p:selectOneRadio>
+					</p:column>
+				</p:row>
+
+				<p:row rendered="#{dashboardItem.criteriaObjs.chartType ne 'LIST'}">
+				
+					<p:column>
+						
+					</p:column>				
+					<p:column>
+					
+						<p:panelGrid id="xAxisSelectPanel">
+		
+							<p:row>
+								<p:column>
+									<p:selectOneListbox scrollHeight="100" disabled="#{dashboardItem.xAxisAllSelected == true}">
+								        <f:selectItems value="#{dashboardItem.selectedXRoot.children}" />
+								    </p:selectOneListbox>
+								</p:column>	
+								<p:column>
+									<p:commandButton value="Select" 
+										oncomplete="PF('dashEditDialogFirstFilterWidget#{widgetId}').show();"
+										update="dashEditFirstFilterForm#{widgetId}:editFilterPanel#{widgetId}">	
+										
+										</p:commandButton>
+								</p:column>	
+							</p:row>
+
+						</p:panelGrid>
+					</p:column>
+				</p:row>
+				
+				
+				<p:row rendered="#{dashboardItem.showSecondFilter() == true}">
+					<p:column>
+						<p:outputLabel value="#{dashboardItem.criteriaObjs.xAxis == 'WORK' ? 'Work Status' : 'Script Result Status'}" />
+					</p:column>				
+					<p:column>
+						<p:selectOneRadio id="allXFilterSelected" value="#{dashboardItem.xFilterAllSelected}" unselectable="false">
+							<p:ajax update="xFilterSelectPanel" listener="#{dashboardItem.clearSelectedXFilterNodes}" />
+				            <f:selectItem itemLabel="All" itemValue="true" />
+				            <f:selectItem itemLabel="#{dashboardItem.criteriaObjs.xAxis == 'WORK' ? 'Selected Statuses' : 'Selected Statuses'}" itemValue="false" />
+			        	</p:selectOneRadio>
+					</p:column>
+				</p:row>
+
+				<p:row rendered="#{dashboardItem.showSecondFilter() == true}">
+				
+					<p:column>
+						
+					</p:column>				
+					<p:column>
+					
+						<p:panelGrid id="xFilterSelectPanel">
+							<p:row>
+								<p:column>
+									<p:selectOneListbox scrollHeight="100" disabled="#{dashboardItem.xFilterAllSelected == true}">
+								        <f:selectItems value="#{dashboardItem.selectedXFilterRoot.children}" />
+								    </p:selectOneListbox>
+								</p:column>	
+								<p:column>
+									<p:commandButton value="Select"
+										action="#{dashboardItem.loadSelectedXFilter}"
+										oncomplete="PF('dashEditDialogSecondFilterWidget#{widgetId}').show();"
+										update="dashEditSecondFilterForm#{widgetId}:editFilterPanel#{widgetId}">										
+										</p:commandButton>
+								</p:column>	
+							</p:row>
+
+						</p:panelGrid>
+					</p:column>
+				</p:row>
+				
+								
+				<p:row>
+				
+					<p:column>
+						
+					</p:column>				
+					<p:column>
+						
+					</p:column>
+				</p:row>
+				
+								
+				<p:row rendered="#{not empty dashboardItem.criteria.dateRange}">
+				
+					<p:column>
+						<p:outputLabel for="dateRange" value="#{dashboardItem.getLocalisationTag() eq 'work_at_risk' ? msg.fdm_at_risk_timewindow : msg.fdm_timewindow}" />
+					</p:column>				
+					<p:column>
+						
+						<p:inputText id="dateRange" required="true"  
+						requiredMessage="Please enter a #{dashboardItem.criteria.dateRangeVisible eq 'risk' ? msg.fdm_at_risk_timewindow : msg.fdm_timewindow}" 
+						converterMessage="#{dashboardItem.criteria.dateRangeVisible eq 'risk' ? msg.fdm_at_risk_timewindow : msg.fdm_timewindow} must be numeric" 
+						validatorMessage="#{dashboardItem.criteria.dateRangeVisible eq 'risk' ?  'At Risk Window value must be minimum 1' : 'Time Window value must be minimum 0'}"
+							value="#{dashboardItem.criteriaObjs.dateRange}" 
+							maxlength="#{dashboardItem.criteria.dateRangeVisible eq 'risk' ? 2 : 3 }" 
+							style="height:19px;width:100px;margin-right:5px;" >
+							<f:validateDoubleRange minimum="#{dashboardItem.criteria.dateRangeVisible eq 'risk' ? 1 : 0 }" maximum="999" />
+						</p:inputText>
+						
+						<p:selectOneMenu id="dateRangeUnit" value="#{dashboardItem.criteriaObjs.dateRangeUnit}"
+							style="min-width:65px !important;" 
+							rendered="#{dashboardItem.criteria.dateRangeVisible ne 'due' and dashboardItem.criteria.dateRangeVisible ne 'risk'}">
+							<f:selectItem itemLabel="#{msg.fdm_days}" itemValue="DAY" />
+							<f:selectItem itemLabel="#{msg.fdm_hours}" itemValue="HOUR" />
+						</p:selectOneMenu>
+						<!-- 32701 - KN - Display label instead of dropdown for Over Due panel -->
+						<h:outputText value="Days" rendered="#{dashboardItem.criteria.dateRangeVisible eq 'due' or dashboardItem.criteria.dateRangeVisible eq 'risk'}" />
+					</p:column>
+				</p:row>
+			
+			
+				<p:row>
+				<p:column colspan="2">
+					<p:messages id="messages" showDetail="false" closable="false">
+				        
+				    </p:messages>
+				</p:column>
+				</p:row>
+				
+				<p:row>
+				<p:column>
+				
+					<p:remoteCommand name="updateItemAfterValidation" update="dashItemForm#{widgetId}" />
+						
+						
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						id="saveBtn"
+						oncomplete="if(!args.validationFailed) { PF('dashEditDialogWidget#{widgetId}').hide(); if(#{widgetId} != 'ADD' &amp;&amp; args.refreshingLists != true)updateItemAfterValidation(); }"
+						action="#{dashboard.saveEdit(dashboardItem)}"
+						process="dashEditForm#{widgetId}"
+						type="submit"
+						update="editPanel msgs messages" />
+						
+			
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						oncomplete="PF('dashEditDialogWidget#{widgetId}').hide();"
+						action="#{dashboard.cancelEdit(dashboardItem)}"
+						process="dashEditForm#{widgetId}"
+						update="msgs" />
+				</p:column>
+				
+				<p:column>
+				
+					<p:commandButton value="Delete"
+						style="float:right; margin-right:18px;"
+						styleClass="ui-button-secondary"
+						process="dashEditForm#{widgetId}"
+						oncomplete="PF('dashEditDialogWidget#{widgetId}').hide();"
+						action="#{dashboard.removeItem(dashboardItem)}"
+						update="dashboardGraphItems dashboardCountItems dashboardAddItem msgs" />
+						
+				</p:column>
+				
+				</p:row>
+			</p:panelGrid>
+
+
+		</p:panel>
+
+
+	</p:sidebar>
+</h:form>
+
+<h:form id="dashEditFirstFilterForm#{widgetId}">
+	<p:sidebar id="dashEditDialogFirstFilter#{widgetId}"
+		widgetVar="dashEditDialogFirstFilterWidget#{widgetId}"
+		position="right" baseZIndex="10001" style="width:790px;">
+		
+		<p:panel id="editFilterPanel#{widgetId}" header="#{dashboardItem.criteriaObjs.xAxis == 'WORK' or dashboardItem.criteriaObjs.xAxis == 'USER' ? 'Work Group Selection' : 'Script Selection'}"
+			style="background:none;margin-bottom:20px;">
+			
+				<div style="height:30px;width:100%"></div>
+
+				<h:panelGroup>
+					<h:panelGrid columns="2" width="100%"
+						style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;"
+						cellpadding="0">
+
+						<p:tree id="xSelectTree" value="#{dashboardItem.xRoot}" var="node"
+							selectionMode="checkbox"
+							propagateSelectionUp="false" filterMatchMode="contains"
+							selection="#{dashboardItem.selectedXNodes}" 
+							filterBy="#{node}"
+							style="width:420px;border:0px !important;">
+							
+							<p:ajax event="select" update="dashEditFirstFilterForm#{widgetId}:xSelectTree2" />
+							<p:ajax event="unselect" update="dashEditFirstFilterForm#{widgetId}:xSelectTree2" />
+							
+							<p:treeNode>
+								<h:outputText
+									rendered="#{dashboardItem.criteriaObjs.xAxis == 'SCRIPT'}"
+									value="#{(node['class'].simpleName == 'Script' ? node.scriptDesc : node.scriptCatDesc)}"/>
+								<h:outputText style=" font-size: 0.7em;font-style: italic;"
+									rendered="#{dashboardItem.criteriaObjs.xAxis == 'SCRIPT' and node['class'].simpleName == 'Script'}"
+									value=" (#{(node['class'].simpleName == 'Script' ? node.scriptCode : '')})"/>
+								<h:outputText
+									rendered="#{dashboardItem.criteriaObjs.xAxis == 'WORK' or dashboardItem.criteriaObjs.xAxis == 'USER'}"
+									value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+								<h:outputText style=" font-size: 0.7em;font-style: italic;"
+									rendered="#{node['class'].simpleName == 'HPCWorkGroups' and (dashboardItem.criteriaObjs.xAxis == 'WORK' or dashboardItem.criteriaObjs.xAxis == 'USER')}"
+									value=" (#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupCode : '')})"/>
+							</p:treeNode>
+						</p:tree>
+
+						<p:tree id="xSelectTree2" value="#{dashboardItem.selectedXRoot}"
+							var="node2" selectionMode="single"
+							selection="#{dashboardItem.removeSelectedXNode}"
+							style="width:320px;border:0px !important;">
+							
+							<p:ajax event="select" update="@this dashEditFirstFilterForm#{widgetId}:xSelectTree" />
+							
+							<p:treeNode icon="fa fa-trash">
+								<h:outputText
+									rendered="#{dashboardItem.criteriaObjs.xAxis == 'SCRIPT'}"
+									value="#{(node2['class'].simpleName == 'Script' ? node2.scriptDesc : node2.scriptCatDesc)}" />
+								<h:outputText
+									rendered="#{dashboardItem.criteriaObjs.xAxis == 'WORK' or dashboardItem.criteriaObjs.xAxis == 'USER'}"
+									value="#{(node2['class'].simpleName == 'HPCWorkGroups' ? node2.workgroupDesc : node2)}" />
+							</p:treeNode>
+						</p:tree>
+					</h:panelGrid>
+					
+					<p:commandButton value="OK" oncomplete="PF('dashEditDialogFirstFilterWidget#{widgetId}').hide();" update="dashEditForm#{widgetId}:xAxisSelectPanel dashEditForm#{widgetId}:allXSelected">
+					<f:setPropertyActionListener value="#{dashboardItem.selectedXRoot.children.size() > 0 ? false : true}" target="#{dashboardItem.xAxisAllSelected}" ></f:setPropertyActionListener></p:commandButton>
+					<p:commandButton value="Clear" action="#{dashboardItem.clearSelectedXNodes}" update="editFilterPanel#{widgetId} dashEditForm#{widgetId}:allXSelected">
+					<f:setPropertyActionListener value="#{dashboardItem.selectedXRoot.children.size() > 0 ? false : true}" target="#{dashboardItem.xAxisAllSelected}" ></f:setPropertyActionListener></p:commandButton>
+					<p:commandButton value="Cancel" action="#{dashboardItem.cancelSelectedXNodes}" oncomplete="PF('dashEditDialogFirstFilterWidget#{widgetId}').hide();" update="dashEditForm#{widgetId}:xAxisSelectPanel dashEditForm#{widgetId}:allXSelected">
+					<f:setPropertyActionListener value="#{dashboardItem.selectedXRoot.children.size() > 0 ? false : true}" target="#{dashboardItem.xAxisAllSelected}" ></f:setPropertyActionListener></p:commandButton>
+					
+				</h:panelGroup>
+				
+		</p:panel>
+		
+	</p:sidebar>
+</h:form>
+
+
+
+<h:form id="dashEditSecondFilterForm#{widgetId}">
+	<p:sidebar id="dashEditDialogSecondFilter#{widgetId}"
+		widgetVar="dashEditDialogSecondFilterWidget#{widgetId}"
+		position="right" baseZIndex="10001">
+		
+		<p:panel id="editFilterPanel#{widgetId}" header="#{dashboardItem.criteriaObjs.xAxis == 'WORK' ? 'Work Status Selection' : 'Script Result Status Selection'}"
+			style="background:none;margin-bottom:20px;">
+			
+			<div style="height:30px;width:100%"></div>
+			
+				<h:panelGroup>
+				
+					<h:panelGrid columns="1" width="100%"
+						style="background:white;margin-bottom:20px;border:1px solid lightgrey;border-radius:4px;"
+						cellpadding="0">
+						
+						<p:tree id="xFilterSelectTree" value="#{dashboardItem.xFilterRoot}" var="node"
+							selectionMode="checkbox" filterMatchMode="contains"
+							selection="#{dashboardItem.selectedXFilterNodes}" filterBy="#{node}"
+							style="">
+							
+							<!-- <p:ajax event="select" update="dashEditSecondFilterForm#{widgetId}:xFilterSelectTree2" />
+							<p:ajax event="unselect" update="dashEditSecondFilterForm#{widgetId}:xFilterSelectTree2" /> -->
+							
+							<p:treeNode>
+								<h:outputText value="#{node}" />
+							</p:treeNode>
+						</p:tree>
+					</h:panelGrid>
+					
+					<p:commandButton value="OK" oncomplete="PF('dashEditDialogSecondFilterWidget#{widgetId}').hide();" update="dashEditForm#{widgetId}:xFilterSelectPanel dashEditForm#{widgetId}:allXFilterSelected">
+					<f:setPropertyActionListener value="#{dashboardItem.selectedXFilterRoot.children.size() > 0 ? false : true}" target="#{dashboardItem.xFilterAllSelected}"></f:setPropertyActionListener></p:commandButton>
+					<p:commandButton value="Clear"  action="#{dashboardItem.clearSelectedXFilterNodes}" update="editFilterPanel#{widgetId} dashEditForm#{widgetId}:allXFilterSelected">
+					<f:setPropertyActionListener value="#{dashboardItem.selectedXFilterRoot.children.size() > 0 ? false : true}" target="#{dashboardItem.xFilterAllSelected}"></f:setPropertyActionListener></p:commandButton>
+					<p:commandButton value="Cancel" action="#{dashboardItem.cancelSelectedXFilterNodes}" oncomplete="PF('dashEditDialogSecondFilterWidget#{widgetId}').hide();" update="dashEditForm#{widgetId}:xFilterSelectPanel dashEditForm#{widgetId}:allXFilterSelected">
+					<f:setPropertyActionListener value="#{dashboardItem.selectedXFilterRoot.children.size() > 0 ? false : true}" target="#{dashboardItem.xFilterAllSelected}"></f:setPropertyActionListener></p:commandButton>
+				</h:panelGroup>
+				
+		</p:panel>
+		
+	</p:sidebar>
+</h:form>
+
+</ui:composition>

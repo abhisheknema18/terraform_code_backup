@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.amtsybex.fieldreach.xmlloader.audit.model">
+
+	<class name="AuditMilestones" table="AUDIT_MILESTONES">
+	
+		<id name="id" column="FILEID">
+			<generator class="assigned"/>
+		</id>
+		        
+		<property name="status"
+				  type="integer"
+				  not-null="true"
+				  column="STATUS"/>
+				  
+		<property name="milestone"
+				  type="integer"
+				  not-null="true"
+				  column="MILESTONE"/>
+				  
+		<property name="milestoneDate"
+				  type="date"
+				  not-null="true"
+				  column="MILESTONEDATE"/>
+				  
+		<property name="milestoneTime"
+				  type="time"
+				  not-null="true"
+				  column="MILESTONETIME"/>
+		
+	</class>
+	
+</hibernate-mapping>

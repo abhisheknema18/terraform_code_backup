@@ -1,0 +1,121 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/admin-template.xhtml">
+	<ui:param name="bean" value="#{accessGroup}" />
+	<ui:define name="admin-body">
+
+		<p:tabView id="accessSearchTabs">
+			<p:tab id="accessSearchResults" 
+				title="#{msg.fdm_search_search_results_tab_label} #{accessGroup.accessGroupsList.size() > 0 ? '('.concat(accessGroup.accessGroupsList.size()).concat(')') : ''}#{accessGroup.filteredAccessGroupsList.size() > 0 ? '('.concat(accessGroup.filteredAccessGroupsList.size()).concat(')') : ''} "
+				disabled="#{fn:length(accessGroup.accessGroupsList) == 0}">
+
+				<f:facet name="title">
+					<h:outputText id="theTitle"
+						value="#{msg.fdm_search_search_results_tab_label} #{accessGroup.filteredAccessGroupsList.size() > 0 and accessGroup.filteredAccessGroupsList.size() lt accessGroup.accessGroupsList.size() ? '('.concat(accessGroup.filteredAccessGroupsList.size()).concat(' of ').concat(accessGroup.accessGroupsList.size()).concat(')') : accessGroup.accessGroupsList.size() > 0 ? '('.concat(accessGroup.accessGroupsList.size()).concat(')') : '(0)' } " />
+				</f:facet>
+
+				<h:form id="accessGroupSearchListForm">
+
+					<p:remoteCommand name="updateFilteredValue"
+						action="#{accessGroup.resetSelectionAfterFilter}"
+						update="accessSearchTabs accessSearchTabs:accessGroupSearchListForm" />
+
+					<p:dataTable id="accessGroupList" value="#{accessGroup.accessGroupsList}" var="ag"
+						filterDelay="1000" rowStatePreserved="true"
+						style="width:100%"
+						selection="#{accessGroup.highlightedAccessGroup}"
+						styleClass="listHighLightTableCls" resizableColumns="true"
+						selectionMode="single" rowIndexVar="rowVar" rowKey="#{ag}"
+						filteredValue="#{accessGroup.filteredAccessGroupsList}">
+						<p:ajax event="filter" oncomplete="updateFilteredValue();"
+							process="@all" />
+
+						<p:column headerText="Application Code" style="width:50px"
+							filterMatchMode="contains" filterBy="#{ag.progCodeStr}"
+							sortBy="#{ag.progCodeStr}">
+							<h:outputText value="#{ag.progCodeStr}" />
+						</p:column>
+						
+						<p:column headerText="Access Group Code" style="width:100px"
+							filterMatchMode="contains" filterBy="#{ag.groupCode}"
+							sortBy="#{ag.groupCode}">
+							<h:outputText value="#{ag.groupCode}" />
+						</p:column>
+						
+						<p:column headerText="Access Group Description" style="width:250px"
+							filterMatchMode="contains" filterBy="#{ag.groupDesc}"
+							sortBy="#{ag.groupDesc}">
+							<h:outputText value="#{ag.groupDesc}" />
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="showSysUser" update="accessGroupList msgs growl" actionListener="#{accessGroup.setHighlightedAccessGroup(ag)}"
+								action="#{systemUserAdmin.searchFromAccessGroup(ag)}">
+								<i class="fas fa-users" alt="users"></i>
+								<p:tooltip for="showSysUser" value="Show System Users"></p:tooltip>
+							</p:commandLink>
+						</p:column>
+						
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="editAccessGroup" action="#{accessGroup.editAccessGroup(ag)}" update="addAccessGroupWidget accessSearchTabs:accessGroupSearchListForm:accessGroupList"
+								oncomplete="PF('addAccessGroupWidget').show();" >
+								<f:setPropertyActionListener value="#{ag}" target="#{accessGroup.highlightedAccessGroup}"></f:setPropertyActionListener>
+								<i class="far fa-edit" alt="edit"></i>
+								<p:tooltip for="editAccessGroup" value="Edit Access Group"></p:tooltip>
+							</p:commandLink>
+						</p:column>
+
+					</p:dataTable>
+					
+					<h:outputText 
+						value="#{accessGroup.filteredAccessGroupsList.size() > 0 and accessGroup.filteredAccessGroupsList.size() lt accessGroup.accessGroupsList.size() ? ''.concat(accessGroup.filteredAccessGroupsList.size()).concat(' of ').concat(accessGroup.accessGroupsList.size()) :  accessGroup.accessGroupsList.size() > 0 ? ''.concat(accessGroup.accessGroupsList.size()) : '0' } #{msg.fdm_search_results_results_found_label}"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+					
+					
+				</h:form>
+			</p:tab>
+
+		</p:tabView>
+		
+		<h:form>
+        
+        
+        <p:dialog id="deleteAccessDialogId" dynamic="true"
+            widgetVar="deleteAccessGroupDialogVar" resizable="false" width="340px"
+            modal="true" position="center center"
+            onShow="PF('deleteAccessGroupDialogVar').initPosition()" closable="false"
+            closeOnEscape="false">
+            <f:facet name="header">
+                <h:outputText value="#{msg.fdm_access_group_delete_header_label}" styleClass="dialogheader" />
+            </f:facet>
+            <p:panelGrid columns="1" width="100%">
+                <h:outputText value="#{msg.fdm_access_group_delete_confirm_msg}" />
+
+ 
+
+            </p:panelGrid>
+            <f:facet name="footer">
+                <p:commandButton value="#{msg.fdm_action_no}"
+                    onclick="PF('deleteAccessGroupDialogVar').hide();" 
+                    styleClass="ui-confirmdialog-no" >
+                </p:commandButton>
+                <p:commandButton value="#{msg.fdm_action_yes}"
+                    action="#{accessGroup.deleteAccessGroup()}"
+                    oncomplete="PF('addAccessGroupWidget').hide();"
+                    onclick="PF('deleteAccessGroupDialogVar').hide();" 
+                    />
+            </f:facet>
+        </p:dialog>
+        
+        
+        </h:form>
+		
+
+	</ui:define>
+</ui:composition>

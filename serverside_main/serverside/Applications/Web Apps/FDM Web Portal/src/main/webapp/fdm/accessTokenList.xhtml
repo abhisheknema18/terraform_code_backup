@@ -1,0 +1,187 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/admin-template.xhtml">
+	<ui:param name="bean" value="#{integrationAccessToken}" />
+	<ui:define name="admin-body">
+
+		<script>
+			$(document).ready(notesRowExpander);
+			
+			function notesRowExpander() {
+				var $this = PF('tokenAccessVar');
+				$this.tbody.off('click.datatable-expansion',
+						'.notesTag').on(
+						'click.datatable-expansion',
+						'.notesTag',
+						null,
+						function() {
+							$this.toggleExpansion($(this).find(
+									'div.ui-row-toggler'));
+						});
+			}
+			
+		</script>
+
+		<p:tabView id="accessTokenTab">
+			<p:tab id="accessTokenSearchResults" title="#{msg.fdm_access_token_tab_title} #{integrationAccessToken.accessList.size() > 0 ? '('.concat(integrationAccessToken.accessList.size()).concat(')') : ''}#{integrationAccessToken.filteredAccessList.size() > 0 ? '('.concat(integrationAccessToken.filteredAccessList.size()).concat(')') : ''} ">
+
+				<f:facet name="title">
+					<h:outputText id="headerTitle"
+						value="#{msg.fdm_access_token_tab_title} #{integrationAccessToken.filteredAccessList.size() > 0 and integrationAccessToken.filteredAccessList.size() lt integrationAccessToken.accessList.size() ? '('.concat(integrationAccessToken.filteredAccessList.size()).concat(' of ').concat(integrationAccessToken.accessList.size()).concat(')') : integrationAccessToken.accessList.size() > 0 ? '('.concat(integrationAccessToken.accessList.size()).concat(')') : '(0)' } " />
+				</f:facet>
+
+				<h:form id="accessTokenListForm">
+
+					<p:remoteCommand name="updateFilteredValue"
+						action="#{integrationAccessToken.resetSelectionAfterFilter}"
+						update="accessTokenTab:headerTitle accessTokenTab:accessTokenListForm:footerTitle" />
+
+					<p:dataTable id="tokenList"
+						value="#{integrationAccessToken.accessList}" var="token"
+						filterDelay="1000" rowStatePreserved="true" style="width:100%"
+						selection="#{integrationAccessToken.selectedAccessToken}"
+						resizableColumns="true"
+						selectionMode="single" rowIndexVar="rowAccessTokenVar" rowKey="#{token}"
+						rowStyleClass="#{token.revoked ==1 ? 'grey-row':''}"
+						widgetVar="tokenAccessVar"
+						filteredValue="#{integrationAccessToken.filteredAccessList}">
+						<p:ajax event="filter" oncomplete="updateFilteredValue();"
+							process="@all" />
+
+						<p:column headerText="#{msg.fdm_application_name_label}" style="width:60%"
+							filterMatchMode="contains" filterBy="#{token.name}"
+							sortBy="#{token.name}">
+							<h:panelGroup
+								styleClass="fas fa-circle" style="#{token.getIconColor()}"></h:panelGroup>
+								&nbsp;
+							<h:outputText value="#{token.name}" />
+						</p:column>
+
+
+						<p:column headerText="#{msg.fdm_access_token_user_code_label}" style="width:40%"
+							sortBy="#{token.linkedUserCode}" filterBy="#{token.linkedUserCode}" filterMatchMode="contains">
+							<h:outputText value="#{token.linkedUserCode}" />
+						</p:column>
+
+						<p:column headerText="#{msg.fdm_access_token_issued_date_label}" styleClass="dateField"
+							filterMatchMode="contains" sortBy="#{token.createDate}">
+							<h:outputText value="#{func:intToDate(token.createDate)}">
+								<f:convertDateTime dateStyle="medium" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.fdm_access_token_expiry_date_label}" styleClass="dateField"
+							filterMatchMode="contains" sortBy="#{token.expiryDate}">
+							<h:outputText value="#{func:intToDate(token.expiryDate)}">
+								<f:convertDateTime dateStyle="medium" />
+							</h:outputText>
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink  id="revokeTokenId" styleClass="fas fa-user-slash" disabled="#{token.revoked==1}"
+							onclick="PF('revokeAccessTokenWidget').show();" update="revokeForm">
+							<f:setPropertyActionListener value="#{token}" target="#{integrationAccessToken.selectedAccessToken}"></f:setPropertyActionListener>
+							</p:commandLink>
+							<p:tooltip for="revokeTokenId" value="Revoke Token"></p:tooltip>
+						</p:column>
+						
+
+						<p:column styleClass="notesTag sticky-notes tableIcon">
+							<p:commandLink id="noteTag"
+								style="#{(not empty token.tokenNotes or not empty token.revokeNotes ) ? 'color:red' : 'color:black'}"
+								styleClass="far fa-sticky-note" value="">
+							</p:commandLink>
+
+							<p:rowToggler id="rowToggId" />
+							<p:tooltip id="accessTokenToolId" for="noteTag" value="#{token.revoked == 0 ? msg.fdm_access_token_token_notes_tooltip : msg.fdm_access_token_revoke_notes_tooltip}"></p:tooltip>
+						</p:column>
+						<p:rowExpansion id="rowExpander" styleClass="rowExpnsionSty">
+
+							<p:panel styleClass="rowExpnStyPl"
+								rendered="#{token.revoked == 0}">
+
+								<p:dataTable value="#{token}" var="access"
+								>
+									<p:column headerText="#{msg.fdm_access_token_user_code_label}" style="width:200px">
+										<h:outputText value="#{access.createUser}" />
+									</p:column>
+
+									<p:column headerText="#{msg.fdm_access_token_issued_date_label}" style="width:150px">
+										<h:outputText value="#{func:intToDate(access.createDate)}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="#{msg.fdm_access_token_token_notes_label}">
+										<h:outputText value="#{access.tokenNotes}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+
+							<p:panel styleClass="rowExpnStyPl" rendered="#{token.revoked == 1}">
+							<p:dataTable value="#{token}" var="revoke">
+								<p:column headerText="#{msg.fdm_access_token_revoke_user}" style="width:200px">
+										<h:outputText value="#{revoke.revokeUser}" />
+									</p:column>
+
+									<p:column headerText="#{msg.fdm_access_token_revoke_date}" style="width:150px">
+										<h:outputText value="#{func:intToDate(revoke.revokeDate)}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="#{msg.fdm_access_token_revoke_notes}">
+										<h:outputText value="#{revoke.revokeNotes}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+									
+								</p:dataTable>
+				
+							</p:panel>
+
+							<p:spacer width="300" height="20" />
+						</p:rowExpansion>
+					</p:dataTable>
+
+
+					<h:outputText id="footerTitle" 
+						value="#{integrationAccessToken.filteredAccessList.size() > 0 and integrationAccessToken.filteredAccessList.size() lt integrationAccessToken.accessList.size() ? ''.concat(integrationAccessToken.filteredAccessList.size()).concat(' of ').concat(integrationAccessToken.accessList.size()) :  integrationAccessToken.accessList.size() > 0 ? ''.concat(integrationAccessToken.accessList.size()) : '0' } #{msg.fdm_access_token_footer_label}"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />	
+						
+					<p:panel>
+						<p:commandLink style="padding-right:20px">
+							<i class="fas fa-circle" style="color: green"
+								></i> Expiry more than 30 days
+						 </p:commandLink>
+						 
+						<p:commandLink style="padding-right:20px">
+							<i class="fas fa-circle" style="color: orange"
+								></i> Expiry within 30 days  
+						</p:commandLink>
+						
+						<p:commandLink style="padding-right:20px">
+							<i class="fas fa-circle" style="color: red"></i> Expired 
+						</p:commandLink>
+
+						<p:commandLink style="padding-right:20px">
+								<i class="fas fa-circle" style="color: grey" ></i> Revoked 
+						</p:commandLink>
+					</p:panel>
+					
+
+				</h:form>
+			</p:tab>
+
+		</p:tabView>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.amtsybex.fieldreach.xmlloader.audit.model">
+
+	<class name="AuditFiles" table="AUDIT_FILES">
+	
+		<id name="id" column="ID">
+			<generator class="assigned"/>
+		</id>
+		
+		<property name="filename"
+				  type="string"
+				  not-null="true"
+				  column="FILENAME"/>
+				  
+		<property name="fileUri"
+				  type="string"
+				  not-null="true"
+				  column="FILEURI"/>
+						  
+		<property name="targetInstance"
+				  type="string"
+				  not-null="false"
+				  column="TARGETINSTANCE"/>
+				  
+		<property name="workgroup"
+				  type="string"
+				  not-null="true"
+				  column="WORKGROUP"/>
+		
+		<property name="dispatched"
+				  type="boolean"
+				  not-null="true"
+				  column="DISPATCHED"/>
+				  	  	
+		<one-to-one name="milestone" 
+					class="com.amtsybex.fieldreach.xmlloader.audit.model.AuditMilestones"
+					cascade="save-update"
+					lazy="proxy">
+		</one-to-one>
+		
+		<one-to-one name="fileError" 
+					class="com.amtsybex.fieldreach.xmlloader.audit.model.FileErrors"
+					cascade="save-update"
+					lazy="proxy">
+		</one-to-one>
+	
+	</class>
+	
+</hibernate-mapping>

@@ -1,0 +1,1436 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/resultAnalysis-template.xhtml">
+
+
+	<ui:param name="bean" value="#{resultAnalysis}" />
+
+	<ui:define name="analysis-body">
+
+		<script src="#{request.contextPath}/highcharts/code/highcharts.js"></script>
+		<script src="#{request.contextPath}/highcharts/code/modules/exporting.js"></script>
+		<script src="#{request.contextPath}/highcharts/code/modules/export-data.js"></script>
+		<script src="#{request.contextPath}/highcharts/code/modules/drilldown.js"></script>
+		<script src="#{request.contextPath}/highcharts/code/modules/boost.js"></script>
+		<script src="#{request.contextPath}/highcharts/code/highcharts-3d.js"></script>
+
+		<style>
+			.headerText {
+				width: 300px;
+			}
+			
+			.questionHeading {
+				background-image: url('../images/icons/Heading1.ICO');
+				background-repeat: no-repeat;
+				padding-left: 20px;
+			}
+	
+			.ui-datatable-tablewrapper {
+				border: 0px;
+			}
+			
+			
+			.ui-datatable-resizable table {
+				border: 1px solid lightgrey
+			}
+			
+			.ui-panelgrid .ui-panelgrid-cell {
+				padding: 4px 10px;
+			}
+			
+			.ui-panel .ui-panel-footer {
+				color: #aaa;
+			}
+			
+			.endMarker {
+				height: 0px !important;
+				display: none;
+			}
+			
+			.highcharts-title {
+				font-size: 1.2em !important;
+			}
+			
+			.lightIndicator {
+				color: lightgray;
+			}
+			
+			.panelQFoundMoreThanOnce .ui-panel-footer {
+				background: #ffe0a8;
+			}
+			
+			.panelQFoundMoreThanOnce .magnify {
+				background: #ffe0a8;
+			}
+			
+			#resultAnalyticsForm .ui-panelgrid .ui-grid-responsive .ui-panelgrid-cell
+				{
+				padding: 0px !important;
+				background: white;
+			}
+
+			#resultAnalyticsForm .ui-tabs .ui-tabs-panel {
+				background: white;
+			}
+			
+			#resultAnalyticsForm .ui-panel {
+				padding: 0px;
+			}
+			
+			#resultAnalyticsForm .ui-tabs .ui-tabs-panel {
+				padding: 0px;
+			}
+			
+			#resultAnalyticsForm .ui-widget-header {
+				background: white;
+				border-bottom: 0px !important;;
+				-webkit-border-radius: 0 !important;
+				border-radius: 0 !important
+			}
+			
+			#resultAnalyticsForm .ui-tabs.ui-tabs-top .ui-tabs-nav.ui-widget-header
+				{
+				background: #69A488 !important;
+				border-bottom: 1px solid #DDDDDD !important;
+			}
+			
+			#resultAnalyticsForm .ui-datatable-resizable th.ui-resizable-column {
+				background: white !important;
+			}
+			
+			#resultAnalyticsForm .ui-widget-header {
+				border: 0px;
+				border-bottom: 1px solid #d8d8d8;
+			}
+			
+			#resultAnalyticsForm .boxedPanel {
+				margin: 7px;
+				border: 1px solid lightgrey !important;
+				box-shadow: 0px 0.175em 0.5em rgba(2, 8, 20, 0.1), 0px 0.085em 0.175em
+					rgba(2, 8, 20, 0.08);
+			}
+			
+			#resultAnalyticsPanel .ui-panelgrid .ui-panelgrid-cell {
+				padding: 0px !important;
+			}
+
+			
+			
+			.question {
+				background-image: url('../images/icons/Blue_dot_quart1.ICO');
+				background-repeat: no-repeat;
+				padding-left: 20px;
+			}
+			
+			.questionMandatory {
+				background-image: url('../images/icons/Blue_dot_quart1.ICO');
+				background-repeat: no-repeat;
+				padding-left: 20px;
+			}
+			
+			.questionNonMandatory {
+				background-image: url('../images/icons/Blue_dot1.ICO');
+				background-repeat: no-repeat;
+				padding-left: 20px;
+			}
+			
+			.rgstart { #
+				background-image: url('../images/icons/rgstart.png'); #
+				background-repeat: no-repeat; #
+				background-position: right center;
+				padding-right: 20px; #
+				mix-blend-mode: multiply;
+			}
+			
+			.rgstart:before {
+				content: "\F3BE";
+				font-weight: bold;
+				color: gray;
+				font-family: "Font Awesome 5 Free";
+				right: 10px;
+				float: right;
+				top: 0px;
+			}
+			
+			.rgend { #
+				background-image: url('../images/icons/rgend.png'); #
+				background-repeat: no-repeat; #
+				background-position: right center; #
+				padding-right: 20px; #
+				mix-blend-mode: multiply;
+			}
+			
+			.rgend:before {
+				content: "\F3BF";
+				font-weight: bold;
+				color: gray;
+				font-family: "Font Awesome 5 Free";
+				right: 10px;
+				float: right;
+				top: 0px;
+			}
+			
+			.rgpsingle { #
+				background-image: url('../images/icons/rgpsingle.png'); #
+				background-repeat: no-repeat; #
+				background-position: right center; #
+				padding-right: 20px; #
+				mix-blend-mode: multiply;
+			}
+			
+			.rgpsingle:before {
+				content: "\F337";
+				font-weight: bold;
+				color: gray;
+				font-family: "Font Awesome 5 Free";
+				right: 10px;
+				float: right;
+				top: 0px;
+			}
+			
+			.rgpstart { #
+				background-image: url('../images/icons/rgpstart.png'); #
+				background-repeat: no-repeat; #
+				background-position: right center; #
+				padding-right: 20px; #
+				mix-blend-mode: multiply;
+			}
+			
+			.rgpstart:before {
+				content: "\F309";
+				font-weight: bold;
+				color: gray;
+				font-family: "Font Awesome 5 Free";
+				right: 10px;
+				float: right;
+				top: 0px;
+			}
+			
+			.rgpend { #
+				background-image: url('../images/icons/rgpend.png'); #
+				background-repeat: no-repeat; #
+				background-position: right center; #
+				padding-right: 20px; #
+				mix-blend-mode: multiply;
+			}
+			
+			.rgpend:before {
+				content: "\F30C";
+				font-weight: bold;
+				color: gray;
+				font-family: "Font Awesome 5 Free";
+				right: 10px;
+				float: right;
+				top: 0px;
+			}
+			
+
+			
+			.red {
+				background: #ff4545;
+			}
+			
+			.orange {
+				background: #f7af40;
+			}
+			
+			.ui-state-hover .red {
+				mix-blend-mode: darken;
+				background: darkred;
+			}
+			
+			.ui-state-hover .orange {
+				mix-blend-mode: darken;
+				background:darkorange;
+			}
+			
+			.chartTablePanelGrid .ui-g {
+				background: white !important;
+			}
+			
+			.qText, .ul {
+				list-style: none;
+				padding: 0;
+				padding-bottom: 0em;
+			}
+			
+			.qText li {
+				padding-left: 1.4em;
+				padding-top: 0em;
+			}
+			
+			.qText li:before {
+				display: inline-block;
+				margin-left: -1.4em;
+				width: 1.4em;
+			}
+			
+			.repeatedItem {
+				background: #c0efd1 !important;
+			}
+		</style>
+		
+		<h:form id="resultAnalyticsForm">
+
+			<!-- <p:tabView id="analyticsTabs" value="#{resultAnalysis.dataResultSet}" var="result"> -->
+			<p:tabView
+				rendered="#{not resultAnalysis.isSearchingVersionAnalysis()}"
+				id="analyticsTabs">
+
+				<p:tab id="thetab"
+					title="#{resultAnalysis.dataResultSet.get(0).title}">
+
+					<div style="height: 1px; widht: 100%;"></div>
+
+					<p:panel>
+
+						<p:panelGrid columns="3" layout="grid"
+							style="padding:0px !important;"
+							columnClasses="ui-g-4 ui-md-4 ui-lg-4, ui-g-3 ui-md-3 ui-lg-3, ui-g-5 ui-md-5 ui-lg-5">
+
+							<p:panel header="#{msg.fdm_data_set}" styleClass=""
+								style="padding-bottom:10px;">
+
+
+								<h:panelGrid columns="2" style="padding-top:20px;">
+									<h:outputLabel for="scriptDescription" value="#{msg.fdm_details_script_description_label}" />
+									<h:outputText id="scriptDescription" value="#{resultAnalysis.searchCriteria.script.scriptDesc}" styleClass="headerText" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="scriptCategory" value="#{msg.fdm_script_category}" />
+									<h:outputText id="scriptCategory" value="#{resultAnalysis.searchCriteria.script.scriptCategory}" styleClass="headerText" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="scriptCode" value="#{msg.fdm_script_code}" />
+									<h:outputText id="scriptCode" value="#{resultAnalysis.searchCriteria.script.scriptCode}" styleClass="headerText" />
+								</h:panelGrid>
+
+
+								<h:panelGrid columns="2" style="padding-bottom:20px;">
+									<h:outputLabel for="resultVersion" value="#{msg.fdm_current_script_version}" />
+									<h:outputText id="resultVersion" value="#{resultAnalysis.dataResultSet.get(0).versionNumbersAsText}" styleClass="headerText" />
+								</h:panelGrid>
+								
+								<h:panelGrid columns="2">
+									<h:outputLabel for="rangeFrom" value="#{msg.fdm_result_range}" />
+									<h:panelGrid columns="2">
+										<h:outputText id="rangeFrom" style="width:144px;" styleClass="headerText" value="#{resultAnalysis.dataResultSet.get(0).getResultFromDateRange()}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+										<h:outputText id="rangeTo" style="width:144px;" styleClass="headerText" value="#{resultAnalysis.dataResultSet.get(0).getResultToDateRange()}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</h:panelGrid>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="searchScope" value="#{msg.fdm_data_set_scope}" />
+									<h:outputText id="searchScope" value="#{resultAnalysis.searchCriteria.scopeToRecentAsset ? msg.fdm_scope_asset : msg.fdm_scope_all}" styleClass="headerText" />
+								</h:panelGrid>
+								<h:panelGrid columns="2">
+									<h:outputLabel for="resultCount" value="#{msg.fdm_result_sets}" />
+									<h:outputText id="resultCount" value="#{resultAnalysis.dataResultSet.get(0).overAllResultCount}" styleClass="headerText" />
+								</h:panelGrid>
+
+
+							</p:panel>
+
+							<p:panel header="#{msg.fdm_workgroup_analysis}" style="padding-bottom:10px;">
+
+								<div class="chart-container">
+									<div id="chartContainerWorkGroup" class="chart" style="width: 100%; height: 300px;"></div>
+								</div>
+
+								<script>
+								Highcharts.chart('chartContainerWorkGroup', {
+								    chart: {
+								        plotBackgroundColor: null,
+								        plotBorderWidth: null,
+								        plotShadow: false,
+								        type: 'pie'
+								    },
+								    legend: { enabled: false },
+								    exporting: { enabled: false },
+								    credits: { enabled: false },
+								    styledMode: false,
+								    title: {
+								        text: '#{question.itemType}'
+								    },
+								    tooltip: {
+								    	headerFormat: '{series.name}&lt;br/&gt;',
+								        pointFormat: '&lt;b&gt;{point.name}:&lt;/b&gt;{point.y}'
+								    },
+								    xAxis: {
+								        type: 'category'
+								    },
+								    accessibility: {
+								        point: {
+								            valueSuffix: '%'
+								        }
+								    },
+								    plotOptions: {
+								        pie: {
+								        	depth: 45,
+						                	center: ["50%", "50%"],
+						                	showInLegend: false,
+								            allowPointSelect: true,
+								            cursor: 'pointer',
+								            dataLabels: {
+						                        padding: 0,
+						                        style: {
+						                          fontSize: '8px'
+						                        },
+								                enabled: true,
+								                formatter: function () {
+								                	return '&lt;span style=&quot;color: grey; font-weight: bold; font-size: 115%;&quot;&gt;' + this.point.name + '&lt;/span&gt;';
+								                },
+								                distance: 1,
+								                connectorWidth: 0,
+								            }
+								        }
+								    },
+							        series: [{
+										name: 'Workgroup Categories',
+										colorByPoint: true,
+										data: [
+									        <p:repeat value="#{resultAnalysis.dataResultSet.get(0).wgCatCounts}" var="catCount" varStatus="status">
+										 	   {
+										 		name: '#{catCount.key}',
+										    	y: #{catCount.value.get('catcount')},
+										 		drilldown: '#{catCount.key}'
+										       }#{status.last?' ':','}
+										     </p:repeat>
+										]
+							        }],
+								    drilldown:{
+								    	series: [
+								    		<p:repeat value="#{resultAnalysis.dataResultSet.get(0).wgCatCounts}" var="catCount" varStatus="status">
+										 	   {
+										 		name: '#{catCount.key}',
+										 		id: '#{catCount.key}',
+										 		data: [
+										 			<p:repeat value="#{catCount.value.get('wgcounts')}" var="wgCount" varStatus="status2">
+										 			[
+										 				'#{wgCount.key}', #{wgCount.value}
+										 			]#{status2.last?' ':','}
+										 			</p:repeat>
+										 		]
+										       }#{status.last?' ':','}
+										     </p:repeat>
+								    	]
+								    }
+								});	
+								    
+								
+								</script>
+
+							</p:panel>
+
+							<p:panel header="#{msg.fdm_timeline}" style="padding-bottom:10px;">
+								
+								<div id="chartContainerTimeLine" style="width: 100%; height: 300px;"></div>
+
+								<script>
+
+							Highcharts.chart('chartContainerTimeLine', {
+
+							    chart: {
+							        zoomType: 'x'
+							    },
+
+							    legend: { enabled: false },
+							    exporting: { enabled: false },
+							    credits: { enabled: false },
+							    title: {
+							        text: ' '
+							    },
+							    yAxis: {
+							        title: {
+							            text: 'Results Per Day'
+							        },
+							    },
+							    tooltip: {
+							        valueDecimals: 0
+							    },
+							    colors: ['#4da823'],
+							    xAxis: {
+							        type: 'datetime'
+							    },
+
+							    series: [{
+							        data: getDateResponseData(),
+							        lineWidth: 0.5,
+							        name: 'Results'
+							    }]
+
+							});
+							
+							function getDateResponseData() {
+								
+								var array = [];
+								
+								<p:repeat value="#{resultAnalysis.dataResultSet.get(0).dateCounts}" var="responseCount" varStatus="status">
+								array.push([getResponseDate('#{responseCount.key}'), #{responseCount.value}]);
+							 	</p:repeat>
+								
+								return  array;
+
+
+							}
+							
+							function getResponseDate(srtDate){
+								return Date.UTC(srtDate.substring(0, 4), srtDate.substring(4, 6) - 1, srtDate.substring(6, 8)); 
+							}
+							
+							</script>
+
+
+							</p:panel>
+
+
+						</p:panelGrid>
+
+					</p:panel>
+
+					<p:panelGrid
+						rendered="#{not resultAnalysis.isSearchingVersionAnalysis()}"
+						columns="2" layout="grid" style="padding:0px !important;"
+						columnClasses="ui-g-6 ui-md-6 ui-lg-4, ui-g-6 ui-md-6 ui-lg-8">
+
+
+
+						<p:dataTable style="padding:8px;" id="questionTable"
+							value="#{resultAnalysis.dataResultSet.get(0).latestScriptItems.values()}"
+							var="question" ActiveIndex="#{resultAnalysis.tabActiveIndex}"
+							resizableColumns="true" selectionMode="single"
+							disabledSelection="#{resultAnalysis.isQuestionSelectionDisabled(question)}"
+							selection="#{resultAnalysis.selectedQuestion}"
+							rowStyleClass="#{question.itemType.equals('HEADING') ? 'heading' : (question.itemType.equals('END OF BLOCK MARKER') ? 'endMarker' : (question.itemType.equals(resultAnalysis.selectedQuestion.itemType) and question.itemText.equals(resultAnalysis.selectedQuestion.itemText) ? 'repeatedItem' : '')) }"
+							rowKey="#{question}">
+
+							<!-- disabledSelection="#{!result.isQuestionInAllVersions(question)}" -->
+
+							<!-- <p:ajax event="rowSelect"
+								listener="#{resultAnalysis.questionSelected(resultAnalysis.dataResultSet.get(0))}"
+								update="@this msgs resultAnalyticsForm:analyticsTabs:resultAnalyticsPanel" /> -->
+
+							<p:column headerText="#{msg.fdm_script_question} (#{resultAnalysis.dataResultSet.get(0).latestScriptItems.size()})"
+								style="width:80%; white-space:normal;"
+								styleClass="#{resultAnalysis.dataResultSet.get(0).getQuestionRepeatGroupRuleGroupIcon(question)}">
+								
+								<ul class="qText">
+									<li class="#{question.itemType.equals('HEADING') ? 'questionHeading' : question.inputType.equals('O') ? 'questionNonMandatory' : 'questionMandatory'}" style="padding-right:5px;margin-left:#{((question.getiLevel()-1) * 20) > 100 ? 100 : ((question.getiLevel()-1) * 20)}px" >
+										<h:outputText value="#{question.itemText}"/>
+									</li>
+								</ul>
+								
+							</p:column>
+
+							<p:column headerText="#{msg.fdm_script_question_type}" style="width:30%;white-space:normal;">
+								<h:outputText value="#{question.itemType == 'HEADING' ? '' : question.itemType}" />
+							</p:column>
+							
+						   	<p:column styleClass="tableIcon">
+								<p:commandLink id="tableChartBtn"
+									rendered="#{not resultAnalysis.isQuestionSelectionDisabled(question)}"
+									action="#{resultAnalysis.questionSelectedDataSet(resultAnalysis.dataResultSet.get(0), question)}"
+									update="msgs resultAnalyticsForm:analyticsTabs:resultAnalyticsPanel">
+									<i class="fa fa-chart-line"></i>
+								</p:commandLink>
+								<p:tooltip id="tableChartView" for="tableChartBtn" value="#{msg.fdm_analyse_response}"></p:tooltip>
+							</p:column>
+
+						</p:dataTable>
+
+						<h:panelGrid id="resultAnalyticsPanel" columns="1" style="padding:0px !important; width:100%;">
+
+
+							<p:panelGrid columns="2" layout="grid" id="chartTablePanelGrid"
+								class="chartTablePanelGrid"
+								style="padding:0px !important;width:100%;"
+								columnClasses="ui-g-6 ui-md-6 ui-lg-6, ui-g-6 ui-md-6 ui-lg-6">
+
+
+
+								<c:forEach items="#{resultAnalysis.dataResultSet.get(0).questionResults}"
+									var="resultSetResult" varStatus="loopStatus">
+
+
+									<p:panel id="chart#{loopStatus.index}"
+										footer="#{resultSetResult.responseCount} Responses with #{resultSetResult.unansweredCount} unanswered (N/A, O/R) across script versions #{resultSetResult.foundInVersions}"
+										styleClass="chart#{loopStatus.index} boxedPanel #{resultSetResult.isFoundMoreThanOnce() ? 'panelQFoundMoreThanOnce' : ''}"
+										style="margin-bottom:15px;"
+										rendered="#{resultSetResult.showGraph}">
+
+										<p:effect type="highlight" event="load" rendered="#{loopStatus.index == 0}" />
+										
+										<script>
+
+											$(document).ready(function() {
+												$('.chart#{loopStatus.index}').click(function() {
+													hightListgQ#{loopStatus.index}();
+												});
+											});
+											
+										</script>
+
+										<div id="chartContainer#{loopStatus.index}" style="width: 100%; height: 375px;"></div>
+
+										<p:remoteCommand name="toggle#{loopStatus.index}"
+											actionListener="#{resultSetResult.toggleChartType()}"
+											update="chart#{loopStatus.index}" style="display: none;" />
+
+										<p:remoteCommand name="hightListgQ#{loopStatus.index}"
+											actionListener="#{resultAnalysis.setSelectedQuestion(resultSetResult.question)}"
+											update="questionTable" style="display: none;" />
+
+										<script>
+								Highcharts.chart('chartContainer#{loopStatus.index}', {
+								    chart: {
+								        plotBackgroundColor: null,
+								        plotBorderWidth: null,
+								        plotShadow: false,
+								        type: '#{resultSetResult.chartType}'
+								    },
+								    legend: { enabled: false },
+								    exporting: {
+								        menuItemDefinitions: {
+								            // Custom definition
+								            label: {
+								                onclick: function () {
+								                	toggle#{loopStatus.index}();
+								                },
+								                text: 'Toggle Chart Type'
+								            }
+								        },
+								        buttons: {
+								            contextButton: {
+								                menuItems: ['downloadPNG', 'downloadSVG', 'separator', 'label']
+								            }
+								        }
+								    },
+								    credits: { enabled: false },
+								    title: {
+								        text: '#{resultSetResult.heading}',
+								        style: { "color": "#333333", "fontSize": "12px !important", "fontWeight": "normal !important" }
+								    },
+								    subtitle: {
+								        text: '#{resultSetResult.question.itemText}',
+								        style: { "color": "#000000", "fontSize": "14px", "fontWeight": "bold" }
+								    },
+								    tooltip: {
+								        pointFormat: '{series.name}:{point.y}'
+								    },
+								    xAxis: {
+								        type: 'category'
+								    },
+								    yAxis: {
+								        title: {
+								            text: 'Number of Responses'
+								        }
+								
+								    },
+								    accessibility: {
+								        point: {
+								            valueSuffix: '%'
+								        }
+								    },
+								    plotOptions: {
+								        pie: {
+								        	depth: 45,
+						                	center: ["50%", "50%"],
+						                	showInLegend: false,
+								            allowPointSelect: true,
+								            cursor: 'pointer',
+								            dataLabels: {
+						                        padding: 0,
+						                        style: {
+						                          fontSize: '8px'
+						                        },
+								                enabled: true,
+								                formatter: function () {
+								                	return '&lt;span style=&quot;color: grey; font-weight: bold; font-size: 115%;&quot;&gt;' + this.point.name + '&lt;/span&gt;';
+								                },
+								                distance: 1,
+								                connectorWidth: 0,
+								            }
+								        }
+								    },
+								    
+								    series: [{
+								        name: 'Responses',
+								        colorByPoint: true,
+								        data: [<p:repeat value="#{resultSetResult.responseCounts}" var="responseCount" varStatus="status">
+									 	   {
+									 		name: '#{responseCount.key}',
+									    	y: #{responseCount.value}
+									       }#{status.last?' ':','}
+										</p:repeat>]
+								    }]
+								});	
+								</script>
+
+
+
+
+								</p:panel>
+
+
+
+
+								<p:panel
+									header="#{msg.fdm_chart_numeric} #{loopStatus.last} #{loopStatus.index}"
+									styleClass="boxedPanel" style="margin-top:20px;"
+									rendered="#{resultSetResult.showNumericGraph}">
+
+									<p:effect type="highlight" event="load" rendered="#{loopStatus.index == 0}" />
+												
+									<div id="chartNumericContainer#{loopStatus.index}" style="width: 100%; height: 375px;"></div>
+
+									<script>
+		
+									
+							
+								Highcharts.chart('chartNumericContainer#{resultAnalysis.dataResultSet.get(0).versionNumbersAsText}-#{loopStatus.index}', {
+	
+								    chart: {
+								        zoomType: 'x'
+								    },
+	
+								    legend: { enabled: false },
+								    exporting: { enabled: false },
+								    credits: { enabled: false },
+								    exporting: {
+								        menuItemDefinitions: {
+								            // Custom definition
+								            label: {
+								                onclick: function () {
+								                    toggle#{resultAnalysis.dataResultSet.get(0).versionNumbersAsText}_#{loopStatus.index}();
+								                },
+								                text: 'Toggle Chart Type'
+								            }
+								        },
+								        buttons: {
+								            contextButton: {
+								                menuItems: ['downloadPNG', 'downloadSVG', 'separator', 'label']
+								            }
+								        }
+								    },
+								    credits: { enabled: false },
+								    title: {
+								        text: '#{resultSetResult.heading}',
+								        style: { "color": "#333333", "fontSize": "12px !important", "fontWeight": "normal !important" }
+								    },
+								    subtitle: {
+								        text: '#{resultSetResult.question.itemText}',
+								        style: { "color": "#000000", "fontSize": "14px", "fontWeight": "bold" }
+								    },
+								    yAxis: {
+								        title: {
+								            text: 'Response (Average per day)'
+								        },
+								    },
+								    tooltip: {
+								        valueDecimals: 0
+								    },
+								    colors: ['#4da823'],
+								    xAxis: {
+								        type: 'datetime'
+								    },
+	
+								    series: [{
+								        data: getDateResponseData(),
+								        lineWidth: 0.5,
+								        name: 'Responses'
+								    }]
+	
+								});
+								
+								function getDateResponseData() {
+									
+									var array = [];
+									
+									<p:repeat value="#{resultSetResult.numericResponsesByDate}" var="responseCount" varStatus="status">
+									array.push([getResponseDate('#{responseCount.key}'), #{responseCount.value}]);
+								 	</p:repeat>
+									
+									return  array;
+	
+	
+								}
+								
+								function getResponseDate(srtDate){
+									return Date.UTC(srtDate.substring(0, 4), srtDate.substring(4, 6) - 1, srtDate.substring(6, 8)); 
+								}
+								
+								</script>
+
+
+									</p:panel>
+
+
+								</c:forEach>
+
+							</p:panelGrid>
+
+
+						</h:panelGrid>
+
+
+
+
+					</p:panelGrid>
+
+
+
+				</p:tab>
+
+			</p:tabView>
+
+
+
+
+			<!-- ____________________________________________ VERSION ANALYSIS - SCRIPT METRICS ____________________________________________ -->
+
+
+
+			<p:tabView id="analyticsVersionTabs"
+				activeIndex="#{resultAnalysis.tabActiveIndex}"
+				rendered="#{resultAnalysis.isSearchingVersionAnalysis()}"
+				value="#{resultAnalysis.dataResultSet}" var="tabResult">
+				<p:ajax event="tabChange"
+					listener="#{resultAnalysis.onVersionTabChange}"
+					update="resultAnalyticsForm:analyticsVersionTabs" />
+
+				<p:tab id="thetab" title="#{tabResult.title}">
+				<f:facet name="title">
+					<span style="color:#ff4000;width:1.5em;" class="#{tabResult.workingVersion.onlineStatus == 1 ? 'fa fa-circle' : ''}" />
+					<h:outputText value="#{tabResult.title}"></h:outputText>
+            	</f:facet>
+            
+					<div style="height: 1px; widht: 100%;"></div>
+
+					<p:panel styleClass="" style="">
+
+						<p:panelGrid columns="3" layout="grid"
+							style="min-width:1300px;padding:0px !important;"
+							columnClasses="ui-g-4 ui-md-4 ui-lg-4, ui-g-4 ui-md-4 ui-lg-4s, ui-g-4 ui-md-4 ui-lg-4">
+
+							<p:panel header="#{msg.fdm_data_set}" styleClass="" style="">
+
+
+								<h:panelGrid columns="2" style="padding-top:10px;">
+									<h:outputLabel for="scriptDescription"
+										value="#{msg.fdm_details_script_description_label}" />
+									<h:outputText id="scriptDescription"
+										value="#{resultAnalysis.searchCriteria.script.scriptDesc}"
+										styleClass="headerText" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="scriptCategory" value="#{msg.fdm_script_category}" />
+									<h:outputText id="scriptCategory"
+										value="#{resultAnalysis.searchCriteria.script.scriptCategory}"
+										styleClass="headerText" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="scriptCode" value="#{msg.fdm_script_code}" />
+									<h:outputText id="scriptCode"
+										value="#{resultAnalysis.searchCriteria.script.scriptCode}"
+										styleClass="headerText" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" style="padding-bottom:20px;">
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="oRangeFrom" value="#{msg.fdm_result_overall_range}" />
+									<h:panelGrid columns="3">
+										<h:outputText id="oRangeFrom" style="width:144px"
+											styleClass="headerText"
+											value="#{tabResult.resultFromDateOverVersions}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+										<h:outputText id="oRangeTo" style="width:144px"
+											styleClass="headerText"
+											value="#{tabResult.resultToDateOverVersions}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</h:panelGrid>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="oResultCount" value="#{msg.fdm_result_overall_sets}" />
+									<h:outputText id="oResultCount"
+										value="#{tabResult.resultCountOverVersions}"
+										styleClass="headerText">
+										<f:convertNumber groupingUsed="true" />
+									</h:outputText>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" style="padding-bottom:20px;">
+								</h:panelGrid>
+
+
+
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="resultVersion" value="#{msg.fdm_script_version}" />
+									<h:outputText id="resultVersion"
+										value="#{tabResult.versionNumbersAsText}"
+										styleClass="headerText" />
+								</h:panelGrid>
+
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="rangeFrom" value="#{msg.fdm_result_range}" />
+									<h:panelGrid columns="3">
+										<h:outputText id="rangeFrom" style="width:144px"
+											styleClass="headerText"
+											value="#{tabResult.getResultFromDateRange()}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+										<h:outputText id="rangeTo" style="width:144px"
+											styleClass="headerText"
+											value="#{tabResult.getResultToDateRange()}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</h:panelGrid>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel for="resultCount" value="#{msg.fdm_result_sets}" />
+									<h:outputText id="resultCount"
+										value="#{tabResult.overAllResultCount}"
+										styleClass="headerText">
+										<f:convertNumber groupingUsed="true" />
+									</h:outputText>
+								</h:panelGrid>
+								
+								<h:panelGrid columns="2">
+									<h:outputLabel for="aDuration" value="#{msg.fdm_result_average_duration}" />
+									<h:outputText id="aDuration"
+										value="#{tabResult.averageDuration}"
+										styleClass="headerText">
+										<f:convertNumber groupingUsed="true" />
+									</h:outputText>
+								</h:panelGrid>
+
+
+
+							</p:panel>
+
+							<p:panel header="#{msg.fdm_workgroup_analysis}" styleClass=""
+								style="padding-bottom:10px;text-align:center;">
+
+								<div class="chart-container">
+									<div id="#{tabResult.workingVersion.id}chartContainerWorkGroup"
+										class="chart" style="width: 100%; height: 300px;"></div>
+								</div>
+
+
+
+								<script>
+							
+							Highcharts.chart('#{tabResult.workingVersion.id}chartContainerWorkGroup', {
+								    chart: {
+								        plotBackgroundColor: null,
+								        plotBorderWidth: null,
+								        plotShadow: false,
+								        type: 'pie'
+								    },
+								    legend: { enabled: false },
+								    exporting: { enabled: false },
+								    credits: { enabled: false },
+								    styledMode: false,
+								    title: {
+								        text: ' '
+								    },
+								    tooltip: {
+								    	headerFormat: '{series.name}&lt;br/&gt;',
+								        pointFormat: '&lt;b&gt;{point.name}:&lt;/b&gt;{point.y}'
+								    },
+								    xAxis: {
+								        type: 'category'
+								    },
+								    accessibility: {
+								        point: {
+								            valueSuffix: '%'
+								        }
+								    },
+								    plotOptions: {
+								        pie: {
+								        	depth: 45,
+						                	center: ["50%", "50%"],
+						                	showInLegend: false,
+								            allowPointSelect: true,
+								            cursor: 'pointer',
+								            dataLabels: {
+						                        padding: 0,
+						                        style: {
+						                          fontSize: '8px'
+						                        },
+								                enabled: true,
+								                formatter: function () {
+								                	return '&lt;span style=&quot;color: grey; font-weight: bold; font-size: 115%;&quot;&gt;' + this.point.name + '&lt;/span&gt;';
+								                },
+								                distance: 1,
+								                connectorWidth: 0,
+								            }
+								        }
+								    },
+							        series: [{
+										name: 'Workgroup Categories',
+										colorByPoint: true,
+										data: [
+									        <p:repeat value="#{tabResult.wgCatCounts}" var="catCount" varStatus="status">
+										 	   {
+										 		name: '#{catCount.key}',
+										    	y: #{catCount.value.get('catcount')},
+										 		drilldown: '#{catCount.key}'
+										       }#{status.last?' ':','}
+										     </p:repeat>
+										]
+							        }],
+								    drilldown:{
+								    	series: [
+								    		<p:repeat value="#{tabResult.wgCatCounts}" var="catCount" varStatus="status">
+										 	   {
+										 		name: '#{catCount.key}',
+										 		id: '#{catCount.key}',
+										 		data: [
+										 			<p:repeat value="#{catCount.value.get('wgcounts')}" var="wgCount" varStatus="status2">
+										 			[
+										 				'#{wgCount.key}', #{wgCount.value}
+										 			]#{status2.last?' ':','}
+										 			</p:repeat>
+										 		]
+										       }#{status.last?' ':','}
+										     </p:repeat>
+								    	]
+								    }
+								});	
+								
+
+								
+								</script>
+
+							</p:panel>
+
+							<p:panel header="#{msg.fdm_timeline}" styleClass=""
+								style="padding-bottom:10px;">
+								<div id="#{tabResult.workingVersion.id}chartContainerTimeLine"
+									style="width: 100%; height: 300px;"></div>
+
+								<script>
+		
+									
+							
+							Highcharts.chart('#{tabResult.workingVersion.id}chartContainerTimeLine', {
+
+							    chart: {
+							        zoomType: 'x'
+							    },
+
+							    legend: { enabled: false },
+							    exporting: { enabled: false },
+							    credits: { enabled: false },
+							    title: {
+							        text: ' '
+							    },
+							    yAxis: {
+							        title: {
+							            text: 'Results Per Day'
+							        },
+							    },
+							    tooltip: {
+							        valueDecimals: 0
+							    },
+							    colors: ['#4da823'],
+							    xAxis: {
+							        type: 'datetime'
+							    },
+
+							    series: [{
+							        data: [<p:repeat value="#{tabResult.dateCounts}" var="responseCount" varStatus="status">
+									[Date.UTC('#{responseCount.key}'.substring(0, 4), '#{responseCount.key}'.substring(4, 6) - 1, '#{responseCount.key}'.substring(6, 8)), #{responseCount.value}]#{status.last?' ':','}
+								 	</p:repeat>],
+							        lineWidth: 0.5,
+							        name: 'Results'
+							    }]
+
+							});
+							
+							</script>
+
+
+							</p:panel>
+
+
+						</p:panelGrid>
+
+					</p:panel>
+
+					<p:panelGrid
+						rendered="#{resultAnalysis.isSearchingVersionAnalysis()}"
+						columns="2" layout="grid" style="padding:0px !important;"
+						columnClasses="ui-g-8 ui-md-8 ui-lg-8, ui-g-4 ui-md-4 ui-lg-4">
+
+						<p:dataTable style="padding:8px;" id="questionTable"
+							value="#{tabResult.latestScriptItems.values()}" var="question"
+							resizableColumns="true" tableStyle="table-layout: auto;"
+							selectionMode="single"
+							disabledSelection="#{resultAnalysis.isQuestionSelectionDisabled(question)}"
+							selection="#{resultAnalysis.selectedQuestion}"
+							rowStyleClass="#{question.itemType.equals('HEADING') ? 'heading' : (question.itemType.equals('END OF BLOCK MARKER') ? 'endMarker' : '') }"
+							rowKey="#{question}">
+
+							<!-- disabledSelection="#{!result.isQuestionInAllVersions(question)}" -->
+
+							<!-- <p:ajax event="rowSelect"
+								listener="#{resultAnalysis.questionSelected(tabResult)}"
+								update="msgs resultAnalyticsForm:analyticsVersionTabs:#{resultAnalysis.tabActiveIndex}:resultAnalyticsPanel" />  -->
+
+							<p:column headerText="#{msg.fdm_script_question} (#{tabResult.latestScriptItems.size()})"
+								style="width:80%; white-space:normal;"
+								styleClass="#{tabResult.getQuestionRepeatGroupRuleGroupIcon(question)}">
+								<ul class="qText" style="pointer-events: none;">
+									<li class="#{question.itemType.equals('HEADING') ? 'questionHeading' : question.inputType.equals('O') ? 'questionNonMandatory' : 'questionMandatory'}" style="padding-right:5px;margin-left:#{((question.getiLevel()-1) * 20) > 100 ? 100 : ((question.getiLevel()-1) * 20)}px" >
+										<h:outputText value="#{question.itemText}"/>
+									</li>
+								</ul>
+							</p:column>
+
+
+							<p:column headerText="#{msg.fdm_script_question_type}"
+								style="width:20%; white-space:normal;">
+								<h:outputText value="#{question.itemType == 'HEADING' ? '' : question.itemType}" />
+							</p:column>
+
+
+							<p:column headerText="%" style="width:40px"
+								styleClass="#{question.itemType.equals('HEADING') ? '' : tabResult.getColourForSeqNo(question.id.sequenceNumber)}">
+								<h:outputText value="#{question.itemType.equals('HEADING') ? '' : tabResult.getRespondedPercentageForSeqNo(question.id.sequenceNumber)}" />
+							</p:column>
+
+							<p:column headerText="#{msg.fdm_result_responses}"
+								styleClass="#{question.itemType.equals('HEADING') ? '' : tabResult.getColourForSeqNo(question.id.sequenceNumber)}"
+								style="width:80px;#{tabResult.getRespondedForSeqNo(question.id.sequenceNumber) == null and not question.itemType.equals('HEADING') ? 'text-align:center;' : ''}">
+								<h:outputText value="#{question.itemType.equals('HEADING') ? '' : tabResult.getRespondedForSeqNo(question.id.sequenceNumber) == null ? question.itemType.equals('HEADING') ? '' : ' - ' : tabResult.getRespondedForSeqNo(question.id.sequenceNumber)}">
+									<f:convertNumber groupingUsed="true" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="#{msg.fdm_result_na}" rendered="#{tabResult.isNAPresent()}"
+								style="width:60px !important;#{tabResult.getNaForSeqNo(question.id.sequenceNumber) == null and not question.itemType.equals('HEADING') ? 'text-align:center;' : ''}"
+								styleClass="#{question.itemType.equals('HEADING') ? '' : tabResult.getColourForSeqNoNA(question.id.sequenceNumber)}">
+								<h:outputText value="#{tabResult.getNaForSeqNo(question.id.sequenceNumber) == null ? question.itemType.equals('HEADING') ? '' : ' - ' : tabResult.getNaForSeqNo(question.id.sequenceNumber)}">
+									<f:convertNumber groupingUsed="true" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="#{msg.fdm_result_or}" rendered="#{tabResult.isORPresent()}"
+								style="width:60px !important;#{tabResult.getOrForSeqNo(question.id.sequenceNumber)} == null and not question.itemType.equals('HEADING') ? 'text-align:center;' : ''}"
+								styleClass="#{question.itemType.equals('HEADING') ? '' : tabResult.getColourForSeqNoOR(question.id.sequenceNumber)}">
+								<h:outputText value="#{tabResult.getOrForSeqNo(question.id.sequenceNumber) == null ? question.itemType.equals('HEADING') ? '' : ' - ' : tabResult.getOrForSeqNo(question.id.sequenceNumber)}">
+									<f:convertNumber groupingUsed="true" />
+								</h:outputText>
+							</p:column>
+
+
+						   <p:column styleClass="tableIcon">
+								<p:commandLink id="tableChartBtn"
+									rendered="#{not resultAnalysis.isQuestionSelectionDisabled(question)}"
+									action="#{resultAnalysis.questionSelectedVersion(tabResult, question)}"
+									update="msgs resultAnalyticsForm:analyticsVersionTabs:#{resultAnalysis.tabActiveIndex}:resultAnalyticsPanel">
+									<i class="fa fa-chart-line"></i>
+								</p:commandLink>
+								<p:tooltip id="tableChartView" for="tableChartBtn" value="Analyse Response"></p:tooltip>
+							</p:column>
+						
+						</p:dataTable>
+
+						<h:panelGrid id="resultAnalyticsPanel" columns="1"
+							style="padding:0px !important; width:100%;">
+
+
+							<p:panelGrid id="charts" columns="1"
+								style="padding:0px !important;width:100%;">
+
+								<p:repeat value="#{tabResult.questionResults}" id="chartrepeat"
+									var="resultSetResult" varStatus="loopStatus">
+
+									<h:panelGrid id="testingit" style="width:100%">
+
+										<p:remoteCommand name="toggleTimeLine#{loopStatus.index}"
+											actionListener="#{resultAnalysis.loadTimeLineForValidationMetrics(tabResult, resultSetResult)}"
+											update="resultAnalyticsForm:analyticsVersionTabs:#{resultAnalysis.tabActiveIndex}:chartrepeat:#{loopStatus.index}:testingit"
+											style="display: none;" />
+
+										<p:remoteCommand name="deleteChart#{loopStatus.index}"
+											actionListener="#{resultAnalysis.deleteChart(tabResult, resultSetResult)}"
+											update="resultAnalyticsForm:analyticsVersionTabs:#{resultAnalysis.tabActiveIndex}:charts"
+											style="display: none;" />
+
+										<p:remoteCommand name="toggle#{loopStatus.index}"
+											actionListener="#{resultSetResult.toggleChartType()}"
+											update="resultAnalyticsForm:analyticsVersionTabs:#{resultAnalysis.tabActiveIndex}:chartrepeat:#{loopStatus.index}:testingit"
+											style="display: none;" />
+
+										<p:remoteCommand name="hightListgQ#{loopStatus.index}"
+											actionListener="#{resultAnalysis.setSelectedQuestion(resultSetResult.question)}"
+											update="resultAnalyticsForm:analyticsVersionTabs:#{resultAnalysis.tabActiveIndex}:questionTable"
+											style="display: none;" />
+
+										<p:panel
+											rendered="#{resultSetResult.showMetricSinglePickBar == true}"
+											id="#{tabResult.workingVersion.id}versionSinglePickChartTime#{loopStatus.index}"
+											styleClass="chart#{loopStatus.index} boxedPanel"
+											style="margin-bottom:15px;">
+
+											<p:effect type="highlight" event="load"
+												rendered="#{loopStatus.index == 0}" />
+
+											<script>
+
+								$(document).ready(function() {
+									$('.chart#{loopStatus.index}').click(function() {
+										hightListgQ#{loopStatus.index}();
+									});
+								});
+								
+							</script>
+
+
+
+											<div
+												id="#{tabResult.workingVersion.id}chartContainer#{loopStatus.index}"
+												style="width: 100%; height: 375px;"></div>
+
+
+
+							<script>
+								Highcharts.chart('#{tabResult.workingVersion.id}chartContainer#{loopStatus.index}', {
+								    chart: {
+								        plotBackgroundColor: null,
+								        plotBorderWidth: null,
+								        plotShadow: false,
+								        type: '#{resultSetResult.chartType}'
+								    },
+								    legend: { enabled: false },
+								    exporting: {
+								        menuItemDefinitions: {
+								            // Custom definition
+								            toggleChart: {
+								                onclick: function () {
+								                	toggle#{loopStatus.index}();
+								                },
+								                text: 'Toggle Chart Type'
+								            },
+								            toggleMetrics: {
+								                onclick: function () {
+								                	toggleTimeLine#{loopStatus.index}();
+								                },
+								                text: 'Show Time Line'
+								            },
+								            deleteChart: {
+								            	onclick: function () {
+								            		deleteChart#{loopStatus.index}();
+								            	},
+								            	text: 'Delete'
+								            }
+								        },
+								        buttons: {
+								            contextButton: {
+								                menuItems: ['downloadPNG', 'downloadSVG', 'separator',  'toggleChart', 'toggleMetrics', 'separator', 'deleteChart']
+								            }
+								        }
+								    },
+								    credits: { enabled: false },
+								    title: {
+								        text: '#{resultSetResult.heading}',
+								        style: { "color": "#333333", "fontSize": "12px !important", "fontWeight": "normal !important" }
+								    },
+								    subtitle: {
+								        text: '#{resultSetResult.question.itemText}',
+								        style: { "color": "#000000", "fontSize": "14px", "fontWeight": "bold" }
+								    },
+								    tooltip: {
+								        pointFormat: '{series.name}:{point.y}'
+								    },
+								    xAxis: {
+								        type: 'category'
+								    },
+								    yAxis: {
+								        title: {
+								            text: 'Number of Responses'
+								        }
+								
+								    },
+								    accessibility: {
+								        point: {
+								            valueSuffix: '%'
+								        }
+								    },
+								    plotOptions: {
+								        pie: {
+								        	depth: 45,
+						                	center: ["50%", "50%"],
+						                	showInLegend: false,
+								            allowPointSelect: true,
+								            cursor: 'pointer',
+								            dataLabels: {
+						                        padding: 0,
+						                        style: {
+						                          fontSize: '8px'
+						                        },
+								                enabled: true,
+								                formatter: function () {
+								                	return '&lt;span style=&quot;color: grey; font-weight: bold; font-size: 115%;&quot;&gt;' + this.point.name + '&lt;/span&gt;';
+								                },
+								                distance: 1,
+								                connectorWidth: 0,
+								            }
+								        }
+								    },
+								    
+								    series: [{
+								        name: 'Responses',
+								        colorByPoint: true,
+								        data: [<p:repeat value="#{resultSetResult.responseCounts}" var="responseCount" varStatus="status">
+									 	   {
+									 		name: '#{responseCount.key}',
+									    	y: #{responseCount.value}
+									       }#{status.last?' ':','}
+										</p:repeat>]
+								    }]
+								});	
+							</script>
+
+										</p:panel>
+
+
+										<p:panel
+											rendered="#{resultSetResult.showMetricSinglePickBar == false}"
+											id="#{tabResult.workingVersion.id}versionChartTime#{loopStatus.index}"
+											styleClass="boxedPanel" style="margin-bottom:15px;">
+
+											<p:effect type="highlight" event="load"
+												rendered="#{loopStatus.index == 0}">
+											</p:effect>
+
+											<div onclick="hightListgQ#{loopStatus.index}()"
+												id="#{tabResult.workingVersion.id}versionChartTimeContainer#{loopStatus.index}"
+												style="width: 100%; height: 375px;"></div>
+
+											<script>
+		
+											Highcharts.chart('#{tabResult.workingVersion.id}versionChartTimeContainer#{loopStatus.index}', {
+				
+											    chart: {
+											        zoomType: 'x'
+											    },
+				
+											    legend: { enabled: true },
+											    exporting: {
+											        menuItemDefinitions: {
+											            // Custom definition
+											            toggleMetrics: {
+											                onclick: function () {
+											                	toggleTimeLine#{loopStatus.index}();
+											                },
+											                text: 'Show Response Chart'
+											            },
+											            deleteChart: {
+											            	onclick: function () {
+											            		deleteChart#{loopStatus.index}();
+											            	},
+											            	text: 'Delete'
+											            }
+											        },
+											        buttons: {
+											            contextButton: {
+											                menuItems: ['downloadPNG', 'downloadSVG'  #{resultSetResult.isCanShowBar() ?', "separator", "toggleMetrics"' : ' '}, 'separator', 'deleteChart']
+											            }
+											        }
+											    },
+											    credits: { enabled: false },
+											    title: {
+											        text: '#{resultSetResult.heading}',
+											        style: { "color": "#333333", "fontSize": "12px !important", "fontWeight": "normal !important" }
+											    },
+				
+											    subtitle: {
+											        text: '#{resultSetResult.question.itemText}',
+											        style: { "color": "#000000", "fontSize": "14px", "fontWeight": "bold" }
+											    },
+											    yAxis: {
+											        title: {
+											            text: 'Number of Responses'
+											        },
+											    },
+											    tooltip: {
+											        valueDecimals: 0
+											    },
+											    colors: ['#4da823', '#d1813b', '#e8db27'],
+											    xAxis: {
+											        type: 'datetime'
+											    },
+				
+											    series: [{
+											        data: [<p:repeat value="#{resultSetResult.responseCountsByDate}" var="responseCount" varStatus="status">
+													[Date.UTC('#{responseCount.key}'.substring(0, 4), '#{responseCount.key}'.substring(4, 6) - 1, '#{responseCount.key}'.substring(6, 8)), #{responseCount.value}]#{status.last?' ':','}
+													</p:repeat>],
+											        lineWidth: 0.5,
+											        name: 'Responses'
+											    },
+											    {
+											        data:  [<p:repeat value="#{resultSetResult.naCountsByDate}" var="responseCount" varStatus="status">
+													[Date.UTC('#{responseCount.key}'.substring(0, 4), '#{responseCount.key}'.substring(4, 6) - 1, '#{responseCount.key}'.substring(6, 8)), #{responseCount.value}]#{status.last?' ':','}
+													</p:repeat>],
+											        lineWidth: 0.5,
+											        name: 'N/A'
+											    },{
+											        data: [<p:repeat value="#{resultSetResult.orCountsByDate}" var="responseCount" varStatus="status">
+													[Date.UTC('#{responseCount.key}'.substring(0, 4), '#{responseCount.key}'.substring(4, 6) - 1, '#{responseCount.key}'.substring(6, 8)), #{responseCount.value}]#{status.last?' ':','}
+													</p:repeat>],
+											        lineWidth: 0.5,
+											        name: 'O/R'
+											    }]
+				
+											});
+											
+											
+											</script>
+
+										</p:panel>
+
+									</h:panelGrid>
+
+								</p:repeat>
+
+							</p:panelGrid>
+
+						</h:panelGrid>
+
+					</p:panelGrid>
+
+				</p:tab>
+
+			</p:tabView>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

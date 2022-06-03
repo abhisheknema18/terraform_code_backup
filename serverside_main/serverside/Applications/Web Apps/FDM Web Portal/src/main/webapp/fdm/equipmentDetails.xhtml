@@ -1,0 +1,309 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/equipment-template.xhtml">
+
+
+	<ui:param name="bean" value="#{equipmentDetails}" />
+
+	<ui:define name="equipment-body">
+
+<script	src="https://maps.googleapis.com/maps/api/js?key=#{fdmenv.systemParameters.mapKey}" >
+				window.gm_authFailure = function validMapKey() {
+				element = document.getElementById('assetDetailsForm:equipmentMapDetails');
+				var img = document.createElement('img'); 
+				img.src = '/images/nomapfound.jpg'; 
+				element.replaceWith(img);
+				img.classList.add('noMapClass'); 
+		}
+</script>
+<h:form id="assetDetailsForm">
+	<div id="navigationContainer" class="resultNavigationContainer">
+			<div id="navigation" class="resultNavigation">
+			
+					<p:commandLink id="nonAjax" rendered="#{equipmentDetails.returnHierarchy}"
+						action="#{equipmentDetails.navigateReturn}"
+						title="Return to List" styleClass="resultNavigationButton fas fa-sitemap" />	
+						
+					<p:commandLink id="nonAjaxSe" rendered="#{!equipmentDetails.returnHierarchy}"
+						action="#{equipmentDetails.navigateReturn}" update="@all"
+						title="Return to List" styleClass="resultNavigationButton fa fa-list" />
+
+					<p:commandLink id="prevNav" rendered="#{!equipmentDetails.returnHierarchy}"
+						styleClass="resultNavigationButton fa fa-arrow-left"
+						action="#{equipmentSearchList.navigatePrevious()}"
+						disabled="#{not equipmentSearchList.previous}"
+						title="Previous"
+						update="@this nextNav equipmentDetailsTab searchSideMenu" />
+
+					<p:commandLink id="nextNav" rendered="#{!equipmentDetails.returnHierarchy}"
+						styleClass="resultNavigationButton fa fa-arrow-right"
+						action="#{equipmentSearchList.navigateNext()}"
+						disabled="#{not equipmentSearchList.next}"
+						update="@this prevNav equipmentDetailsTab searchSideMenu" execute="@page"
+						title="Next"
+						event="click" />    
+			</div>
+	</div>
+	<h:panelGrid columns="2" layout="grid" columnClasses="ui-g-6 ui-md-5, ui-g-12; ui-md-9">
+	
+	<p:panel id="equipmentDetailsTab">
+			<h:panelGrid id="equipmentDataId" width="100%">
+				<h:panelGrid columns="2" >
+					<h:outputLabel for="equipNo"
+						value="#{msg.fdm_equipment_information_equipment_number_label}" />
+					<h:outputText id="equipNo"
+						value="#{equipmentDetails.equipmentData.equipNo}"
+						styleClass="assetDetailheaderText" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" >
+					<h:outputLabel for="equipDesc"
+						value="#{msg.fdm_equipment_information_equipment_description_label}" />
+					<h:outputText id="equipDesc"
+						value="#{equipmentDetails.equipmentData.equipDesc}"
+						styleClass="assetDetailheaderText" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" >
+					<h:outputLabel for="equipReference"
+						value="#{msg.fdm_search_reference_number_label}" />
+					<h:outputText id="equipReference"
+						value="#{equipmentDetails.equipmentData.altEquipRef}"
+						styleClass="assetDetailheaderText" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" >
+					<h:outputLabel for="equipType"
+						value="#{msg.fdm_equipment_information_equipment_type_label}" />
+					<h:outputText id="equipType"
+						value="#{equipmentDetails.equipmentData.equipType}"
+						styleClass="assetDetailheaderText" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" >
+					<h:outputLabel
+						value="#{msg.fdm_equipment_information_equipment_location_label}" />
+					<h:outputText id="location"
+						value="#{equipmentDetails.location !=null ? equipmentDetails.location : ''}"
+						styleClass="assetDetailheaderText" />
+				</h:panelGrid>
+			<p:spacer height="25px;width:100%"></p:spacer>
+				
+				<p:dataTable id="equipAttribTable"
+					value="#{equipmentDetails.equipmentAttribList}" var="equipAtt"
+					styleClass="eqipmentTableCls"
+					scrollable="true" scrollHeight="200"
+					emptyMessage="No records found" rowKey="#{equipAtt.attributeName}"
+					selectionMode="single"
+					resizableColumns="true"
+					style="border: 1px solid #d5d5d5 !important;width:100%">
+
+					<p:column headerText="Attribute Name" styleClass="assetDetailAttribname">
+						<h:outputText value="#{equipAtt.attributeName}" />
+					</p:column>
+					<p:column headerText="Value" styleClass="assetDetailAttribValue">
+						<h:outputText value="#{equipAtt.value}" />
+					</p:column>
+
+				</p:dataTable>
+
+		</h:panelGrid >
+		</p:panel>
+		<p:panel id="equipmentMapDetails">
+			<h:panelGrid width="100%" rendered="#{equipmentDetails.location==null || fdmenv.systemParameters.mapKey==null}"  >
+				<!-- <h:outputText value="No map data found" styleClass = "noMapClass"></h:outputText> -->
+				<h:graphicImage value ="/images/nomapfound.jpg" styleClass="noMapClass"/>
+			</h:panelGrid>
+			<h:panelGrid width="100%" rendered="#{equipmentDetails.location!=null and fdmenv.systemParameters.mapKey!=null}"  >
+				<p:gmap center="#{equipmentDetails.location}" zoom="15" type="ROADMAP" styleClass="mapClass" model="#{equipmentDetails.mapModel}"></p:gmap>
+			</h:panelGrid>
+		</p:panel>
+	</h:panelGrid>
+	
+		<p:panel id="assetStatusHistory" style="width:100%">
+		
+			<p:accordionPanel activeIndex="#{equipmentDetails.accordionIndex}" cache="false" multiple="true" id="assetAcc" >
+
+				<p:tab title="Work History (#{equipmentDetails.workIssuedHistoryList.size()})">
+				
+					<p:dataTable id="workListTable" 
+						style="width:100%;border: 1px solid #dddddd;"
+						value="#{equipmentDetails.workIssuedHistoryList}" var="result"
+						selection="#{equipmentDetails.selectedWorks}"
+						selectionMode="single"
+						rowKey="#{result.id}"
+						filterDelay="1000"
+						scrollable="true"
+						scrollHeight="300"
+						styleClass = "listHighLightTableCls"
+						resizableColumns="true">
+						
+						<p:column headerText="Work Order" style="width:95px;"
+							sortBy="#{result.id.workOrderNo}" filterMatchMode="contains"
+							filterBy="#{result.id.workOrderNo}">
+							<h:outputText value="#{result.id.workOrderNo}" />
+						</p:column>
+
+						<p:column headerText="Description" id="woDescCol"
+							filterBy="#{result.workOrderDesc}" filterMatchMode="contains"
+							filterable="false" sortBy="#{result.workOrderDesc}"
+							style="width:250px;">
+							<h:outputText value="#{result.workOrderDesc}" />
+						</p:column>
+						<p:column headerText="Issued" id="woiDateCol"
+							filterBy="#{func:intToDateString(result.issuedDate)}"
+							filterMatchMode="contains" filterable="false" style="width:80px;"
+							sortBy="#{func:intToDate(result.issuedDate)}">
+							<h:outputText id="issuedDate"
+								value="#{func:intToDateString(result.issuedDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Work Group" style="width:95px;"
+							sortBy="#{result.workgroupCode}"
+							filterBy="#{result.workgroupCode}" filterMatchMode="contains">
+							<h:outputText value="#{result.workgroupCode}" />
+						</p:column>
+						<p:column headerText="User" style="width:90px;"
+							sortBy="#{result.user.id.userCode}"
+							filterBy="#{result.user.id.userCode}" filterMatchMode="contains">
+							<h:outputText value="#{result.user.id.userCode}" />
+						</p:column>
+						<p:column headerText="Plan Start"
+							filterBy="#{func:intToDateString(result.planStartDate)}"
+							filterMatchMode="contains" filterable="false" style="width:80px;"
+							sortBy="#{func:intToDate(result.planStartDate)}">
+							<h:outputText id="planStartDate"
+								value="#{func:intToDateString(result.planStartDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Req. Finish"
+							filterBy="#{func:intToDateString(result.reqFinishDate)}"
+							filterMatchMode="contains" filterable="false" style="width:90px;"
+							sortBy="#{func:intToDate(result.reqFinishDate)}">
+							<h:outputText id="reqFinishDate"
+								value="#{func:intToDateString(result.reqFinishDate)}"
+								style="border:0px !important;">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Type" style="width:90px;"
+							sortBy="#{result.woType}" filterBy="#{result.woType}"
+							filterMatchMode="contains">
+							<h:outputText value="#{result.woType}" />
+						</p:column>
+						<p:column headerText="Status" style="width:90px;"
+							sortBy="#{result.workStatus}" filterBy="#{result.workStatus}"
+							filterMatchMode="contains">
+							<h:outputText value="#{result.workStatus}" />
+						</p:column>
+					</p:dataTable>
+				</p:tab>
+				
+				<p:tab title="Result History (#{equipmentDetails.scriptResultsList.size()})">
+
+					<!-- bit of a hack for a primefaces bug, the update on the ajax filter is always one step behind so use oncomplete instead to update the count -->
+					<p:remoteCommand name="updateFilteredValue" action="#{equipmentDetails.resetSelectionAfterFilter}" update="multiViewBtn assetScriptResultTable"/>	
+					
+					<p:dataTable value="#{equipmentDetails.scriptResultsList}"
+						id="assetScriptResultTable"
+						var="result" style="width:100%;border: 1px solid #dddddd;"
+						selection="#{equipmentDetails.selectedResults}"
+						filteredValue="#{equipmentDetails.resultsFiltered}"
+						filterDelay="1000"
+						rowSelectMode="add"
+						rowKey="#{result.id}"
+						scrollable="true"
+						scrollHeight="300"
+						styleClass="listHighLightTableCls"
+						resizableColumns="true">
+
+
+						<p:ajax event="rowSelect" update="assetDetailsForm:assetAcc:multiViewBtn" process="@this" />
+						<p:ajax event="rowUnselect" update="assetDetailsForm:assetAcc:multiViewBtn" process="@this" />
+						<p:ajax event="rowDblselect" update="assetDetailsForm:assetAcc:multiViewBtn" process="@this" />
+						<p:ajax event="toggleSelect" update="assetDetailsForm:assetAcc:multiViewBtn" process="@this" />
+						<p:ajax event="rowSelectCheckbox" update="assetDetailsForm:assetAcc:multiViewBtn" process="@this" />
+						<p:ajax event="rowUnselectCheckbox" update="assetDetailsForm:assetAcc:multiViewBtn" process="@this" /> 
+						<p:ajax event="filter" oncomplete="updateFilteredValue();" process="@this" />
+						 
+						<p:column selectionMode="multiple" style="width:16px;text-align:center;" />
+
+
+						<p:column style="width:80px;"
+							headerText="#{msg.fdm_search_results_date_label}"
+							filterMatchMode="contains"
+							sortBy="#{func:intToDate(result.completeDate)}"
+							filterable="false"
+							filterBy="#{func:intToDateString(result.completeDate)}">
+							<h:outputText value="#{func:intToDateString(result.completeDate)}">
+							</h:outputText>
+						</p:column>
+						<p:column style="width:95px;"
+							headerText="#{msg.fdm_search_results_work_order_no_label}"
+							filterMatchMode="contains" filterBy="#{result.workOrderNo}"
+							sortBy="#{result.workOrderNo}">
+							<h:outputText value="#{result.workOrderNo}" />
+						</p:column>
+						<p:column style="width:180px;"
+							headerText="#{msg.fdm_search_results_work_order_description_label}"
+							filterMatchMode="contains" filterBy="#{result.workOrderDesc}"
+							filterable="false" sortBy="#{result.workOrderDesc}">
+							<h:outputText value="#{result.workOrderDesc}" />
+						</p:column>
+						<!-- 41092 - Front end changes to add the new column in Search results Start-->
+						<p:column style="width:140px;"
+							headerText="#{msg.fdm_search_results_script_code_label}"
+							filterMatchMode="contains"
+							filterBy="#{result.scriptCode.concat('/').concat(result.scriptVersions.versionNumberInt)}"
+							sortBy="#{result.scriptCode.concat('/').concat(result.scriptVersions.versionNumberInt)}">
+							<h:outputText value="#{result.scriptCode}" />
+							<h:outputText value="/#{result.scriptVersions.versionNumberInt}"
+								style="color:grey" />
+						</p:column>
+						<!-- 41092 - Front end changes to add the new column in Search results End-->
+						<p:column style="width:150px;"
+							headerText="#{msg.fdm_search_results_script_description_label}"
+							filterMatchMode="contains" filterBy="#{result.summaryDesc}"
+							filterable="false" sortBy="#{result.summaryDesc}">
+							<h:outputText value="#{result.summaryDesc}" />
+						</p:column>
+						<p:column style="width:90px;"
+							headerText="#{msg.fdm_search_results_field_user_label}"
+							filterMatchMode="contains" filterBy="#{result.completeUser}"
+							sortBy="#{result.completeUser}">
+							<h:outputText value="#{result.completeUser}" />
+						</p:column>
+						<p:column style="width:90px;"
+							headerText="#{msg.fdm_search_results_status_label}"
+							filterMatchMode="contains" filterBy="#{result.resultStatus}"
+							sortBy="#{result.resultStatus}">
+							<h:outputText value="#{result.resultStatus}" />
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:tooltip for="assetReultQuickView" value="#{msg.fdm_quick_view_tool_tip}"></p:tooltip>
+							<p:commandLink id="assetReultQuickView"
+								action="#{detailsQuickView.initialise(result)}"
+								update="resultQuickViewForm:detailDialog"
+								oncomplete="PF('detailDialog').show();">
+								<i class="fa fa-search" alt="Quick View"></i>
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+					
+					<p:commandButton id="multiViewBtn" value="Multi View" action="#{equipmentDetails.loadDetailsMultiView()}" style="margin-top:10px;" disabled="#{not equipmentDetails.isUniqueScriptIdSelected()}"/>
+				</p:tab>
+			</p:accordionPanel>
+		</p:panel>
+</h:form>
+	<ui:include src="detailsQuickView.xhtml">
+		</ui:include>
+	</ui:define>
+</ui:composition>
