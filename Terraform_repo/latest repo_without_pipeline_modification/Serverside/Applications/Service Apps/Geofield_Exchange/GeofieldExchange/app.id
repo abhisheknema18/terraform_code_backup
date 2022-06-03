@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppId LogPath="" xsi:type="SigmaSeven.Exchange.AppId" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Assemblies>
+	<Item>SigmaSeven.Common.dll</Item>
+	<Item>SigmaSeven.DataAccess.dll</Item>
+	<Item>SigmaSeven.DataAccess.SpatiaLite.dll</Item>
+	<Item>SigmaSeven.Exchange.dll</Item>
+	<Item>SigmaSeven.Exchange.Packaging.dll</Item>
+	<Item>SigmaSeven.GDAL.dll</Item>
+  </Assemblies>
+</AppId>

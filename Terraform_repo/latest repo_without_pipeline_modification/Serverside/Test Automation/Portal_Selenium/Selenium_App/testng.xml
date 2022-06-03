@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<!-- <suite name="Fusion Portal Test Suite" thread-count="2" parallel="true"> -->
+<suite name="Fusion Portal Test Suite">
+	<listeners>
+		<listener class-name="utility.SuiteListeners" />
+	</listeners>
+	<suite-files>
+		<suite-file path="./edge.xml"></suite-file>
+		<suite-file path="./chrome.xml"></suite-file>
+	</suite-files>
+</suite>

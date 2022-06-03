@@ -1,0 +1,1540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Endpoint: /integration/workorder/release/{workOrderNo}" enabled="true">
+      <stringProp name="TestPlan.comments">Services to return lists of available work orders and enable work order download</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <JDBCDataSource guiclass="TestBeanGUI" testclass="JDBCDataSource" testname="JDBC Connection Configuration" enabled="true">
+        <boolProp name="autocommit">true</boolProp>
+        <stringProp name="checkQuery"></stringProp>
+        <stringProp name="connectionAge">5000</stringProp>
+        <stringProp name="connectionProperties"></stringProp>
+        <stringProp name="dataSource">SQLTest</stringProp>
+        <stringProp name="dbUrl">jdbc:sqlserver://sql-web-dev-uksouth.database.windows.net;databaseName=fieldsmart-qa;</stringProp>
+        <stringProp name="driver">com.microsoft.sqlserver.jdbc.SQLServerDriver</stringProp>
+        <stringProp name="initQuery"></stringProp>
+        <boolProp name="keepAlive">true</boolProp>
+        <stringProp name="password">FieldsmartMobileDev@123</stringProp>
+        <stringProp name="poolMax">0</stringProp>
+        <boolProp name="preinit">false</boolProp>
+        <stringProp name="timeout">10000</stringProp>
+        <stringProp name="transactionIsolation">DEFAULT</stringProp>
+        <stringProp name="trimInterval">60000</stringProp>
+        <stringProp name="username">QaLogin</stringProp>
+      </JDBCDataSource>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="HostIP" elementType="Argument">
+            <stringProp name="Argument.name">HostIP</stringProp>
+            <stringProp name="Argument.value">amt.v1.fieldsmarttest.com/qa</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="AuthHeader" elementType="Argument">
+            <stringProp name="Argument.name">AuthHeader</stringProp>
+            <stringProp name="Argument.value">Bearer eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.DhLHvDtVpp2Wjaf5-mT_WaDeSCm-HlGv9i55t3xyULWP9z4n_YldPffDxF9gasgXVO0NtGZeuqu17GzdWH7qlheMYhebXCTFQEeGKAZwkb9QuIj4DBBkQ6qHvKaYEeNP_zC-UViZ_nXsL6NJRThWTCNnCwzFzfSC4mtfEvB77fCTU-dTbGwajcSO0Qhls-Gt--ES3MMh3d2d2squFwMueU1C9oMJwl1z8Bg8G5sVhZlCsEpgpW4fMByMtywhn-1KeGXSxGQQvZrK7SvDrDpuE8nU9eXWVgoGDGHge5P-pmosCcxgz8_x4hU_i7Y6sa2QYzBVZV_8v_LE-2y1aeSWEw.DN5vb64VaFDq5lV60R693g.S0GKb9g-VXa9ZtL4KGeadCKuyQ2sRE-0JAdqNcZqqM0i7rKcmCmO2DUTjg4Vkqqc01aEPkJ5hHfjoikXFdXfj7vtU8hJ11D7efIsOuEiaCiLocE2nPGkFOqd3N6DZGrDqE73AWuAGaiRFgW6cYq4JQZBwL7sFqvlFboZPI2cdv49dsWkfPROd8tdt_LrzNIS.PIfJJ8cw4dIYC-B6CdFWZg</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="AuthHeader1" elementType="Argument">
+            <stringProp name="Argument.name">AuthHeader1</stringProp>
+            <stringProp name="Argument.value">Bearer Q0JDLUhTMjU2IiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.hO4earkRJU7C7ih3fchYmy3JkJzg8RoNKcjrsARHU7p0GDkwOz8QOmxY7g_twd3lyj_cOAC8RIr9Dpaf65AjQsQ4zrz58JW2YOsWWupqkES0GeteyyIqp7fHbaL6vkFrOjwmNcYro1QI-kIJL2463xjnbn5tXQUs060Ewue8AbKWppp3jKjc7Jl_meWwThgZySSv1pTMzIN8F8m_fz6exEL4QDE1GRxTOpwxLOaXHRqPv9eKor4Bygsk-6cRra2m0v5fNtRYlsyrN8DpE6x45a8ZinvY1Wx9PgImxDAPpcNGKFpWR1ufv_Talsd1OE4lxpesCG4ZFXAyO3KOLG5gBQ.X9UNU4Wo5rk-H3ujBeS5_w._tUKuh-vinQgytQTfbJCOhuLY3od_OF3b3A9-rPpNpiTRTtIh99f50BDoeTIGEByP-mSAKHO2ReU1qSocNAmaN3zX0l7m-wxRTnw4-IoREc7_KWx2xErADUSg_wN9tMgnWB34EgmGGfVx3oRoaXtOAKscqf2WJIO5w45fmtmpt_Lni-knx4VCmJUbT2LnnYV.TG5-KFsNLm0LTjQv6IdZlA</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="/integration/workorder/release/{workOrderNo} ALL SCENARIOS (application/vnd.fieldsmart.call-response-1+xml)" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">SQLTest</stringProp>
+          <stringProp name="query">BEGIN
+DELETE FROM WORKISSUED WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDLOG WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDFILEREFS WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKSTATUSHISTORY WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+select * from WorkIssued where WorkOrderNo LIKE &apos;%REGTEST%&apos;;
+END;
+</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">${AuthHeader}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/vnd.fieldsmart.call-response-1+xml</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/xml</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1: Release Work Order, empty body request - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">Bad request</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 400" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51508">400</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="2: Release Work Order, body request contains invalid work order content - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;Rel-1002&lt;/WorkOrderNo&gt;&#xd;
+	     &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1002</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/CallResponse/error/errorCode/text() = &apos;WorkOrderValidationException&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="3: Release Work Order, work order exists in database - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;REGTEST-1001&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1001&lt;/WorkOrderDesc&gt;&#xd;
+	     &lt;WorkGroupCode&gt;REGRESSION&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/REGTEST-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message">WorkOrder already exists in the database.workorderno = REGTEST-1001 districtCode = CAM</stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/CallResponse/error/errorDescription/text() = &apos;WorkOrder already exists in the database.workorderno = REGTEST-1001 districtCode = CAM&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="4: Release Work Order, Success, District Code not specified - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;Rel-1003&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1003&lt;/WorkOrderDesc&gt;&#xd;
+	     &lt;WorkGroupCode&gt;REGRESSION&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1003</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/CallResponse/success/text() = &apos;true&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="5: Release Work Order, Success, District Code specified - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;Rel-1004&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1004&lt;/WorkOrderDesc&gt;&#xd;
+	     &lt;WorkGroupCode&gt;REGRESSION&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1004</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/CallResponse/success/text() = &apos;true&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="6: Release Work Order, Restricted Access - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;Rel-1005&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1054&lt;/WorkOrderDesc&gt;&#xd;
+		&lt;WorkGroupCode&gt;NOTVALID&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+		&lt;UserCode&gt;NOTVALID&lt;/UserCode&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1005</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/CallResponse/error/errorDescription/text() = &apos;Access to work orders is not Authorized&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="/integration/workorder/release/{workOrderNo} Invalid Version (application/vnd.fieldsmart.call-response-1+xml)" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">SQLTest</stringProp>
+          <stringProp name="query">BEGIN
+DELETE FROM WORKISSUED WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDLOG WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDFILEREFS WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKSTATUSHISTORY WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+select * from WorkIssued where WorkOrderNo LIKE &apos;%REGTEST%&apos;;
+END;
+</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">${AuthHeader}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/vnd.fieldsmart.call-response-2+xml</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/vnd.fieldsmart.call-response-2+xml</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="7: Invalid Response Content Type - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;REGTEST-1001&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1001&lt;/WorkOrderDesc&gt;&#xd;
+	     &lt;WorkGroupCode&gt;REGRESSION&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/REGTEST-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 415" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51544">415</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message">WorkOrder already exists in the database.workorderno = REGTEST-1001 districtCode = CAM</stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/Map/error/text() = &apos;Unsupported Media Type&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="8: Invalid Parameter Content Type - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;REGTEST-1001&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1001&lt;/WorkOrderDesc&gt;&#xd;
+	     &lt;WorkGroupCode&gt;REGRESSION&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/REGTEST-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 415" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51544">415</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/Map/error/text() = &apos;Unsupported Media Type&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="/integration/workorder/release/{workOrderNo} unathorised (application/vnd.fieldsmart.call-response-1+xml)" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">SQLTest</stringProp>
+          <stringProp name="query">BEGIN
+DELETE FROM WORKISSUED WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDLOG WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDFILEREFS WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKSTATUSHISTORY WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+select * from WorkIssued where WorkOrderNo LIKE &apos;%REGTEST%&apos;;
+END;
+</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">${AuthHeader1}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/vnd.fieldsmart.call-response-1+xml</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/xml</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="9: Unauthorised User - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;REGTEST-1001&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1001&lt;/WorkOrderDesc&gt;&#xd;
+	     &lt;WorkGroupCode&gt;REGRESSION&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/REGTEST-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 401" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51509">401</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="success/error - application/xml " enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">SQLTest</stringProp>
+          <stringProp name="query">BEGIN
+DELETE FROM WORKISSUED WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDLOG WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDFILEREFS WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKSTATUSHISTORY WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+select * from WorkIssued where WorkOrderNo LIKE &apos;%REGTEST%&apos;;
+END;
+</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">${AuthHeader}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/xml</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/xml</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="10: Release Work Order, empty body request - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">Bad request</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 400" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51508">400</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="11: Release Work Order, Restricted Access - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;Rel-1005&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1054&lt;/WorkOrderDesc&gt;&#xd;
+		&lt;WorkGroupCode&gt;NOTVALID&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+		&lt;UserCode&gt;NOTVALID&lt;/UserCode&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1005</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/CallResponse/error/errorDescription/text() = &apos;Access to work orders is not Authorized&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="success/error - application/vnd.fieldsmart.call-response-1+json" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">SQLTest</stringProp>
+          <stringProp name="query">BEGIN
+DELETE FROM WORKISSUED WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDLOG WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDFILEREFS WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKSTATUSHISTORY WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+select * from WorkIssued where WorkOrderNo LIKE &apos;%REGTEST%&apos;;
+END;
+</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">${AuthHeader}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/vnd.fieldsmart.call-response-1+json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/xml</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="12:Release Work Order, empty body request - application/vnd.fieldsmart.call-response-1+json" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 400" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51508">400</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="13:Release Work Order, Restricted Access - application/vnd.fieldsmart.call-response-1+json" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;Rel-1014&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1014&lt;/WorkOrderDesc&gt;&#xd;
+		&lt;WorkGroupCode&gt;NOTVALID&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+		&lt;UserCode&gt;NOTVALID&lt;/UserCode&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1014</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="JSON Assertion" enabled="true">
+            <stringProp name="JSON_PATH">$.error</stringProp>
+            <stringProp name="EXPECTED_VALUE">{&quot;errorDescription&quot;:&quot;Access to work orders is not Authorized&quot;,&quot;errorCode&quot;:&quot;AuthorizationException&quot;}</stringProp>
+            <boolProp name="JSONVALIDATION">true</boolProp>
+            <boolProp name="EXPECT_NULL">false</boolProp>
+            <boolProp name="INVERT">false</boolProp>
+            <boolProp name="ISREGEX">true</boolProp>
+          </JSONPathAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Invalid Version - application/vnd.fieldsmart.call-response-1+json" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">SQLTest</stringProp>
+          <stringProp name="query">BEGIN
+DELETE FROM WORKISSUED WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDLOG WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDFILEREFS WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKSTATUSHISTORY WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+select * from WorkIssued where WorkOrderNo LIKE &apos;%REGTEST%&apos;;
+END;
+</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">${AuthHeader}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/vnd.fieldsmart.call-response-2+xml</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/vnd.fieldsmart.call-response-2+xml</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="14: Invalid Response Content Type - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;REGTEST-1001&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1001&lt;/WorkOrderDesc&gt;&#xd;
+	     &lt;WorkGroupCode&gt;REGRESSION&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/REGTEST-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 415" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51544">415</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message">WorkOrder already exists in the database.workorderno = REGTEST-1001 districtCode = CAM</stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/Map/error/text() = &apos;Unsupported Media Type&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="15: Invalid Parameter Content Type - application/vnd.fieldsmart.call-response-1+xml" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;REGTEST-1001&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1001&lt;/WorkOrderDesc&gt;&#xd;
+	     &lt;WorkGroupCode&gt;REGRESSION&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/REGTEST-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 415" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51544">415</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">/Map/error/text() = &apos;Unsupported Media Type&apos;</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">false</boolProp>
+            <boolProp name="XPath.namespace">true</boolProp>
+          </XPathAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="success/error - application/json" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">SQLTest</stringProp>
+          <stringProp name="query">BEGIN
+DELETE FROM WORKISSUED WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDLOG WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKISSUEDFILEREFS WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+DELETE FROM WORKSTATUSHISTORY WHERE WorkorderNo LIKE &apos;%Rel-%&apos;;
+select * from WorkIssued where WorkOrderNo LIKE &apos;%REGTEST%&apos;;
+END;
+</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">${AuthHeader}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/xml</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="16: Release Work Order, empty body request - JSON" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1001</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 400" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="51508">400</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="17: Release Work Order, Restricted Access - JSON" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
+&lt;WorkOrder&gt;&#xd;
+	&lt;WorkOrderDetail&gt;&#xd;
+		&lt;WorkOrderNo&gt;Rel-1014&lt;/WorkOrderNo&gt;&#xd;
+		&lt;WorkOrderDesc&gt;Release workorder - 1014&lt;/WorkOrderDesc&gt;&#xd;
+		&lt;WorkGroupCode&gt;NOTVALID&lt;/WorkGroupCode&gt;&#xd;
+	     &lt;OperationType&gt;REL&lt;/OperationType&gt;&#xd;
+	     &lt;Latitude&gt;57.12345&lt;/Latitude&gt;&#xd;
+	     &lt;Longitude&gt;51.1234&lt;/Longitude&gt;&#xd;
+		&lt;PlanStartDate&gt;20210907&lt;/PlanStartDate&gt;&#xd;
+		&lt;UserCode&gt;NOTVALID&lt;/UserCode&gt;&#xd;
+	     &lt;ReqFinishDate&gt;20210907&lt;/ReqFinishDate&gt;&#xd;
+	     &lt;ReqFinishTime&gt;1200&lt;/ReqFinishTime&gt;&#xd;
+		&lt;CreationDate&gt;20210907&lt;/CreationDate&gt;&#xd;
+		&lt;CreationTime&gt;123105&lt;/CreationTime&gt;&#xd;
+		&lt;DistrictCode&gt;CAM&lt;/DistrictCode&gt;&#xd;
+		&lt;FuelType&gt;PETROL&lt;/FuelType&gt;&#xd;
+		&lt;Make&gt;RENAULT&lt;/Make&gt;&#xd;
+		&lt;Model&gt;MEGANE DYNAMIQUE&lt;/Model&gt;&#xd;
+		&lt;Owner&gt;BORRd&lt;/Owner&gt;&#xd;
+		&lt;Colour&gt;BLUE&lt;/Colour&gt;&#xd;
+		&lt;AccountNo&gt;0714-96-5820&lt;/AccountNo&gt;&#xd;
+		&lt;AccountClientNo&gt;07/55/513916&lt;/AccountClientNo&gt;&#xd;
+		&lt;Contact&gt;000 8408 4101&lt;/Contact&gt;&#xd;
+		&lt;Email&gt;REGRESSION_TEST.COM&lt;/Email&gt;&#xd;
+	    &lt;EquipDesc&gt;DETACHED&lt;/EquipDesc&gt;&#xd;
+		&lt;AdditionalText/&gt;&#xd;
+		&lt;/WorkOrderDetail&gt;&#xd;
+&lt;/WorkOrder&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${HostIP}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/integration/workorder/release/Rel-1014</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Code 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="JSON Assertion" enabled="true">
+            <stringProp name="JSON_PATH">$.error</stringProp>
+            <stringProp name="EXPECTED_VALUE">{&quot;errorDescription&quot;:&quot;Access to work orders is not Authorized&quot;,&quot;errorCode&quot;:&quot;AuthorizationException&quot;}</stringProp>
+            <boolProp name="JSONVALIDATION">true</boolProp>
+            <boolProp name="EXPECT_NULL">false</boolProp>
+            <boolProp name="INVERT">false</boolProp>
+            <boolProp name="ISREGEX">true</boolProp>
+          </JSONPathAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="TableVisualizer" testclass="ResultCollector" testname="View Results in Table" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">Work Order Integration</stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

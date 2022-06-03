@@ -1,0 +1,1040 @@
+<?xml version="1.0" standalone="yes"?>
+<ScriptConfig xmlns="http://tempuri.org/DataSet1.xsd">
+    <!--<ScriptMenu> 
+        <Type>OR-ACTION1</Type> 
+        <TargetName>SCRIPT1</TargetName>
+        <AutoCommit>0</AutoCommit>
+		<PropertyName>EquipStatus</PropertyName>
+		<PropertyVal>AC</PropertyVal>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>OR-ACTION2</Type> 
+        <TargetName>SCRIPT2</TargetName>
+        <AutoCommit>0</AutoCommit>
+		<PropertyName>EquipStatus</PropertyName>
+		<PropertyVal>AC</PropertyVal>
+    </ScriptMenu>-->
+    <ScriptMenu> 
+        <Type>OR-ACTION1</Type> 
+        <TargetName>CARE-ROUND</TargetName>
+        <AutoCommit>0</AutoCommit>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>OR-ACTION2</Type> 
+        <TargetName>NOT-INSPECTED</TargetName>
+        <AutoCommit>0</AutoCommit>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>SIGNON</Type> 
+		<MenuText>SIGNON</MenuText>
+		<TargetName>SIGNON</TargetName>
+		<InitialDisplayScreen>AS</InitialDisplayScreen>
+       </ScriptMenu>
+   <ScriptMenu>
+        <Type>SIGNOFF</Type> 
+		<MenuText>SIGNOFF</MenuText>
+		<TargetName>SIGNOFF</TargetName>
+		<InitialDisplayScreen>AS</InitialDisplayScreen>
+    </ScriptMenu>
+	<ScriptMenu>
+		<Type>CANTDO</Type>
+		<MenuText>CANTDO</MenuText>
+		<TargetName>CANTDO</TargetName>
+		<InitialDisplayScreen>AS</InitialDisplayScreen>
+		<Mode>M</Mode>
+	</ScriptMenu>
+    <ScriptMenu>
+		<Type>CLOSEWORK</Type>
+		<MenuText>CLOSEWORK</MenuText>
+		<TargetName>CLOSEWORK</TargetName>
+		<InitialDisplayScreen>AS</InitialDisplayScreen>
+		<Mode>M</Mode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>MARK PEAKE</Category>
+		<TargetName>SWWORKID</TargetName>
+		<MenuText>SWWORKID</MenuText>
+		<CompletionMode>P</CompletionMode>
+		<Mandatory>0</Mandatory>
+		<AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>NONMANDATORY</TargetName>
+		<MenuText>NONMANDATORY</MenuText>
+		<CompletionMode>P</CompletionMode>
+		<Mandatory>0</Mandatory>
+		<AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>REPEAT</TargetName>
+		<MenuText>REPEAT</MenuText>
+		<CompletionMode>P</CompletionMode>
+		<Mandatory>0</Mandatory>
+		<AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>WS-22-ALL-09</Category>
+		<MenuText>WS-22-ALL-09</MenuText>
+		<TargetName>WS-22-ALL-09</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>INSTRUCTION</MenuText>
+		<TargetName>INSTRUCTION</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>DECIMALQUESTION</MenuText>
+		<TargetName>DECIMALQUESTION</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>YESNOQUESTION</MenuText>
+		<TargetName>YESNOQUESTION</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>CONDITION</MenuText>
+		<TargetName>CONDITION</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>PRE-POPULATED</MenuText>
+		<TargetName>PRE-POPULATED</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>SUB-PREPOPULATE</MenuText>
+		<TargetName>SUB-PREPOPULATE</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>POSITIVE</TargetName>
+		<MenuText>POSITIVE</MenuText>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>FORMATTEDDATAIN</TargetName>
+		<MenuText>FORMATTEDDATAIN</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>ACCEPTDEFAULT</TargetName>
+		<MenuText>ACCEPTDEFAULT 424 RC2</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>CSVQUESTION</TargetName>
+		<MenuText>CSVQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>MEDIA</TargetName>
+		<MenuText>MEDIA</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>SIGNATURE</MenuText>
+		<TargetName>SIGNATURE</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<MenuText>abcedfghijklmnopqrstuvwxyz</MenuText>
+		<TargetName>abcedfghijklmnopqrstuvwxyz</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>VIDEOLOADTEST</MenuText>
+		<TargetName>VIDEOLOADTEST</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<TargetName>RECORDCARD</TargetName>
+		<MenuText>RECORDCARD</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<TargetName>TRISHA</TargetName>
+		<MenuText>TRISHA</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<MenuText>GPSCONFIG</MenuText>
+		<TargetName>GPSCONFIG</TargetName>
+		<PropertyName></PropertyName>
+		<PropertyVal></PropertyVal>
+		<Mode>M</Mode>
+		<Mandatory>0</Mandatory>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<TargetName>FIELDREACH1</TargetName>
+		<MenuText>FIELDREACH1 TEST SCRIPT</MenuText>
+		<AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<TargetName>FIELDREACH1</TargetName>
+		<MenuText>FIELDREACH1 TEST SCRIPT</MenuText>
+		<AutoCommit>1</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<TargetName>SET-F103-UPD</TargetName>
+		<MenuText>SET-F103-UPD</MenuText>
+		<AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<TargetName>SET-F103-UPD</TargetName>
+		<MenuText>SET-F103-UPD</MenuText>
+		<AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>FIELDREACH1</TargetName>
+		<MenuText>FIELDREACH1 TEST SCRIPT</MenuText>
+		<AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<MenuText>DATES</MenuText>
+		<TargetName>DATES</TargetName>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<TargetName>VEHICLE</TargetName>
+		<MenuText>Vehicle Inspection</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<TargetName>VALUATION</TargetName>
+		<MenuText>EQ - FUEL - DIESEL</MenuText>
+		<PropertyName>FuelType</PropertyName>
+		<PropertyVal>DIESEL</PropertyVal>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<PropertyName>EquipStatus</PropertyName>
+		<PropertyVal>TQ</PropertyVal>
+		<MenuText>EQ - EquipStatus - TQ</MenuText>
+		<TargetName>EMTEST</TargetName>
+		<Mode>M</Mode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<TargetName>CSVQUESTION</TargetName>
+		<MenuText>CSVQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<MenuText>CH-TEST</MenuText>
+		<TargetName>CH-TEST</TargetName>
+		<Mode>M</Mode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<TargetName>HOST-TRIGGER</TargetName>
+		<Category>SUBSCRIPT TESTING</Category>
+		<MenuText>HOST-TRIGGER</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB-VERIFY</Type>
+		<TargetName>WB-VERIFY</TargetName>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB-CLOSE</Type>
+		<TargetName>WB-CLOSE</TargetName>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB-CANCEL</Type>
+		<TargetName>WB-CANCEL</TargetName>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB-UPDATE</Type>
+		<TargetName>WB-UPDATE</TargetName>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<TargetName>WB-UPDATE-2</TargetName>
+		<MenuText>WB-UPDATE-2</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<TargetName>VEHICLE</TargetName>
+		<MenuText>WB - PP - M1</MenuText>
+		<PropertyName>PlannersPriority</PropertyName>
+		<PropertyVal>M1</PropertyVal>
+		<AutoCommit></AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<TargetName>VEHICLE</TargetName>
+		<MenuText>WB - PP - M3</MenuText>
+		<PropertyName>PlannersPriority</PropertyName>
+		<PropertyVal>M3</PropertyVal>
+		<AutoCommit></AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<TargetName>VALUATION</TargetName>
+		<MenuText>WB - JCN - TRISHA</MenuText>
+		<PropertyName>JobCostNo</PropertyName>
+		<PropertyVal>TRISHA</PropertyVal>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<TargetName>SCRIPT1</TargetName>
+		<MenuText>WB - DIS - RTK1</MenuText>
+		<PropertyName>DistrictCode</PropertyName>
+		<PropertyVal>RTK1</PropertyVal>
+		<AutoCommit></AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<TargetName>SCRIPT2</TargetName>
+		<MenuText>WB - DIS - RTK2</MenuText>
+		<PropertyName>DistrictCode</PropertyName>
+		<PropertyVal>RTK2</PropertyVal>
+		<AutoCommit></AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<TargetName>SCRIPT1</TargetName>
+		<MenuText>WB - WGC - TRISHA</MenuText>
+		<PropertyName>WorkGroupCode</PropertyName>
+		<PropertyVal>TRISHA</PropertyVal>
+		<AutoCommit></AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<MenuText>SILENT-1</MenuText>
+		<TargetName>SILENT</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+        <Mandatory>1</Mandatory>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<TargetName>TEF3077-RA</TargetName>
+		<MenuText>TEF3077-RA</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<TargetName>SILENTSCRIPT-02</TargetName>
+		<MenuText>SILENTSCRIPT-02</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<TargetName>WB-UPDATE-SUB</TargetName>
+		<MenuText>WB-UPDATE-SUB</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WB</Type>
+		<TargetName>RANDOM</TargetName>
+		<MenuText>RANDOM</MenuText>
+	</ScriptMenu>
+   <!--<ScriptMenu>
+    <Type>SUB</Type>
+    <TargetName>WM-SUB1</TargetName>
+    <MenuText>WM Sub Script 1</MenuText>
+    <PropertyName></PropertyName>
+    <PropertyVal></PropertyVal>
+    <CompletionMode>F</CompletionMode>
+  </ScriptMenu>
+   <ScriptMenu>
+	  <Type>SUB</Type> 
+	  <TargetName>WM-SUB2</TargetName>
+	  <MenuText>WM Sub Script 2</MenuText> 
+	  <PropertyName></PropertyName> 
+	  <PropertyVal></PropertyVal> 
+	  <CompletionMode>F</CompletionMode> 
+	  <SubTo>
+		<TargetName>VEHICLE</TargetName>
+	  </SubTo>
+  </ScriptMenu>-->
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>VEHICLE</TargetName>
+		<MenuText>Vehicle Inspection</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>RANDOM</TargetName>
+		<MenuText>RANDOM</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>HOST-SCRIPT-01</TargetName>
+		<Category>SUBSCRIPT TESTING</Category>
+		<MenuText>HOST-SCRIPT-01</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>HOST-SCRIPT-02</TargetName>
+		<Category>SUBSCRIPT TESTING</Category>
+		<MenuText>HOST-SCRIPT-02</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>HOST-SCRIPT-03</TargetName>
+		<Category>SUBSCRIPT TESTING</Category>
+		<MenuText>HOST-SCRIPT-03</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>HOST-SCRIPT-04</TargetName>
+		<Category>SUBSCRIPT TESTING</Category>
+		<MenuText>HOST-SCRIPT-04</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>HOST-SCRIPT-05</TargetName>
+		<Category>SUBSCRIPT TESTING</Category>
+		<MenuText>HOST-SCRIPT-05</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>HOST-TRIGGER</TargetName>
+		<Category>SUBSCRIPT TESTING</Category>
+		<MenuText>HOST-TRIGGER</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>TALLYCOUNT</TargetName>
+		<Category>TALLYCOUNT</Category>
+		<MenuText>TALLYCOUNT</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>ACCEPTDEF</TargetName>
+		<Category>ACCEPTDEF</Category>
+		<MenuText>ACCEPTDEF</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>RUN TIME</Category>
+		<MenuText>RTC-TEST</MenuText>
+		<TargetName>RTC-TEST</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>RUN TIME</Category>
+		<MenuText>RTP-TEST</MenuText>
+		<TargetName>RTP-TEST</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<MenuText>WO - DIS - TRI</MenuText>
+		<TargetName>DISTRICTCODE TRI</TargetName>
+		<PropertyName>DistrictCode</PropertyName>
+		<PropertyVal>TRI</PropertyVal>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<MenuText>WO - DIS - RTK1</MenuText>
+		<TargetName>DISTRICTCODE RTK1</TargetName>
+		<PropertyName>DistrictCode</PropertyName>
+		<PropertyVal>RTK1</PropertyVal>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>ANSWER SUMMARY</MenuText>
+		<TargetName>SCRIPT1</TargetName>
+		<Mode>M</Mode>
+		<InitialDisplayScreen>AS</InitialDisplayScreen>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>CHECK</MenuText>
+		<TargetName>CHECK</TargetName>
+		<Mode>M</Mode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>COMPLETE PAR</MenuText>
+		<TargetName>SCRIPT2</TargetName>
+		<Mode>M</Mode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>COMPLETE FULL</MenuText>
+		<TargetName>SCRIPT3</TargetName>
+		<Mode>M</Mode>
+		<CompletionMode>F</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>AUTO COMMIT</MenuText>
+		<TargetName>SCRIPT4</TargetName>
+		<Mode>M</Mode>
+        <AutoCommit>1</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>SERVICELAYERV1</MenuText>
+		<TargetName>SERVICELAYERV1</TargetName>
+		<Mode>M</Mode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>MANDATORY</MenuText>
+		<TargetName>SCRIPT5</TargetName>
+		<Mandatory>0</Mandatory>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>REGRESSION</Category>
+		<TargetName>SCRIPTPARAMS</TargetName>
+		<MenuText>SCRIPTPARAMS_NOUPDATE</MenuText>
+		<CompletionMode>P</CompletionMode>
+	    <AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>NR Issue</MenuText>
+		<Category>NR Issue</Category>
+		<TargetName>EMTEST</TargetName>
+		<CompletionMode>P</CompletionMode>
+		<Mandatory>0</Mandatory>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<TargetName>AUDVID</TargetName>
+		<MenuText>AUDVID</MenuText>
+	    <AutoCommit>1</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>REGRESSION</Category>
+		<TargetName>SCRIPTPARAMS</TargetName>
+		<MenuText>SCRIPTPARAMS_NOUPDATE</MenuText>
+		<CompletionMode>P</CompletionMode>
+	    <AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>CONFIGURED SCRIPTS</Category>
+		<MenuText>WO - MAKE - FORD</MenuText>
+		<TargetName>SCRIPT</TargetName>
+		<PropertyName>Make</PropertyName>
+		<PropertyVal>FORD</PropertyVal>
+        <InitialDisplayScreen>AS</InitialDisplayScreen>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<MenuText>SILENT</MenuText>
+		<TargetName>SILENT</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>PRB0043368</Category>
+		<TargetName>REPEATGROUP</TargetName>
+		<MenuText>REPEATGROUP</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>PRB0043368</Category>
+		<TargetName>REPEATGROUP2</TargetName>
+		<MenuText>REPEATGROUP2</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>PRB0043368</Category>
+		<TargetName>RUNTIMEPARAM2</TargetName>
+		<MenuText>RUNTIMEPARAM2</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>PRB0043370</Category>
+		<TargetName>FDI</TargetName>
+		<MenuText>FDI</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>PRB0043371</Category>
+		<TargetName>RULEGROUP</TargetName>
+		<MenuText>RULEGROUP</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>PRB0043371</Category>
+		<TargetName>RULEGROUP2</TargetName>
+		<MenuText>RULEGROUP2</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>PRB0043489</Category>
+		<TargetName>PHOTO</TargetName>
+		<MenuText>PHOTO</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>43990 - K2FLY</Category>
+		<TargetName>DEFECTTRACK</TargetName>
+		<MenuText>DEFECTTRACK</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>PRB0043368</Category>
+		<TargetName>DYN-TEXT3</TargetName>
+		<MenuText>DYN-TEXT3</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>ACCEPT DEFAULTS</MenuText>
+		<TargetName>ACCEPTDEFAULT</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<TargetName>SILENTSCRIPT-02</TargetName>
+		<MenuText>SILENTSCRIPT-02</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>CARRY</TargetName>
+		<MenuText>CARRY</MenuText>
+		<Mandatory>0</Mandatory>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>REL 4.1.2</Category>
+		<TargetName>BUG-51843</TargetName>
+		<MenuText>BUG-51843</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>COMP-DEFAULTS</TargetName>
+		<MenuText>COMP-DEFAULTS</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>COMP-DEFAULTS</TargetName>
+		<MenuText>COMP-DEFAULTS</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>DYN-POPULATED</TargetName>
+		<MenuText>DYN-POPULATED</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>DYN-QUESTIONTXT</TargetName>
+		<MenuText>DYN-QUESTIONTXT</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>WO</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>DYNQUEST</TargetName>
+		<MenuText>DYNQUEST</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>TASKLISTQUEST</TargetName>
+		<MenuText>TASKLISTQUEST</MenuText>
+		<CompletionMode>P</CompletionMode>
+		<Mandatory>1</Mandatory>
+		<AutoCommit>0</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>BITMAPQUESTION</TargetName>
+		<MenuText>BITMAPQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>REL 4.1.2</Category>
+		<TargetName>PRB0044310</TargetName>
+		<MenuText>PRB0044310</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>REL 4.1.2</Category>
+		<TargetName>BUG-51843</TargetName>
+		<MenuText>BUG-51843</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FUSION-SB</Category>
+		<TargetName>FUSION-SB</TargetName>
+		<MenuText>FUSION-SB</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>LEVELQUESTION</TargetName>
+		<MenuText>LEVELQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>LEVELQUEST</TargetName>
+		<MenuText>LEVELQUEST</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>DEF-AUTOSAVE10</TargetName>
+		<MenuText>DEF-AUTOSAVE10</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>AUTOSAVE15</TargetName>
+		<MenuText>AUTOSAVE15</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>AUTOSAVE20</TargetName>
+		<MenuText>AUTOSAVE20</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>AUDVID</TargetName>
+		<MenuText>AUDVID</MenuText>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>MEDIA</TargetName>
+		<MenuText>MEDIA</MenuText>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>GPS Testing</Category>
+		<TargetName>GPSQUESTION</TargetName>
+		<MenuText>GPSQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>SUB/REPEATING GROUP QUESTIONS</MenuText>
+		<TargetName>SUBTEST</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>ACCEPT DEFAULTS</MenuText>
+		<TargetName>ACCEPTDEFAULT</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>HIDDENQUESTIONS</MenuText>
+		<TargetName>HIDDENQUESTIONS</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>H-DEFAULT-NS</MenuText>
+		<TargetName>H-DEFAULT-NS</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	    <Mandatory>0</Mandatory>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>QRCODES</MenuText>
+		<TargetName>QRCODES</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>TALLYCOUNT</MenuText>
+		<TargetName>TALLYCOUNT</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>GPSCONFIG</MenuText>
+		<TargetName>GPSCONFIG</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>UNITOFMEASURE</TargetName>
+		<MenuText>UNITOFMEASURE</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>N/A - O/R Testing</Category>
+		<TargetName>NAORQUESTIONS</TargetName>
+		<MenuText>NAORQUESTIONS</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>Global Default Testing</Category>
+		<TargetName>GLOBALDEFAULT</TargetName>
+		<MenuText>GLOBALDEFAULT</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>Global Default Testing</Category>
+		<TargetName>SCRIPTDEFAULT</TargetName>
+		<MenuText>SCRIPTDEFAULT</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<TargetName>DYN-QUESTIONTXT</TargetName>
+		<MenuText>DYN-QUESTIONTXT</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>AUDIOTEST</TargetName>
+		<MenuText>AUDIOTEST</MenuText>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>VIDEOTEST</TargetName>
+		<MenuText>VIDEOTEST</MenuText>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>PHOTOTEST</TargetName>
+		<MenuText>PHOTOTEST</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<MenuText>PHOTO-MARKUP</MenuText>
+		<TargetName>PHOTO-MARKUP</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<MenuText>PHOTO-MARKUP</MenuText>
+		<TargetName>PHOTO-MARKUP</TargetName>
+		<DisplayMode>M</DisplayMode>
+		<CompletionMode>P</CompletionMode>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>PHOTO-RESIZING</TargetName>
+		<MenuText>PHOTO-RESIZING</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>UNITOFMEASURE</TargetName>
+		<MenuText>UNITOFMEASURE</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<MenuText>CCE-TI-CRT</MenuText>
+		<TargetName>CCE-TI-CRT</TargetName>
+		<Mandatory>0</Mandatory>
+        <AutoCommit>1</AutoCommit>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>STRINGQUESTION</TargetName>
+		<MenuText>STRINGQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>NUMERICQUESTION</TargetName>
+		<MenuText>NUMERICQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>DATEQUESTION</TargetName>
+		<MenuText>DATEQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>SCRIPT-PLAYER Testing</Category>
+		<TargetName>TIMEQUESTION</TargetName>
+		<MenuText>TIMEQUESTION</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET</TargetName>
+		<MenuText>DATASET</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET6</TargetName>
+		<MenuText>DATASET6</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET</TargetName>
+		<MenuText>DATASET</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET1</TargetName>
+		<MenuText>DATASET1</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET2</TargetName>
+		<MenuText>DATASET2</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET3</TargetName>
+		<MenuText>DATASET3</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET4</TargetName>
+		<MenuText>DATASET4</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET5</TargetName>
+		<MenuText>DATASET5</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET6</TargetName>
+		<MenuText>DATASET6</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET7</TargetName>
+		<MenuText>DATASET7</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET8</TargetName>
+		<MenuText>DATASET8</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET10</TargetName>
+		<MenuText>DATASET10</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET11</TargetName>
+		<MenuText>DATASET11</MenuText>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<Category>FDE063</Category>
+		<TargetName>DATASET9</TargetName>
+		<MenuText>DATASET9</MenuText>
+		<Mandatory>1</Mandatory>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>EQ</Type>
+		<MenuText>ANSWER SUMMARY</MenuText>
+		<TargetName>SCRIPT1</TargetName>
+		<Mode>M</Mode>
+		<InitialDisplayScreen>AS</InitialDisplayScreen>
+	</ScriptMenu>
+	<ScriptMenu>
+		<Type>SA</Type>
+		<MenuText>ANSWER SUMMARY</MenuText>
+		<TargetName>SCRIPT1</TargetName>
+		<Mode>M</Mode>
+		<InitialDisplayScreen>AS</InitialDisplayScreen>
+	</ScriptMenu>
+</ScriptConfig> 

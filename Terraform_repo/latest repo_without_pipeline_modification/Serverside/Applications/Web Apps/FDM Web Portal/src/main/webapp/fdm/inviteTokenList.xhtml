@@ -1,0 +1,214 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/admin-template.xhtml">
+	<ui:param name="bean" value="#{userInvitation}" />
+	<ui:define name="admin-body">
+
+		<script>
+			$(document).ready(notesRowExpander);
+			
+			function notesRowExpander() {
+				var $this = PF('tokenInviteVar');
+				$this.tbody.off('click.datatable-expansion',
+						'.notesTag').on(
+						'click.datatable-expansion',
+						'.notesTag',
+						null,
+						function() {
+							$this.toggleExpansion($(this).find(
+									'div.ui-row-toggler'));
+						});
+			}
+			
+		</script>
+
+		<p:tabView id="inviteTokenTab">
+			<p:tab id="inviteTokenSearchResults" title="#{userInvitation.systemUserInvite ? msg.fdm_systemuser_invitation_token_tab_title : msg.fdm_invitation_token_tab_title} #{userInvitation.invitationList.size() > 0 ? '('.concat(userInvitation.invitationList.size()).concat(')') : ''}#{userInvitation.filteredInvitationList.size() > 0 ? '('.concat(userInvitation.filteredInvitationList.size()).concat(')') : ''} ">
+
+				<f:facet name="title">
+					<h:outputText id="headerTitle"
+						value="#{userInvitation.systemUserInvite ? msg.fdm_systemuser_invitation_token_tab_title : msg.fdm_invitation_token_tab_title} #{userInvitation.filteredInvitationList.size() > 0 and userInvitation.filteredInvitationList.size() lt userInvitation.invitationList.size() ? '('.concat(userInvitation.filteredInvitationList.size()).concat(' of ').concat(userInvitation.invitationList.size()).concat(')') : userInvitation.invitationList.size() > 0 ? '('.concat(userInvitation.invitationList.size()).concat(')') : '(0)' } " />
+				</f:facet>
+				 
+				<h:form id="inviteTokenListForm">
+
+					<p:remoteCommand name="updateFilteredValue"
+						update="inviteTokenTab:headerTitle inviteTokenTab:inviteTokenListForm:footerTitle" />
+					
+					
+				<h:panelGrid columns="2" style="float:right; margin-bottom:10px" cellpadding="5">
+              <h:outputText value="#{msg.fdm_invitation_token_active_toggle}" style="padding-right:5px; line-height:24px;"/>
+                  <p:toggleSwitch id="ShowActiveTokens" value="#{userInvitation.onlyActiveMobileInvitations}" rendered="#{!userInvitation.systemUserInvite}">
+                            <p:ajax listener= "#{userInvitation.setListInvitations}"    oncomplete="updateActiveValue(); updateFilteredValue()" />
+                  </p:toggleSwitch>
+                  <p:toggleSwitch id="ShowSystemActiveTokens" value="#{userInvitation.onlyActiveSystemInvitations}" rendered="#{userInvitation.systemUserInvite}">
+                            <p:ajax listener= "#{userInvitation.setListInvitations}"    oncomplete="updateActiveValue(); updateFilteredValue()" />
+                  </p:toggleSwitch>
+                  
+               <p:remoteCommand name="updateActiveValue"
+                  update=" inviteTokenTab:inviteTokenListForm:tokenList" 
+                  oncomplete = "notesRowExpander()"/> 
+        </h:panelGrid>  
+						  
+						
+					<p:dataTable id="tokenList"
+						value="#{userInvitation.invitationList}" var="token"
+						filterDelay="1000" rowStatePreserved="true" style="width:100%"
+						selection="#{userInvitation.selectedUserInvitation}"
+						resizableColumns="true"
+						selectionMode="single" rowIndexVar="rowInviteTokenVar" rowKey="#{token}"
+						rowStyleClass="#{token.invitationStatus=='REVOKED' ? 'grey-row':''}"
+						widgetVar="tokenInviteVar"
+						filteredValue="#{userInvitation.filteredInvitationList}">
+ 						<p:ajax event="filter" oncomplete="updateFilteredValue();"
+							process="@all" />
+							
+						<p:column headerText="#{msg.fdm_invitation_token_label}" style="width:60%"
+							filterMatchMode="contains" filterBy="#{token.name}"
+							sortBy="#{token.name}">
+			        <h:panelGroup
+                styleClass="fas fa-circle" style="#{token.getIconColor()}"></h:panelGroup>
+								&nbsp;
+							<h:outputText value="#{token.name}" />
+						</p:column>
+
+						<p:column headerText="#{msg.fdm_invitation_token_work_Group_code_label}" style="width:40%" rendered="#{!userInvitation.systemUserInvite}"
+							sortBy="#{token.workGroupCode}" filterBy="#{token.workGroupCode}" filterMatchMode="contains">
+							<h:outputText value="#{token.workGroupCode}" />
+						</p:column>
+						
+						<p:column headerText="#{msg.fdm_systemuser_invitation_token_systemuser_label}" style="width:40%" rendered="#{userInvitation.systemUserInvite}"
+							sortBy="#{token.systemUser}" filterBy="#{token.systemUser}" filterMatchMode="contains">
+							<h:outputText value="#{token.systemUser}" />
+						</p:column>
+						
+						<p:column headerText="#{msg.fdm_invitation_token_issued_date_label}" styleClass="dateField"
+              filterMatchMode="contains" sortBy="#{token.createDate}">
+              <h:outputText value="#{func:intToDate(token.createDate)}">
+                <f:convertDateTime dateStyle="medium" />
+              </h:outputText>
+            </p:column>
+
+            <p:column headerText="#{msg.fdm_invitation_token_expiry_date_label}" styleClass="dateField"
+              filterMatchMode="contains" sortBy="#{token.expiryDate}">
+              <h:outputText value="#{func:intToDate(token.expiryDate)}">
+                <f:convertDateTime dateStyle="medium" />
+              </h:outputText>
+            </p:column>
+            
+            <p:column styleClass="tableIcon">
+              <p:commandLink  id="revokeTokenId" styleClass="fas fa-user-slash" disabled="#{token.invitationStatus=='REVOKED'}"
+              onclick="PF('revokeInvitationTokenWidget').show();" update="revokeInviteForm">
+              <f:setPropertyActionListener value="#{token}" target="#{userInvitation.selectedUserInvitation}"></f:setPropertyActionListener>
+              </p:commandLink>
+              <p:tooltip for="revokeTokenId" value="Revoke Invitation"></p:tooltip>
+            </p:column>
+
+						<p:column styleClass="notesTag sticky-notes tableIcon">
+							<p:commandLink id="noteTag"
+								style="#{(not empty token.invitationNotes or not empty token.revokeNotes ) ? 'color:red' : 'color:black'}"
+								styleClass="far fa-sticky-note" value="">
+							</p:commandLink>
+
+							<p:rowToggler id="rowToggId" />
+							<p:tooltip id="inviteTokenToolId" for="noteTag" value="#{token.invitationStatus != 'REVOKED' ? msg.fdm_invitation_token_token_notes_tooltip : msg.fdm_invitation_token_revoke_notes_tooltip}"></p:tooltip>
+						</p:column>
+						
+						<p:rowExpansion id="rowExpander" styleClass="rowExpnsionSty">
+
+							<p:panel styleClass="rowExpnStyPl"
+								rendered="#{token.invitationStatus != 'REVOKED'}">
+
+								<p:dataTable value="#{token}" var="invite">
+									<p:column headerText="#{msg.fdm_invitation_token_user_code_label}" style="width:200px">
+										<h:outputText value="#{invite.createUser}" />
+									</p:column>
+
+									<p:column headerText="#{msg.fdm_invitation_token_issued_date_label}" style="width:150px">
+										<h:outputText value="#{func:intToDate(invite.createDate)}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="#{msg.fdm_invitation_token_token_notes_label}">
+										<h:outputText value="#{invite.invitationNotes}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+
+							<p:panel styleClass="rowExpnStyPl" rendered="#{token.invitationStatus == 'REVOKED'}">
+							<p:dataTable value="#{token}" var="revoke">
+								<p:column headerText="#{msg.fdm_access_token_revoke_user}" style="width:200px">
+										<h:outputText value="#{revoke.revokeUser}" />
+									</p:column>
+
+									<p:column headerText="#{msg.fdm_access_token_revoke_date}" style="width:150px">
+										<h:outputText value="#{func:intToDate(revoke.revokeDate)}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="#{msg.fdm_access_token_revoke_notes}">
+										<h:outputText value="#{revoke.revokeNotes}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+									
+								</p:dataTable>
+				
+							</p:panel>
+
+							<p:spacer width="300" height="20" />
+						</p:rowExpansion>
+						
+						 
+					</p:dataTable>
+
+					
+					     
+
+
+					<h:outputText id="footerTitle" 
+						value="#{(userInvitation.filteredInvitationList.size() > 0) and (userInvitation.filteredInvitationList.size() lt userInvitation.invitationList.size()) ? ''.concat(userInvitation.filteredInvitationList.size()).concat(' of ').concat(userInvitation.invitationList.size()) :  userInvitation.invitationList.size() > 0 ? ''.concat(userInvitation.invitationList.size()) : '0' } #{userInvitation.systemUserInvite ? msg.fdm_systemuser_invitation_token_footer_label : msg.fdm_invitation_token_footer_label}"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />	
+						
+					<p:panel>
+						<p:commandLink style="padding-right:20px">
+							<i class="fas fa-circle" style="color: green"
+								></i> Expiry more than 30 days
+						 </p:commandLink>
+						 
+						<p:commandLink style="padding-right:20px">
+							<i class="fas fa-circle" style="color: orange"
+								></i> Expiry within 30 days  
+						</p:commandLink>
+						
+						<p:commandLink style="padding-right:20px">
+							<i class="fas fa-circle" style="color: red"></i> Expired 
+						</p:commandLink>
+						
+						<p:commandLink style="padding-right:20px">
+							<i class="fas fa-circle" style="color: deepskyblue"></i> Complete 
+						</p:commandLink>
+
+						<p:commandLink style="padding-right:20px">
+								<i class="fas fa-circle" style="color: grey" ></i> Revoked 
+						</p:commandLink>
+					</p:panel>
+					
+
+				</h:form>
+			</p:tab>
+
+		</p:tabView>
+
+	</ui:define>
+</ui:composition>

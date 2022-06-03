@@ -1,0 +1,99 @@
+# Default values for XML Loader.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: acrplatdevshared.azurecr.io/xmlloader
+#  Override tag from command-line, example: --set image.tag=0.1.55-beta-develop.126
+#  tag: "0.1.55-beta-develop.126"
+
+deployment:
+  volumes:
+    - name: secrets-store-inline
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          secretProviderClass: xmlloader-fieldsmart
+    - name: fs-volume
+      persistentVolumeClaim:
+        claimName: azurefile
+  volumeMounts:
+    - name: secrets-store-inline
+      mountPath: "/mnt/secrets-store"
+      readOnly: true
+    - mountPath: "/home/fusion/fieldsmart"
+      name: fs-volume
+
+service:
+  env:
+    - name: DEFAULT_JDBC_PASSWORD
+      value: DbPassword
+    - name: DEFAULT_JDBC_USERNAME
+      value: DbUser
+    - name: DEFAULT_INSTANCE_KEY
+      value: InstanceKey
+
+configmap:
+  enabled: true
+  configuration:
+    # Import Script Result XML to Fieldreach DB
+    FXL_SCRIPTRESULT_DB_IMPORT: 'false'
+    # Option to load Additional Equipment Attributes to EquipAttrib
+    FXL_SCRIPTRESULT_EQUIPMENTATTRIB_LOAD: 'false'
+    # Number of days for the next refresh of EquipAttrib to occur
+    FXL_SCRIPTRESULT_EQUIPMENTATTRIB_REFRESHDAYS: '20'
+    # LOG level.
+    LOGGING_LEVEL_ROOT: #{LOGGINGLEVEL}#
+    # Log Level  for HIKARI
+    LOGGING_LEVEL_COM_ZAXXER_HIKARI: #{LOGHIKARI}#
+    # Log level for SPRINGFRAMEWORK
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: #{LOGSPRINGFRAMEWORK}#
+    # Logging level for Hibernate
+    LOGGING_LEVEL_ORG_HIBERNATE: #{LOGHIBERNATE}#
+    # Logging Level for AMTSYBEX 
+    LOGGING_LEVEL_COM_AMTSYBEX: #{LOGAMTSYBEX}#
+    # Logging Level for APACHE 
+    LOGGING_LEVEL_ORG_APACHE: #{LOGAPACHE}#
+    # Logging Level for AMTSYBEX 
+    LOGGING_LEVEL_COM_AMTSYBEX_FIELDREACH_XMLLOADER_SCRIPTRESULT_IMPL_DISPATCHIMPL: #{LOGAMTSYBEXFIELDREACHDIS}#
+
+# We must monitor this and set appropriate limits here:
+#
+# $ kubectl top pods -n fieldsmart
+#
+# We get the following output:
+# NAME                                   CPU(cores)   MEMORY(bytes)
+# xmlloader-deployment-d9578f7cb-wrklk   3m           230Mi
+#
+#
+# resources:
+  # requests:
+    # memory: "350Mi"
+    # cpu: "50m"
+  # limits:
+    # memory: "700Mi"
+    # cpu: "100m"
+    
+secretProviderClass:
+  enabled: true
+  name: xmlloader-fieldsmart
+  secretObjects:
+    type: Opaque
+    data:
+      - key: DbPassword
+        objectName: DbPassword
+      - key: DbUser
+        objectName: DbUser
+      - key: InstanceKey
+        objectName: InstanceKey
+  keyVaultSecrets:
+    - objectName: DbPassword
+      objectType: secret
+      objectVersion: ''
+    - objectName: DbUser
+      objectType: secret
+      objectVersion: ''
+    - objectName: InstanceKey
+      objectType: secret
+      objectVersion: ''

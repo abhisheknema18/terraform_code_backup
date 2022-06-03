@@ -1,0 +1,45 @@
+# Default values for mobile webservices.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+configmap:
+  configuration:
+    # Database connection string
+    DEFAULT_JDBC_URL: jdbc:sqlserver://sqlfg-web-dev-uksouth.database.windows.net:1433;databaseName=fieldsmart-dev;
+    TENANT-URI_MWS: https://amt.v1.fieldsmarttest.com/dev/mobile
+    TENANT-URI_PORTAL: https://amt.v1.fieldsmarttest.com/dev/fdm
+    SERVER_SERVLET_CONTEXT_PATH: '/dev/'
+    
+labels:
+  environment: dev
+  
+ingress:
+  hosts:
+    - host: amt.v1.fieldsmarttest.com
+      paths:
+        - path: /dev
+          pathType: Prefix
+  tls:
+  - hosts:
+    - amt.v1.fieldsmarttest.com
+    secretName: aks-ingress-tls
+
+probes:
+  enabled: true
+  livenessProbe:
+    httpGet:
+      path: /dev/actuator/health/liveness
+      port: http
+    initialDelaySeconds: 50
+    periodSeconds: 20
+  readinessProbe:
+    httpGet:
+      path: /dev/actuator/health/readiness
+      port: http
+    initialDelaySeconds: 50
+    periodSeconds: 20
+    
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 1

@@ -1,0 +1,31 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="main-body">
+		<div id="searchBody">
+			<h:panelGrid columns="2" styleClass="leftTabbed" columnClasses="searchMenuCell,searchPanelCell" style="width:100%">
+				<h:panelGroup id="searchSideMenu" styleClass="leftMenuBorder">
+					<h:form id="sideMenuForm">
+						<h:panelGrid columns="1" id="leftMenuVerticalSpacer" style="background:#69A488;padding:.2em;height:30px;width:100%;"> </h:panelGrid>
+						<h:panelGrid columns="1" styleClass="leftMenuBorder">
+							
+						</h:panelGrid>
+
+					</h:form>
+				</h:panelGroup>
+				<h:panelGroup id="searchBodyContent" styleClass="searchBodyContent">
+					<h:panelGrid columns="1" id="equipmentPanel" width="100%">
+						<ui:insert name="equipment-body"/>
+					</h:panelGrid>			   
+				</h:panelGroup>
+			</h:panelGrid>
+
+		</div>
+	</ui:define>
+</ui:composition>

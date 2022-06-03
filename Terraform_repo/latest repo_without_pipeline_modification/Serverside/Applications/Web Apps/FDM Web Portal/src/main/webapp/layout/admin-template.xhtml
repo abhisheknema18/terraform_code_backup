@@ -1,0 +1,53 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="main-body">
+		<div id="adminhBody">
+			<h:panelGrid columns="2" class="leftTabbed" columnClasses="searchMenuCell,searchPanelCell" style="width:100%">
+				<h:panelGroup id="adminSideMenu" class="leftMenuBorder">
+					<h:form id="adminMenuForm">
+						<h:panelGrid columns="1" id="leftMenuVerticalSpacer" style="background:#69A488;padding:.2em;height:39px;width:100%;"> </h:panelGrid>
+						<h:panelGrid columns="1" class="leftMenuBorder">
+							
+							<p:commandLink rendered="#{view.viewId=='/fdm/configurationFilesList.xhtml'}" 
+								onclick="document.getElementById('adminMenuForm:configFileUploader_input').click();"
+								styleClass="leftMenuSelected">
+								<i class="leftMenuLinkIcon fa fa-upload"></i><h:outputText value="Upload"  />
+							</p:commandLink>
+						
+							<p:fileUpload id="configFileUploader" mode="advanced" skinSimple="true" rendered="#{view.viewId=='/fdm/configurationFilesList.xhtml'}"
+								dragDropSupport="false" style="display: none;"
+								listener="#{configurationManagement.validateConfigFile}"
+								accept=".xml" 
+								auto="true" styleClass="leftMenuSelected"
+								invalidFileMessage="Please upload only xml files"
+								label="Upload" chooseIcon="fa fa-upload"
+								oncomplete="refreshConfigTab()" update="replaceConfigForm:replaceConfigDialogId growl">
+							</p:fileUpload>
+						
+						<p:remoteCommand name="refreshConfigTab" update="configFilesTab:headerTitle configFilesTab:configFilesListForm:wmConfigList configFilesTab:configFilesListForm:footerTitle configFilesTab:headerTitle2 configFilesTab:scriptConfigFilesListForm:scriptConfigList configFilesTab:scriptConfigFilesListForm:footerTitle" 
+										 process="@all" rendered="#{view.viewId=='/fdm/configurationFilesList.xhtml'}"> </p:remoteCommand>
+		
+
+						</h:panelGrid>
+					</h:form>
+				</h:panelGroup>
+				<h:panelGroup id="adminBodyContent" styleClass="searchBodyContent">
+					<h:panelGrid columns="1" id="adminPanel" styleClass="searchPanel">
+						<ui:insert name="admin-body"/>
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+		
+	
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,80 @@
+default:
+  jdbc:
+    url: jdbc:sqlserver://myserver.ad.capita.co.uk:1433;databaseName=fieldsmart;
+    username: 
+    password: 
+  instance:
+    key: hiddensercretkey
+
+jdbc:
+  driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  connectionpool:
+    max_size: 5
+
+hibernate:
+  dialect: org.hibernate.dialect.SQLServerDialect
+  show_sql: false
+  format_sql: true
+
+folder:
+  basePath: /home/fusion/fieldsmart
+  
+fea:
+  aib:
+    headers: false
+  audit:
+    jdbc:
+      driverClassName: org.h2.Driver
+      password: d1d8297896808bee2bd5c7bd96c9ea7a e6255d048477967112faf96f56251781
+      pool:
+        max_size: 10
+      url: jdbc:h2:file:${fea.dbroot}/feaauditdb/feaauditdb;CIPHER=AES;AUTO_SERVER=TRUE
+      username: feaauditdbadmin
+    retention:
+      period: 7
+  dbroot: ${folder.basePath}/logs/auditdb
+  destination: ${folder.basePath}/fea
+  email:
+    defaultSubject: ''
+    from: ''
+    password: ''
+    port: ''
+    recipients: ''
+    server: ''
+    username: ''
+  extract:
+    binary: false
+  ignore:
+    NA:
+      OR: false
+    blankfieldrole: false
+  jms:
+    broker:
+      url: tcp://localhost:61616
+  polling:
+    interval: 60000
+  redelivery:
+    interval: 60000
+    max:
+      attempts: 5
+  scriptresult:
+    destination: DIR
+  status:
+    error: ERROR
+  threadpool:
+    size: 5
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: none
+  jmx:
+    enabled: true
+
+management:
+  endpoints:
+    jmx:
+      domain: "fea.health.check"
+  health:
+    defaults:
+      enabled: false

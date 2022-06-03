@@ -1,0 +1,18 @@
+mode: Mainline
+major-version-bump-message: '(^|\n)\+semver:\s?(breaking|major)'
+minor-version-bump-message: '(^|\n)\+semver:\s?(feature|minor)'
+patch-version-bump-message: '(^|\n)\+semver:\s?(fix|patch)'
+tag-prefix: 'XLO_'
+branches:
+  main:
+    regex: ^main$
+  develop:
+    regex: ^develop$
+    tag: 'beta-develop'
+    increment: Patch
+  hotfix:
+    regex: ^hotfix(es)?[/-]
+    tag: 'hotfix-{BranchName}'
+  feature:
+    regex: ^(?!main$|develop$|hotfix(es)?[/-]).*
+    tag: 'alpha-{BranchName}'

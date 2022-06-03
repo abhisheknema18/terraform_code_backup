@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.amtsybex.fieldreach.xmlloader.audit.model">
+
+	<class name="StatusValues" table="STATUS_VALUES">
+	
+		<id name="id" column="ID">
+			<generator class="assigned"/>
+		</id>
+		
+		<property name="status"
+				  type="string"
+				  not-null="true"
+				  column="STATUS"/>
+				
+	</class>
+	
+</hibernate-mapping>

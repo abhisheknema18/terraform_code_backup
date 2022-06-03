@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="dsResultSet">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ScriptResults">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="PROFILE">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="GENERAL" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="TITLE" type="xs:string" minOccurs="0"/>
+													<xs:element name="USERCODE" type="xs:string" minOccurs="0"/>
+													<xs:element name="DEVICEID" type="xs:string" minOccurs="0"/>
+													<xs:element name="WORKGROUPCODE" type="xs:string" minOccurs="0"/>
+													<xs:element name="RUNTYPE" type="xs:string" minOccurs="0"/>
+													<xs:element name="SUMMDESC" type="xs:string" minOccurs="0"/>
+													<xs:element name="SCRIPTSTATUS" type="xs:string" minOccurs="0"/>
+													<xs:element name="HEADING" type="xs:string" minOccurs="0"/>
+													<xs:element name="SUBHEADING" type="xs:string" minOccurs="0"/>
+													<xs:element name="SOURCEFILE" type="xs:string" minOccurs="0"/>
+													<xs:element name="RESASSOCCODE" type="xs:string" minOccurs="0"/>
+													<xs:element name="RESULTSFILE" type="xs:string" minOccurs="0"/>
+													<xs:element name="STARTDATE" type="xs:string" minOccurs="0"/>
+													<xs:element name="STARTTIME" type="xs:string" minOccurs="0"/>
+													<xs:element name="COMPLETEDATE" type="xs:string" minOccurs="0"/>
+													<xs:element name="COMPLETETIME" type="xs:string" minOccurs="0"/>
+													<xs:element name="COMPLETECODE" type="xs:string" minOccurs="0"/>
+													<xs:element name="COMPLETEUSER" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD1" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD2" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD3" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD4" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD5" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD6" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD7" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD8" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD9" type="xs:string" minOccurs="0"/>
+													<xs:element name="NAMEFIELD10" type="xs:string" minOccurs="0"/>
+													<xs:element name="COMPLETIONMODE" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="EXTENDED" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="RESULTS">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ITEM" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="TIME" type="xs:string" minOccurs="0"/>
+													<xs:element name="DATE" type="xs:string" minOccurs="0"/>
+													<xs:element name="FREETEXT" type="xs:string" minOccurs="0"/>
+													<xs:element name="UOM" type="xs:string" minOccurs="0"/>
+													<xs:element name="PREV" type="xs:string" minOccurs="0"/>
+													<xs:element name="RESPONSEFILE" type="xs:string" minOccurs="0"/>
+													<xs:element name="RESPONSEFILENAME" type="xs:string" minOccurs="0"/>
+													<xs:element name="RESPONSE" minOccurs="0">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="Type" type="xs:string" use="optional"/>
+																	<xs:attribute name="RESPONSE_Display" type="xs:string" use="optional"/>
+																	<xs:attribute name="LINENO" type="xs:string" use="optional"/>
+																	<xs:attribute name="LABEL" type="xs:string" use="optional"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="DEFECTS" minOccurs="0">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="DEFECT" maxOccurs="unbounded" minOccurs="0">
+																	<xs:complexType>
+																		<xs:simpleContent>
+																			<xs:extension base="xs:string">
+																				<xs:attribute type="xs:string" name="Rate" use="optional"/>
+																				<xs:attribute type="xs:string" name="Action" use="optional"/>
+																				<xs:attribute type="xs:string" name="LogNo" use="optional"/>
+																			</xs:extension>
+																		</xs:simpleContent>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+															<xs:attribute name="DefectCount" type="xs:string" use="required"/>
+															<xs:attribute name="DefectSet" type="xs:string" use="required"/>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="SUBSCRIPTRESULTS" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="RESULTSFILE" type="xs:string" use="required"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="SeqNo" type="xs:string" use="required"/>
+												<xs:attribute name="ResOrderNo" type="xs:string" use="required"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="HK" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="RGROUPS" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="SEQNO" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:attribute name="START" type="xs:string" use="required"/>
+															<xs:attribute name="NOGROUPS" type="xs:string"/>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="CAINVALID" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="IDX" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="JTS" type="xs:string"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="CARRYTHROUGH" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="DATAITEM" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="FieldName" type="xs:string" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+						<xs:attribute name="VersionNo" type="xs:string" use="required"/>
+						<xs:attribute name="ScriptId" type="xs:string" use="required"/>
+						<xs:attribute name="ScriptCodeId" type="xs:string" use="required"/>
+						<xs:attribute name="ScriptCode" type="xs:string" use="required"/>
+						<xs:attribute name="OnlineDate" type="xs:string" use="required"/>
+						<xs:attribute name="ItemCount" type="xs:string
+						" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

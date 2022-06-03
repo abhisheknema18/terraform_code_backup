@@ -1,0 +1,109 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/equipment-template.xhtml">
+
+	<ui:param name="bean" value="#{equipmentHierarchy}" />
+
+	<ui:define name="equipment-body">
+
+	<style>
+
+	.equipTreeTable .ui-state-highlight .ui-icon {
+   		background-image:url('#{request.contextPath}/javax.faces.resource/images/ui-icons_333333_256x240.png.xhtml?ln=primefaces-bootstrap');
+	}  
+	 
+	.ui-treetable thead th{
+		background: #eee !important;
+	}
+	  
+	</style>
+
+		
+ 				
+				<h:form id="equipmentForm">
+					<div id="navigationContainer" class="resultNavigationContainer" style="padding-left: 2px;">
+                <div id="navigation" class="resultNavigation" style="margin-bottom: 0px !important;">
+                <p:commandLink id="nonAjax" action="#{equipmentSearchList.navigateReturn}"
+						update="@all" title="Return to List" styleClass="resultNavigationButton fa fa-list" />
+                 	</div>
+           		</div>
+           		<p:panel>
+					<p:treeTable id="equipmentDetailsView" style="width:100%"
+						value="#{equipmentHierarchy.equipmentHierarchyTreeView}" var="equip"
+						selectionMode="single" expandMode="children" widgetVar="equipmentTreeTable"
+						selection="#{equipmentHierarchy.selectedNodes}" emptyMessage="No Asset Found"
+						resizableColumns="true" styleClass="equipTreeTable" liveResize="true" >
+
+						<p:ajax event="expand" listener="#{equipmentHierarchy.onNodeExpand}"
+							update="equipmentDetailsView msgs growl" />
+						
+						<p:ajax event="collapse" listener="#{equipmentHierarchy.onNodeCollapse}" 
+							update="equipmentDetailsView" />
+						
+						<p:column headerText="Equipment Number"
+							style="width:30%;">
+							<h:outputText value="#{equip.equipNo}"></h:outputText>
+						</p:column>
+
+						<p:column headerText="Equipment Reference"
+							style="width:20%;">
+							<h:outputText value="#{equip.altEquipRef}"></h:outputText>
+						</p:column>
+
+						<p:column headerText="Equipment Description"
+							style="width:30%;">
+							<h:outputText value="#{equip.equipDesc}"></h:outputText>
+						</p:column>
+
+						<p:column headerText="Equipment Type"
+							style="width:20%;">
+							<h:outputText value="#{equip.equipType}"></h:outputText>
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink disabled="#{!equipmentHierarchy.parentFound}" rendered="#{equipmentHierarchy.currentParentEquipNo eq equip.equipNo}">
+								
+								<i class="fas fa-level-up-alt"></i>
+								<p:ajax event="click" listener="#{equipmentHierarchy.getParentNode}" update="equipmentDetailsView msgs" />
+							</p:commandLink>
+						</p:column>
+
+						<p:column styleClass="tableIcon" >
+							<p:commandLink id="equipmentQuickViewBtn" oncomplete="PF('assetViewWidgetVar').show();" action="#{equipmentHierarchy.loadAssetInformation(equip.equipNo)}" 
+								update="assetDialogViewId:assetViewPanel">
+							<i class="fas fa-search" alt="edit"></i>
+							</p:commandLink>
+							<p:tooltip id="equipmentQuickView" for="equipmentQuickViewBtn" value="#{msg.fdm_quick_view_tool_tip}"></p:tooltip>
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="equipmentDetailedViewBtn">
+								<i class="fa fa-external-link"></i>
+								<p:ajax event="click" listener="#{equipmentHierarchy.findEquipmentByRowDetails(equip)}" update="equipmentDetailsView msgs growl"/>
+							</p:commandLink>
+							<p:tooltip id="equipmentDetailedView" for="equipmentDetailedViewBtn" value="#{msg.fdm_detailed_view_tool_tip}"></p:tooltip>
+						</p:column>
+					</p:treeTable>
+					</p:panel>
+				
+				</h:form>
+
+				<h:form id="assetDialogViewId">
+
+					<ui:include src="../fdm/EquipmentInformation.xhtml">
+						<ui:param name="equipBean" value="#{equipmentHierarchy}"></ui:param>
+					</ui:include>
+
+				</h:form>
+
+
+			
+
+	</ui:define>
+</ui:composition>

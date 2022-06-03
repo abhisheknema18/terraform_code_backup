@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:jee="http://www.springframework.org/schema/jee" 
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/jee 
+		http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
+
+
+	<!-- ====================================================== -->
+	<!-- Extract Adapter JMS Properties							-->
+	<!-- ====================================================== -->
+	
+	<bean id="feaJmsTemplate" class="org.springframework.jms.core.JmsTemplate">  
+		<property name="connectionFactory" ref="feaConnectionFactory" /> 
+		<property name="sessionTransacted" value="false" />
+	</bean>
+		
+	<bean id="feaJmsController" 
+		class="com.amtsybex.fieldreach.extract.jms.impl.FeaJmsControllerImpl">
+		<property name="jmsTemplate" ref="feaJmsTemplate"/>
+		<property name="destination" ref="feaDispatchQueue"/>
+		<property name="aibHeaders" value="${fea.aib.headers}"/>
+	</bean> 
+	
+	
+	<!-- ====================================================== -->
+	<!-- ACTIVEMQ SETTINGS										-->
+	<!-- ====================================================== -->
+	 
+	<!-- ActiveMQ Pooled Connection Factory -->
+	
+	<!-- 
+	
+	<bean id="feaConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="${fea.jms.broker.url}"/>
+			</bean>
+		</property>
+	</bean> 
+	
+	-->
+	
+	<!-- Destination queue for extracted messages to be dispatched to -->
+	
+	<!-- 
+	
+	<bean id="feaDispatchQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="${fea.destination}"/>
+	</bean>
+	
+	-->
+	
+	
+	<!-- ====================================================== -->
+	<!-- JNDI LOOKUP SETTINGS									-->
+	<!-- ====================================================== -->
+	 
+	<!-- Connection Factory -->
+	
+	<!--  
+	
+	<jee:jndi-lookup id="feaConnectionFactory" jndi-name="jms/feaConnectionFactory" resource-ref="true" 
+		cache="true" lookup-on-startup="true" />
+		
+	-->
+	
+	<!-- Destination queue for extracted messages to be dispatched to -->
+
+	<!-- 
+	
+	<jee:jndi-lookup id="feaDispatchQueue" jndi-name="jms/feaDispatchQueue" resource-ref="true" 
+		cache="true" lookup-on-startup="true" />
+		
+	-->
+	
+	
+</beans>

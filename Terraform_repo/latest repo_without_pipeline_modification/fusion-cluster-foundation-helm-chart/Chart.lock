@@ -1,0 +1,12 @@
+dependencies:
+- name: ingress-nginx
+  repository: ""
+  version: 3.34.0
+- name: secrets-store-csi-driver
+  repository: ""
+  version: 0.0.23
+- name: csi-secrets-store-provider-azure
+  repository: ""
+  version: 0.0.20
+digest: sha256:aee1b6cca76add22e793e30b60601ccda01f676b6f18203858cefb1399b45cec
+generated: "2021-06-24T14:56:48.9378278+05:30"

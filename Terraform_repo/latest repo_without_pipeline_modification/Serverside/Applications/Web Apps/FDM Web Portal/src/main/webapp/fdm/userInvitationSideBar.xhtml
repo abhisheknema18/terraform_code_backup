@@ -1,0 +1,599 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+	<script>
+	function myFunction() {
+		
+		  var text_to_copy = document.getElementById("inviteTokenId");
+		  
+		  text_to_copy.select();
+			
+		  navigator.clipboard.writeText(text_to_copy.value);
+			
+		}
+
+	</script>
+
+	<p:sidebar id="adduserInvitationWidget"
+		widgetVar="adduserInvitationWidget" styleClass="searchTabs"
+		style="width:640px; padding:.5em 0em; overflow: hidden;"
+		position="right">
+
+		<p:panel header="#{msg.fdm_invitation_side_bar_header}">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('adduserInvitationWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:panel>
+			<h:form id="addUserInvitationForm" >
+				<p:panelGrid id="innerContent" width="100%">
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_invitation_token_short_description}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="shortDescription" maxlength="50"
+								value="#{userInvitation.selectedUserInvitation.name}" style="width:250px" autocomplete="false"
+								requiredMessage="#{msg.fdm_invitation_token_description_required_message}">
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_expiry_label}" />
+						</p:column>
+
+						<p:column styleClass="noPaddingCell">
+							<p:selectOneMenu required="true"
+								requiredMessage="#{msg.fdm_invitation_token_expiry_required_message}"
+								value="#{userInvitation.selectedExpiryVal}"
+								valueChangeListener="#{userInvitation.onExpiryChange}"
+								scrollHeight="230" style="min-width: 230px !important;">
+								<p:ajax event="change"
+									update="addUserInvitationForm:expiryDateReadOnly" />
+								<f:selectItems value="#{userInvitation.loadExpiry()}"
+									var="selectItem"
+									itemLabel="+ #{selectItem.getValue() == '1' ? selectItem.getValue().concat(' ').concat(msg.fdm_accesstoken_expiry_unit) 
+												: selectItem.getValue().concat(' ').concat(msg.fdm_accesstoken_expiry_units)} "
+									itemValue="#{selectItem.getValue()}">
+								</f:selectItems>
+							</p:selectOneMenu>
+						</p:column>
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="expiryDateReadOnly" readonly="true"
+								value="#{func:intToDate(userInvitation.selectedUserInvitation.expiryDate)}"
+								style="width:150px;height:27px;" autocomplete="false">
+								<f:convertDateTime dateStyle="medium" />
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_invitation_notes}" />
+						</p:column>
+						<p:column styleClass="noPaddingCell" colspan="2">
+
+							<p:inputTextarea value="#{userInvitation.selectedUserInvitation.invitationNotes}" style="width:420px" rows="15"
+								maxlength="250" requiredMessage="#{msg.fdm_invitation_token_notes_required_message}">
+
+							</p:inputTextarea>
+
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_work_group_label}" />
+						</p:column>
+						<p:column styleClass="noPaddingCell" colspan="2">
+
+							<p:inputText id="addWorkGroup" maxlength="32" style="width:420px"
+								readonly="true" value="#{userInvitation.selectedUserInvitation.workGroupDesc.concat(' ('.concat(userInvitation.selectedUserInvitation.workGroupCode).concat(') '))}"
+								requiredMessage="#{msg.fdm_invitation_token_work_group_required_message}">
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+						<p:column />
+						<p:column />
+						<p:column>
+							<p:commandButton value="#{msg.fdm_system_user_admin_select_btn_label}" id="editWorkgroups" immediate="true"
+										style="float:right;margin-right: -8px;" action="#{userInvitation.loadSelectedWorkgroups}"
+										update="SingleWorkgroupSelectionFormUserInvitation:singleWorkgroupSelection"
+										oncomplete="PF('singleWorkgroupUserInvitationWidget').show();">
+							</p:commandButton>
+						</p:column>
+						
+					</p:row>
+					<p:row>
+						<p:column colspan="2">
+							<p:messages id="messages" showDetail="false" closable="false">
+
+							</p:messages>
+						</p:column>
+					</p:row>
+
+					<p:row>
+
+						<p:column>
+
+							<p:commandButton id="addinvitationBtn"
+								value="#{msg.fdm_save}" icon="fas fa-save"
+								action="#{userInvitation.saveInvitation()}"
+								update="messages showUserInvitation" />
+
+							<p:commandButton id="cancelAdmin" icon="fas fa-times"
+								value="#{msg.fdm_search_dialog_cancel_label}"
+								onclick="PF('adduserInvitationWidget').hide();" />
+						</p:column>
+					</p:row>
+
+				</p:panelGrid>
+			</h:form>
+		</p:panel>
+
+	</p:sidebar>
+	
+	<!--KN- 115596 Gen Sys URL Start -->
+	
+	<p:sidebar id="addSysUserInvitationWidget"
+		widgetVar="addSysUserInvitationWidget" styleClass="searchTabs"
+		style="width:640px; padding:.5em 0em; overflow: hidden;"
+		position="right">
+
+		<p:panel header="#{msg.fdm_systemuser_invitation_side_bar_header}">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('addSysUserInvitationWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:panel>
+			<h:form id="addSysUserInvitationForm">
+				<p:panelGrid id="innerContent" width="100%">
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_invitation_token_short_description}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="shortDescription" maxlength="50"
+								value="#{userInvitation.selectedUserInvitation.name}"
+								style="width:250px" autocomplete="false"
+								requiredMessage="#{msg.fdm_invitation_token_description_required_message}">
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_expiry_label}" />
+						</p:column>
+
+						<p:column styleClass="noPaddingCell">
+							<p:selectOneMenu required="true"
+								requiredMessage="#{msg.fdm_invitation_token_expiry_required_message}"
+								value="#{userInvitation.selectedExpiryVal}"
+								valueChangeListener="#{userInvitation.onExpiryChange}"
+								scrollHeight="230" style="min-width: 230px !important;">
+								<p:ajax event="change"
+									update="addSysUserInvitationForm:expiryDateReadOnly" />
+								<f:selectItems value="#{userInvitation.loadExpiry()}"
+									var="selectItem"
+									itemLabel="+ #{selectItem.getValue() == '1' ? selectItem.getValue().concat(' ').concat(msg.fdm_accesstoken_expiry_unit) 
+												: selectItem.getValue().concat(' ').concat(msg.fdm_accesstoken_expiry_units)} "
+									itemValue="#{selectItem.getValue()}">
+								</f:selectItems>
+							</p:selectOneMenu>
+
+							<p:inputText id="expiryDateReadOnly" readonly="true"
+								value="#{func:intToDate(userInvitation.selectedUserInvitation.expiryDate)}"
+								style="width:150px;height:27px;margin-left: 20px;"
+								autocomplete="false">
+								<f:convertDateTime dateStyle="medium" />
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+
+						<p:column>
+							<p:outputLabel value="#{msg.fdm_invitation_notes}" />
+						</p:column>
+						<p:column styleClass="noPaddingCell" colspan="2">
+
+							<p:inputTextarea
+								value="#{userInvitation.selectedUserInvitation.invitationNotes}"
+								style="width:420px" rows="15" maxlength="250"
+								requiredMessage="#{msg.fdm_invitation_token_notes_required_message}">
+
+							</p:inputTextarea>
+
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel
+								value="#{msg.fdm_system_user_admin_user_code_label}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="userCodeAdd" maxlength="10"
+								style="width:350px;text-transform: uppercase"
+								onblur="value=value.toUpperCase()"
+								value="#{userInvitation.selectedSystemUser.id}"
+								autocomplete="false" validatorMessage="#{msg.fdm_systemuser_invite_usercode_message}">
+								<f:validateRegex pattern="^[A-Za-z_]*$"></f:validateRegex>
+								<p:keyFilter regEx="/[a-z_]/i" preventPaste="false"></p:keyFilter>
+								<f:validateLength minimum="1"></f:validateLength>
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel
+								value="#{msg.fdm_system_user_admin_user_name_label}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="userName" maxlength="40" style="width:350px"
+								value="#{userInvitation.selectedSystemUser.userName}"
+								validatorMessage="#{msg.fdm_systemuser_invite_username_message}">
+								<f:validateLength minimum="1"></f:validateLength>
+								<f:validateRegex pattern="^[ A-Za-z0-9\-]*$"></f:validateRegex>
+								<p:keyFilter regEx="/[ a-z0-9\-]/i" preventPaste="false"></p:keyFilter>
+							</p:inputText>
+						</p:column>
+
+
+
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel
+								value="#{msg.fdm_system_user_admin_portal_access_label}" />
+						</p:column>
+
+						<p:column styleClass="noPaddingCell">
+
+							<p:selectOneMenu id="fdmAccessGroup" editable="false"
+								value="#{userInvitation.selectedSystemUser.fdmGroupCode}"
+								style="min-width: 325px !important;">
+								<p:ajax event="change" update="addSystemUserForm:fdmAccessGroup" />
+								<f:selectItems value="#{userInvitation.fdmAccessGroups}"
+									var="fdmGroup" itemValue="#{fdmGroup.groupCode}"
+									itemLabel="#{fdmGroup.groupDesc}" />
+							</p:selectOneMenu>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel
+								value="#{msg.fdm_system_user_admin_sb_access_label}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+
+							<p:selectOneMenu id="sbAccessGroup" editable="false"
+								value="#{userInvitation.selectedSystemUser.sbGroupCode}"
+								style="min-width: 325px !important;">
+								<p:ajax event="change"
+									listener="#{userInvitation.onSBAccessGroupChange()}"
+									update="addSysUserInvitationForm:sbAccessGroup addSysUserInvitationForm:windowsLoginInput" />
+								<f:selectItem noSelectionOption="true"></f:selectItem>
+								<f:selectItems value="#{userInvitation.sbAccessGroups}"
+									var="sbGroup" itemValue="#{sbGroup.groupCode}"
+									itemLabel="#{sbGroup.groupDesc}" />
+							</p:selectOneMenu>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel
+								value="#{msg.fdm_system_user_admin_windows_login_lobel}" />
+						</p:column>
+
+
+						<p:column styleClass="noPaddingCell">
+							<p:inputText id="windowsLoginInput" maxlength="32"
+								style="width:350px"
+								value="#{userInvitation.selectedSystemUser.winLogin}"
+								disabled="#{userInvitation.selectedSystemUser.sbGroupCode==null||userInvitation.selectedSystemUser.sbGroupCode==''}"
+								>
+							</p:inputText>
+						</p:column>
+
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:outputLabel
+								value="#{msg.fdm_system_user_admin_user_class_label}" />
+						</p:column>
+
+						<p:column styleClass="noPaddingCell"
+							rendered="#{userInvitation.validationProperty==null}">
+							<p:inputText id="editUserClass" maxlength="80"
+								style="width:350px"
+								value="#{userInvitation.selectedSystemUser.userClass}"
+								validatorMessage="The User Class is invalid">
+							</p:inputText>
+						</p:column>
+
+						<p:column styleClass="noPaddingCell" id="userClass"
+							rendered="#{userInvitation.validationProperty!=null}">
+							<p:selectOneMenu editable="false"
+								style="min-width: 325px !important;"
+								value="#{userInvitation.selectedSystemUser.userClass}">
+
+								<f:selectItems value="#{userInvitation.validationProperty}"
+									var="cat" itemValue="#{cat.validationProperty}"
+									itemLabel="#{cat.validationProperty}" />
+							</p:selectOneMenu>
+						</p:column>
+
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel
+								value="#{msg.fdm_system_user_admin_admin_user_label}" />
+						</p:column>
+
+						<p:column>
+							<p:selectBooleanCheckbox id="adminUser"
+								value="#{userInvitation.selectedSystemUser.adminUserBool}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="2">
+							<p:messages id="messages" showDetail="false" closable="false">
+
+							</p:messages>
+						</p:column>
+					</p:row>
+
+					<p:row>
+
+						<p:column>
+
+							<p:commandButton id="addinvitationBtn" value="#{msg.fdm_save}"
+								icon="fas fa-save" action="#{userInvitation.saveInvitation()}"
+								update="messages showUserInvitation" />
+
+							<p:commandButton id="cancelAdmin" icon="fas fa-times" 
+								value="#{msg.fdm_search_dialog_cancel_label}" 
+								oncomplete="PF('addSysUserInvitationWidget').hide();" />
+						</p:column>
+					</p:row>
+
+				</p:panelGrid>
+			</h:form>
+		</p:panel>
+
+	</p:sidebar>
+	
+		
+	
+	<!-- KN- 115596 Gen Sys URL End -->
+	
+	<h:form id="SingleWorkgroupSelectionFormUserInvitation">
+		<p:sidebar position="right" id="singleWorkgroupSelection"
+			widgetVar="singleWorkgroupUserInvitationWidget" style="width:640px;">
+
+			<p:panel id="workgroupSelectionSingle"
+				header="#{msg.fdm_search_workgroup_dialog_label}">
+
+				<div style="height: 10px; width: 100%"></div>
+
+				<div
+					style="background: white; margin-bottom: 20px; border: 1px solid lightgrey; border-radius: 4px; width: 100%; overflow: auto">
+					<p:tree id="workgroupSelectTree" value="#{userInvitation.workgroupRoot}"
+					filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}"
+						style="width:100%;" var="node" filterMatchMode="contains"
+						selectionMode="single"
+						selection="#{userInvitation.selectedSingleWorkgroupNode}">
+						<p:treeNode>
+							<h:outputText
+								value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;"
+								value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('singleWorkgroupUserInvitationWidget').hide();"
+						action="#{userInvitation.updateSelectedSingleWorkgroup()}"
+						update="addUserInvitationForm:addWorkGroup addUserInvitationForm:messages" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{userInvitation.clearSelectedSingleWorkgroup()}"
+						update="workgroupSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('singleWorkgroupUserInvitationWidget').hide();" />
+
+				</f:facet>
+
+			</p:panel>
+		</p:sidebar>
+		
+	</h:form>
+	
+	<p:dialog id="showUserInvitation"
+		widgetVar="showUserInvitationDialog" 
+		resizable="false" 
+		style="width:550px;"
+		modal="true"
+		position="center center"
+		onShow="PF('showAccessTokenDialog').initPosition()" 
+		closable="false"
+		closeOnEscape="false"
+		draggable="false"
+		>
+		<f:facet name="header">
+			<h:outputText value="#{msg.fdm_invitation_url}" styleClass="dialogheader" />
+		</f:facet>
+		<p:panelGrid columns="1" width="100%">
+			<p:inputTextarea value="#{userInvitation.generatedInviteToken}" readonly="true" cols="90" rows="13"
+				id="inviteTokenId" />
+			<p:commandButton onclick="myFunction();PF('showUserInvitationDialog').hide();" action="#{userInvitation.redirect}"
+				value="#{msg.fdm_copy_and_close}" icon="fas fa-clipboard" 
+				update="#{!userInvitation.systemUserInvite ? 'adduserInvitationWidget growl' : 'addSysUserInvitationWidget growl'}" />
+			
+			
+		</p:panelGrid>
+	</p:dialog>
+	
+	 <p:sidebar id="revokeInvitationTokenWidget"
+    widgetVar="revokeInvitationTokenWidget" styleClass="searchTabs"
+    style="width:640px; padding:.5em 0em; overflow: hidden;"
+    position="right">
+
+    <p:panel header="#{userInvitation.systemUserInvite ? msg.fdm_systemuser_invitation_token_revoke_token_side_header : msg.fdm_invitation_token_revoke_token_side_header}">
+      <div class="ui-icon-close-override">
+        <span class="fa fa-angle-right"
+          style="padding-left: .25em; cursor: pointer;"
+          onclick="PF('revokeInvitationTokenWidget').hide();" />
+      </div>
+      <div style="height: 10px; width: 100%"></div>
+    </p:panel>
+
+    <p:panel>
+      <h:form id="revokeInviteForm">
+        <p:panelGrid id="innerContent" width="100%">
+
+          <p:row>
+            <p:column>
+              <p:outputLabel value="#{msg.fdm_invitation_name_label}" />
+            </p:column>
+
+            <p:column styleClass="noPaddingCell">
+              <p:inputText id="invitationName" readonly="true"
+                value="#{userInvitation.selectedUserInvitation.name}"
+                style="width:250px;background: #d6f5e1;" autocomplete="false">
+              </p:inputText>
+            </p:column>
+
+          </p:row>
+          
+          <p:row>
+            <p:column>
+              <p:outputLabel value="#{msg.fdm_invitation_workgroupcode_label}" />
+            </p:column>
+
+
+            <p:column styleClass="noPaddingCell">
+              <p:inputText id="linkedSysUserRevoke" readonly="true"
+                value="#{userInvitation.selectedUserInvitation.workGroupCode}"
+                style="width:250px;background: #d6f5e1;" autocomplete="false">
+              </p:inputText>
+            </p:column>
+
+          </p:row>
+          
+          <p:row>
+            <p:column>
+              <p:outputLabel value="#{msg.fdm_access_token_expiry_date_label}" />
+            </p:column>
+
+
+            <p:column styleClass="noPaddingCell">
+              <p:inputText id="expiryDateRevoke" readonly="true"
+                value="#{func:intToDate(userInvitation.selectedUserInvitation.expiryDate)}"
+                style="width:250px;background: #d6f5e1;" autocomplete="false">
+                <f:convertDateTime dateStyle="medium" />
+              </p:inputText>
+            </p:column>
+
+          </p:row>
+          
+          <p:row>
+                
+                  <p:column>
+                    <p:outputLabel value="#{msg.fdm_access_token_revoke_notes}" />
+                  </p:column>
+                  <p:column styleClass="noPaddingCell" colspan="2">
+                    
+                    <p:inputTextarea value="#{userInvitation.selectedUserInvitation.revokeNotes}" style="width:420px" rows="15" maxlength="250"
+                    required="true" requiredMessage="#{msg.fdm_access_token_revoke_notes_message}">
+                    
+                    </p:inputTextarea>
+                    
+                  </p:column>
+                </p:row>
+
+
+          <p:row>
+            <p:column colspan="2">
+              <p:messages id="messages" showDetail="false" closable="false">
+
+              </p:messages>
+            </p:column>
+          </p:row>
+
+          <p:row>
+
+            <p:column>
+
+              <p:commandButton id="revokeInviteTokenBtn" value="revoke"
+                icon="fas fa-user-slash"
+                action="#{userInvitation.revokeInviteToken}"
+                update="messages" />
+
+              <p:commandButton id="cancelInviteToken"
+                icon="fas fa-times"
+                value="#{msg.fdm_search_dialog_cancel_label}"
+                onclick="PF('revokeInvitationTokenWidget').hide();" />
+            </p:column>
+          </p:row>
+        </p:panelGrid>
+      </h:form>
+    </p:panel>
+
+  </p:sidebar>
+
+</ui:composition>

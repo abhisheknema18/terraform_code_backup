@@ -1,0 +1,8 @@
+.terraform\*.**
+terraform.*
+*.backup
+*.tfstate
+.terraform.lock.hcl
+private_ssh_key
+graph.svg
+.terraform*

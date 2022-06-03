@@ -1,0 +1,53 @@
+# Default values for mobile webservices.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+configmap:
+  configuration:
+    # Enable swagger documentation
+    SPRING_PROFILES_ACTIVE: swagger
+    # Database connection string
+    DEFAULT_JDBC_URL: jdbc:sqlserver://sqlfg-web-qa-uksouth.database.windows.net:1433;databaseName=fieldsmart-qa;
+    SERVER_SERVLET_CONTEXT_PATH: '/qa/mobile/'
+    TENANT-URI_MWS: https://amt.v1.fieldsmarttest.com/qa/mobile
+
+labels:
+  environment: qa
+  
+ingress:
+  hosts:
+    - host: amt.v1.fieldsmarttest.com
+      paths:
+        - path: /qa/mobile
+          pathType: Prefix
+  tls:
+  - hosts:
+    - amt.v1.fieldsmarttest.com
+    secretName: aks-ingress-tls
+
+probes:
+  enabled: true
+  startupProbe:
+    httpGet:
+      path: /qa/mobile/actuator/health/liveness
+      port: http
+    failureThreshold: 60
+    periodSeconds: 10
+  livenessProbe:
+    httpGet:
+      path: /qa/mobile/actuator/health/liveness
+      port: http
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /qa/mobile/actuator/health/readiness
+      port: http
+    periodSeconds: 10
+    
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+    

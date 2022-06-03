@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+openssl pkcs8 -topk8 -inform PEM -outform PEM -in "${PRIVATE_KEY_FILENAME}" -out "${PKCS8_PRIVATE_KEY}" -nocrypt
+
+az keyvault secret set --name "${PRIVATE_KEY_SECRET_NAME}" --vault-name "${KEY_VAULT_NAME}" --file "${PKCS8_PRIVATE_KEY}" --encoding ASCII
+
+az keyvault secret set --name "${PUBLIC_KEY_SECRET_NAME}" --vault-name "${KEY_VAULT_NAME}" --file "${PUBLIC_KEY_FILENAME}" --encoding ASCII

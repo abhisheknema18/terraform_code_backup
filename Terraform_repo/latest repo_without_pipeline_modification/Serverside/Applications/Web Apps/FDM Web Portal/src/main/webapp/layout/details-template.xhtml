@@ -1,0 +1,78 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="main-body">
+		<div id="searchBody">
+			<h:panelGrid columns="2" styleClass="leftTabbed" columnClasses="searchMenuCell,searchPanelCell" style="width:100%">
+				<h:panelGroup id="searchSideMenu" styleClass="leftMenuBorder">
+					<h:form id="sideMenuForm">
+						<h:panelGrid columns="1" id="leftMenuVerticalSpacer" style="background:#69A488;padding:.2em;height:30px;width:100%;"> </h:panelGrid>
+						<h:panelGrid columns="1" styleClass="leftMenuBorder">
+							
+							<!-- <h:commandLink action="#{search.navigate}" value="#{msg.fdm_left_nav_search}" class="leftMenu#{view.viewId=='/fdm/search.xhtml' ? 'Selected' : ''}"/> -->
+
+							<p:commandLink rendered="#{searchResults.isReturnToMultiView() == false}" styleClass="leftMenuAction" disabled="#{!(details.isResultStatusEditable())}" action="#{details.loadNextStatuses}"  update="statusUpdateForm:statusUpdate" oncomplete="PF('statusUpdateWidget').show();">
+							<i class="leftMenuLinkIcon fa fa-cloud-upload"></i><h:outputText value="#{msg.fdm_left_nav_status_update}"/>
+							</p:commandLink>
+							
+						</h:panelGrid>
+
+					</h:form>
+				</h:panelGroup>
+				<h:panelGroup id="searchBodyContent" styleClass="searchBodyContent">
+					<h:panelGrid columns="1" id="detailsPanel">
+						<ui:insert name="details-body"/>
+					</h:panelGrid>			   
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:form id="statusUpdateForm">
+
+				<p:sidebar modal="true" id="statusUpdate" widgetVar="statusUpdateWidget" position="right"> 
+						
+					<p:panel header="#{msg.fdm_left_nav_status_update}" style="background:none;">
+			
+						<div class="ui-icon-close-override">
+							<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('statusUpdateWidget').hide();"/>
+						</div>
+						<div style="height:10px;width:100%"></div>
+					
+						<p:panelGrid columns="2" styleClass="noBackground">
+
+							<p:outputLabel for="currentStatus" value="#{msg.fdm_details_current_status}"/>  
+							<p:inputText id="currentStatus" value="#{details.script.resultStatus}" disabled="true" style="width:100%" styleClass="disabledBlackText" />
+							
+							<p:outputLabel for="nextStatus" value="#{msg.fdm_details_next_status}"/>  
+							<p:selectOneMenu id="nextStatus" value="#{details.nextStatus}">
+								<f:ajax event="change" />
+					   			<f:selectItems value="#{details.nextStatuses}" />
+					   		</p:selectOneMenu>
+					   		
+						</p:panelGrid>	
+						
+						<f:facet name="footer">
+		
+	                    	<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+	                    		onclick="PF('statusUpdateWidget').hide();"
+								action="#{details.updateNextStatus()}" update="searchSideMenu statusUpdate detailsForm:resultStatus msgs detailsForm:resultNoteAcc"/>
+							
+								
+							<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}" onclick="PF('statusUpdateWidget').hide();" />
+
+				
+	                	</f:facet>
+                	</p:panel>
+				</p:sidebar>
+		
+			</h:form>
+			
+
+		</div>
+	</ui:define>
+</ui:composition>

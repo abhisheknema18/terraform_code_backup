@@ -1,0 +1,113 @@
+# Default Common values for Office Portal across environments/tenants.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: acrplatdevshared.azurecr.io/fdmwebportal
+#  Override tag from command-line, example: --set image.tag=0.1.55-beta-develop.126
+#  tag: "0.1.55-beta-develop.127"
+
+deployment:
+  containerPort: 8080
+  volumes:
+    - name: secrets-store-inline
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          secretProviderClass: officeportal-fieldsmart
+    - name: fs-volume
+      persistentVolumeClaim:
+        claimName: azurefile
+  volumeMounts:
+    - name: secrets-store-inline
+      mountPath: "/mnt/secrets-store"
+      readOnly: true
+    - mountPath: "/home/fusion/fieldsmart"
+      name: fs-volume
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+
+
+service:
+  enabled: true
+  port: 443
+  env:
+    - name: DEFAULT_JDBC_PASSWORD
+      value: DbPassword
+    - name: DEFAULT_JDBC_USERNAME
+      value: DbUser
+    - name: JWT_ISSUER_URI # Is this actually used?
+      value: JwtIssuerUri
+
+configmap:
+  enabled: true
+  configuration:
+    # Portal dashboard refresh interval
+    PORTAL_REFRESH_INTERVAL: '500'
+    # Allow work orders to be assigned to individual users, if false work can only be assigned to work groups
+    PORTAL_ENABLEUSERWORKASSIGNMENT: 'false'
+    # Comma seperated list of Result Approval statuses
+    PORTAL_APPROVAL_RESULT: 'APPROVAL'
+    # Status (comma seperated) of awaiting approval closed results
+    PORTAL_APPROVAL_CLOSEWORK: 'FIELDCOMPLETE'
+    # Auth0 Client ID
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUTH0_CLIENT_ID: tn47mNO4J4gySXDG3bhuc11miYI5Jgnh
+    # Auth0 Client Secret
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUTH0_CLIENT_SECRET: yeHHeL4UByjpj06Xb8xI-8Sqm0E7-rcgzY7TIPWZsAf1-t-aLJmYkIVVN1pYWKSb
+    # Issuer URI - N.B. The trailing slash is important.
+    SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTH0_ISSUER_URI: https://mcamt.eu.auth0.com/
+    # LOG level.
+    LOGGING_LEVEL_ROOT: #{LOGGINGLEVEL}#
+    # Log Level  for HIKARI
+    LOGGING_LEVEL_COM_ZAXXER_HIKARI: #{LOGHIKARI}#
+    # Log level for SPRINGFRAMEWORK
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: #{LOGSPRINGFRAMEWORK}#
+    # Logging level for Hibernate
+    LOGGING_LEVEL_ORG_HIBERNATE: #{LOGHIBERNATE}#
+    # Logging Level for AMTSYBEX 
+    LOGGING_LEVEL_COM_AMTSYBEX: #{LOGAMTSYBEX}#
+    # Logging Level for APACHE 
+    LOGGING_LEVEL_ORG_APACHE: #{LOGAPACHE}#
+    # Logging level for Web container
+    JAVAX_ENTERPRISE_RESOURCE_WEBCONTAINER_JSF_LIFECYCLE_LEVEL: #{LOGJAVAXENTWEBCONT}#
+    #Logging of the javax faces 
+    # Please look into different login level of Javax : https://mkyong.com/jsf2/jsf-2-log4j-integration-example/
+    #JAVAX.FACES.LEVEL:  FINEST
+    #COM.SUN.FACES.LEVEL: FINEST
+    JAVAX_FACES_LEVEL:  #{LOGJAVAXFACES}#
+    COM_SUN_FACES_LEVEL: #{LOGCOMSUNFACES}#
+
+secretProviderClass:
+  enabled: true
+  name: officeportal-fieldsmart
+  secretObjects:
+    type: Opaque
+    data:
+      - key: DbPassword
+        objectName: DbPassword
+      - key: DbUser
+        objectName: DbUser
+      - key: JwtIssuerUri
+        objectName: JwtIssuerUri
+  keyVaultSecrets:
+    - objectName: DbPassword
+      objectType: secret
+      objectVersion: ''
+    - objectName: DbUser
+      objectType: secret
+      objectVersion: ''
+    - objectName: JwtIssuerUri
+      objectType: secret
+      objectVersion: ''
+    - objectName: public
+      objectType: secret
+      objectVersion: ''
+    - objectName: privatePKCS8
+      objectType: secret
+      objectVersion: ''

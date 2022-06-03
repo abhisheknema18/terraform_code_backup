@@ -1,0 +1,450 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+	<p:sidebar id="adminUserSearchWidget" widgetVar="adminUserSearchWidget"
+		styleClass="searchTabs" style="width:640px; padding:.5em 0em;"
+		position="right">
+
+		<p:panel header="Mobile User Search">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('adminUserSearchWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:panel>
+			<p:tabView id="searchUsers">
+				<!--  activeIndex="#{workList.activeTab}"> -->
+
+				<p:tab id="userAdminSearchTab" title="Search">
+
+					<p:panel>
+
+						<h:form id="searchForm">
+							<!-- <p:defaultCommand target="searchWO" /> -->
+							<p:panelGrid id="innerContent" width="100%">
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="User Code" />
+									</p:column>
+
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="userCode" maxlength="32" style="width:300px"
+											value="#{userAdmin.userAdminCriteria.userCode}"
+											autocomplete="false" validatorMessage="The User Code is invalid">
+											<p:keyFilter regEx="/[a-z0-9_()-]/i" preventPaste="false"></p:keyFilter>
+											<f:validateRegex pattern="^[A-Za-z0-9_()-]*$"></f:validateRegex>
+										</p:inputText>
+										<p:outputLabel id="userCodeInfo"
+											style="padding-top:5px;position: absolute;left:510px;" styleClass="tool-tip-info">
+											<i class="fas fa-info-circle"></i>
+											<p:tooltip for="userCodeInfo"
+												value="Enter a full or partial User Code"
+												style="width:200px;" />
+										</p:outputLabel>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="User Name" />
+									</p:column>
+
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="userName" maxlength="40" style="width:300px"
+											value="#{userAdmin.userAdminCriteria.userName}"
+											autocomplete="false" validatorMessage="The User Name is invalid">
+											<f:validateRegex pattern="^[ A-Za-z0-9_()-]*$"></f:validateRegex>
+											<p:keyFilter regEx="/[ a-z0-9_()-]/i" preventPaste="false"></p:keyFilter>
+										</p:inputText>
+										<p:outputLabel id="userNameInfo"
+											style="padding-top:5px;position: absolute;left:510px;" styleClass="tool-tip-info">
+											<i class="fas fa-info-circle"></i>
+											<p:tooltip for="userNameInfo"
+												value="Enter a full or partial User Name"
+												style="width:200px;" />
+										</p:outputLabel>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_search_workgroup_label}" />
+									</p:column>
+									<p:column styleClass="noPaddingCell">
+										<p:selectOneRadio id="allWorkgroupsSelected"
+											value="#{userAdmin.allWorkgroupsSelected}" unselectable="false">
+											<p:ajax update="workgroupSelect"
+												listener="#{userAdmin.userAdminCriteria.setWorkgroups(null)}" />
+											<f:selectItem itemLabel="All" itemValue="true" />
+											<f:selectItem itemLabel="Selected Work Groups"
+												itemValue="false" />
+										</p:selectOneRadio>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column />
+									<p:column styleClass="noPaddingCell">
+
+										<p:panelGrid id="workgroupSelect">
+											<p:row>
+												<p:column>
+													<p:selectOneListbox scrollHeight="80"
+														disabled="#{userAdmin.allWorkgroupsSelected == true}">
+														<f:selectItems
+															value="#{userAdmin.userAdminCriteria.workgroups}" />
+													</p:selectOneListbox>
+												</p:column>
+												<p:column>
+													<p:commandButton value="Select" id="showWorkgroups"
+														action="#{userAdmin.loadSelectedWorkgroups(false)}"
+														update="WorkgroupSelectionFormUserAdmin:workgroupSelection"
+														oncomplete="PF('workgroupSelectionWidget').show();">
+													</p:commandButton>
+												</p:column>
+											</p:row>
+
+										</p:panelGrid>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column colspan="2">
+										<p:messages id="messages" showDetail="false" closable="false">
+
+										</p:messages>
+									</p:column>
+								</p:row>
+
+								<p:row>
+
+									<p:column colspan="2">
+
+										<p:commandButton id="searchAdmin"
+											value="#{msg.fdm_search_btn}" action="#{userAdmin.searchUsers()}" update="searchForm messages">
+											<f:setPropertyActionListener value="false" target="#{userAdmin.navigateWorkGroup}"></f:setPropertyActionListener>
+										</p:commandButton>
+										<p:commandButton id="cancelAdmin" action="#{userAdmin.cancel}"
+											value="#{msg.fdm_search_dialog_cancel_label}"
+											onclick="PF('adminUserSearchWidget').hide();" 
+											update="innerContent"/>
+									
+										<p:commandButton id="resetBtn" value="#{msg.fdm_reset_btn}"
+											action="#{userAdmin.reset}" style="float:right"
+											update="searchForm">
+											<p:resetInput target="innerContent" />
+										</p:commandButton>
+									</p:column>
+
+								</p:row>
+
+
+							</p:panelGrid>
+
+
+						</h:form>
+
+					</p:panel>
+
+
+				</p:tab>
+
+
+			</p:tabView>
+
+		</p:panel>
+
+	</p:sidebar>
+
+	<p:sidebar id="adminUserEditWidget" widgetVar="adminUserEditWidget"
+		styleClass="searchTabs" style="width:640px; padding:.5em 0em;"
+		position="right">
+
+		<p:panel
+			header="#{userAdmin.isEditUser?'Edit Mobile User':'Add Mobile User'}">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('adminUserEditWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:panel  rendered="#{userAdmin.selectedMobileUser != null}">
+			<p:panel>
+
+				<h:form id="addUserForm" autocomplete="false">
+					<!-- <p:defaultCommand target="searchWO" /> -->
+					
+					<p:panelGrid id="innerContent" width="100%">
+
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="User Code" />
+							</p:column>
+
+
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="userCodeAdd" maxlength="32" style="width:350px" 
+									value="#{userAdmin.selectedMobileUser.id.userCode}" disabled="#{userAdmin.isEditUser}"
+									autocomplete="false" validatorMessage="The User Code is invalid">
+									<f:validateLength minimum="1"></f:validateLength>									
+									<p:keyFilter regEx="/[a-z0-9_()-]/i" preventPaste="false"></p:keyFilter>
+									<f:validateRegex pattern="^[A-Za-z0-9_()-]*$"></f:validateRegex>
+								</p:inputText>
+							</p:column>
+							
+						
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="User Name" />
+							</p:column>
+
+
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="userName" maxlength="40" style="width:350px"
+									value="#{userAdmin.selectedMobileUser.userName}"
+									validatorMessage="The User Name is invalid">
+									<f:validateLength minimum="1"></f:validateLength>
+									<f:validateRegex pattern="^[ A-Za-z0-9_()-]*$"></f:validateRegex>
+									<p:keyFilter regEx="/[ a-z0-9_()-]/i" preventPaste="false"></p:keyFilter>
+								</p:inputText>
+							</p:column>
+
+
+
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Work Group" />
+							</p:column>
+							<p:column styleClass="noPaddingCell">
+
+								<p:inputText id="addWorkGroup" maxlength="32"
+									style="width:350px" readonly="true"
+									value="#{userAdmin.selectedMobileUser.workGroup.workgroupDesc.concat(' ('.concat(userAdmin.selectedMobileUser.workGroup.id.workgroupCode).concat(') '))}"
+									validatorMessage="The Work Group is invalid">
+									<f:validateLength minimum="1"></f:validateLength>
+								</p:inputText>
+							</p:column>
+
+						</p:row>
+
+						<p:row>
+							<p:column />
+							<p:column>
+								<p:commandButton value="Select" id="editWorkgroups"
+									style="float:right;margin-right: -8px;" action="#{userAdmin.loadSelectedWorkgroups(true)}"
+									update="SingleWorkgroupSelectionFormUserAdmin:singleWorkgroupSelection"
+									oncomplete="PF('singleWorkgroupSelectionWidget').show();">
+								</p:commandButton>
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="User Class" />
+							</p:column>
+
+							<p:column styleClass="noPaddingCell"
+								rendered="#{userAdmin.validationProperty==null}">
+								<p:inputText id="editUserClass" maxlength="80"
+									style="width:350px"
+									value="#{userAdmin.selectedMobileUser.userClass}"
+									validatorMessage="The User Class is invalid">
+								</p:inputText>
+							</p:column>
+
+							<p:column styleClass="noPaddingCell"
+								rendered="#{userAdmin.validationProperty!=null}">
+								<p:selectOneMenu effect="fold" editable="false" style="min-width: 325px !important;"
+									value="#{userAdmin.selectedMobileUser.userClass}">
+									<p:ajax event="change" process="@form" update="addUserForm" />
+									<f:selectItems value="#{userAdmin.validationProperty}" var="cat"
+										itemValue="#{cat.validationProperty}"
+										itemLabel="#{cat.validationProperty}" />
+								</p:selectOneMenu>
+							</p:column>
+
+
+
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Alternative Ref" />
+							</p:column>
+
+
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="editAltRef" maxlength="10" style="width:350px"
+									value="#{userAdmin.selectedMobileUser.altRef}"
+									validatorMessage="The Alt Ref is invalid">
+								</p:inputText>
+							</p:column>
+
+						</p:row>
+						
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Revoked" />
+								</p:column>
+
+								<p:column>
+									<p:selectBooleanCheckbox style="margin-left: 1px;"
+										value="#{userAdmin.selectedMobileUser.revokedBool}" />
+								</p:column>
+							</p:row>
+
+							<p:panelGrid>
+							<p:row>
+								<p:column colspan="2">
+									<p:messages id="messages" showDetail="false" closable="false">
+
+									</p:messages>
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column style="width:200px">
+									<p:commandButton value="#{msg.fdm_save}" 
+										action="#{userAdmin.saveMobileUser()}"
+										oncomplete="if(!args.validationFailed) {PF('adminUserEditWidget').hide();}"
+										update="addUserForm growl" icon="fas fa-save">
+									</p:commandButton>
+								
+									<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+										onclick="PF('adminUserEditWidget').hide();"
+										icon="fas fa-times" >
+									</p:commandButton>
+								</p:column>
+								<p:column rendered="#{userAdmin.isEditUser}" style="width:295px">
+									<p:commandButton value="Delete" icon="far fa-trash-alt"
+										action="#{userAdmin.isDeleteUser}" style="float:right;margin-right: -5px;"
+										update="addUserForm">
+									</p:commandButton>
+
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:panelGrid>
+
+
+				</h:form>
+
+			</p:panel>
+
+		</p:panel>
+
+	</p:sidebar>
+
+	<h:form id="WorkgroupSelectionFormUserAdmin">
+		<p:sidebar position="right" id="workgroupSelection"
+			widgetVar="workgroupSelectionWidget" style="width:640px;">
+
+			<p:panel id="workgroupSelectionP"
+				header="#{msg.fdm_search_workgroup_dialog_label}">
+
+				<div style="height: 10px; width: 100%"></div>
+
+				<div
+					style="background: white; margin-bottom: 20px; border: 1px solid lightgrey; border-radius: 4px; width: 100%; overflow: auto">
+					<p:tree id="workgroupSelectTree" value="#{userAdmin.workgroupRoot}"
+						style="width:100%;" var="node" filterMatchMode="contains"
+						selectionMode="checkbox"
+						filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}"
+						selection="#{userAdmin.selectedWorkgroupNodes}">
+						<p:treeNode>
+							<h:outputText
+								value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;"
+								value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('workgroupSelectionWidget').hide();"
+						action="#{userAdmin.updateSelectedWorkgroups()}"
+						update="searchUsers:searchForm:innerContent" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{userAdmin.clearSelectedWorkgroups()}"
+						update="workgroupSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('workgroupSelectionWidget').hide();" />
+
+				</f:facet>
+
+			</p:panel>
+		</p:sidebar>
+	</h:form>
+
+	<h:form id="SingleWorkgroupSelectionFormUserAdmin">
+		<p:sidebar position="right" id="singleWorkgroupSelection"
+			widgetVar="singleWorkgroupSelectionWidget" style="width:640px;">
+
+			<p:panel id="workgroupSelectionSingle"
+				header="#{msg.fdm_search_workgroup_dialog_label}">
+
+				<div style="height: 10px; width: 100%"></div>
+
+				<div
+					style="background: white; margin-bottom: 20px; border: 1px solid lightgrey; border-radius: 4px; width: 100%; overflow: auto">
+					<p:tree id="workgroupSelectTree" value="#{userAdmin.workgroupRoot}"
+					filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}"
+						style="width:100%;" var="node" filterMatchMode="contains"
+						selectionMode="single"
+						selection="#{userAdmin.selectedSingleWorkgroupNode}">
+						<p:treeNode>
+							<h:outputText
+								value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+							<h:outputText style="font-size:0.7em;font-style:italic;"
+								value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+						</p:treeNode>
+					</p:tree>
+				</div>
+				<f:facet name="footer" styleClass="searchDialog">
+
+					<p:commandButton value="#{msg.fdm_search_dialog_ok_label}"
+						onclick="PF('singleWorkgroupSelectionWidget').hide();"
+						action="#{userAdmin.updateSelectedSingleWorkgroup()}"
+						update="addUserForm" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_clear_label}"
+						action="#{userAdmin.clearSelectedSingleWorkgroup()}"
+						update="workgroupSelectTree" />
+
+					<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+						onclick="PF('singleWorkgroupSelectionWidget').hide();" />
+
+				</f:facet>
+
+			</p:panel>
+		</p:sidebar>
+
+	</h:form>
+
+</ui:composition>

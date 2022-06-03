@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+az sql server ad-admin create --display-name "${user_name_lists}" --object-id "${object_id_list}" --resource-group "${resource_group}" --server "${sql_server_name}"
+

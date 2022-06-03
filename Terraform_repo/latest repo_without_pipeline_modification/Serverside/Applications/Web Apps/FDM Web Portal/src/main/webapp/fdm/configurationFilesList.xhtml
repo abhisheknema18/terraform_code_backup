@@ -1,0 +1,236 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/admin-template.xhtml">	
+	
+	<ui:param name="bean" value="#{configurationManagement}" />	
+
+	<ui:define name="admin-body">
+
+		<p:tabView id="configFilesTab" activeIndex="#{configurationManagement.activeTab=='ScriptConfig' ? 1 : 0}">
+			<p:ajax event="tabChange" listener="#{configurationManagement.onTabChange}" />
+			<p:tab id="wmConfigFilesSearchResults"
+				title="Configuration Files List #{configurationManagement.viewWMConfigList.size() > 0 ? '('.concat(configurationManagement.viewWMConfigList.size()).concat(')') : ''}#{configurationManagement.filteredWMConfigList.size() > 0 ? '('.concat(configurationManagement.filteredWMConfigList.size()).concat(')') : ''} ">
+
+				<f:facet name="title">
+					<h:outputText id="headerTitle"
+						value="WMConfig #{configurationManagement.filteredWMConfigList.size() > 0 and configurationManagement.filteredWMConfigList.size() lt configurationManagement.viewWMConfigList.size() ? '('.concat(configurationManagement.filteredWMConfigList.size()).concat(' of ').concat(configurationManagement.viewWMConfigList.size()).concat(')') : configurationManagement.viewWMConfigList.size() > 0 ? '('.concat(configurationManagement.viewWMConfigList.size()).concat(')') : '(0)' } " />
+				</f:facet>
+
+				<h:form id="configFilesListForm">
+					
+					<p:remoteCommand name="updateFilteredWMConfig" update="configFilesTab:headerTitle configFilesTab:configFilesListForm:wmConfigList configFilesTab:configFilesListForm:footerTitle"/>	
+					
+
+					<p:dataTable id="wmConfigList"
+						value="#{configurationManagement.viewWMConfigList}"
+						var="wmConfigFile" filterDelay="1000" rowStatePreserved="true"
+						style="width:100%"
+						selection="#{configurationManagement.selectedWMConfig}"
+						resizableColumns="true" selectionMode="single"
+						rowIndexVar="rowWMConfigListVar" rowKey="#{wmConfigFile}"
+						widgetVar="wmConfigListVar"
+						filteredValue="#{configurationManagement.filteredWMConfigList}">
+						<p:ajax event="filter" oncomplete="updateFilteredWMConfig();"
+							process="@all" />
+
+						<p:column headerText="Published Date" style="width:25%"
+							sortBy="#{func:combineDateTime(wmConfigFile.publishDate,wmConfigFile.publishTime)}">
+							<h:outputText value="#{func:combineDateTime(wmConfigFile.publishDate,wmConfigFile.publishTime)}">
+								<f:convertDateTime pattern="dd MMM YYYY HH:mm"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Published by" style="width:40%"
+							sortBy="#{wmConfigFile.systemUser}"
+							filterBy="#{wmConfigFile.systemUser}" filterMatchMode="contains">
+							<h:outputText value="#{wmConfigFile.systemUser}" />
+						</p:column>
+
+						<p:column headerText="Work Group" style="width:40%"
+							sortBy="#{wmConfigFile.hpcWorkGroup.workgroupDesc}"
+							filterBy="#{wmConfigFile.hpcWorkGroup.workgroupDesc}"
+							filterMatchMode="contains">
+							<h:outputText value="#{wmConfigFile.hpcWorkGroup.workgroupDesc}" />
+						</p:column>
+
+						<p:column headerText="Configuration File Name" style="width:40%"
+							sortBy="#{wmConfigFile.configFileName}"
+							filterBy="#{wmConfigFile.configFileName}"
+							filterMatchMode="contains">
+							<h:outputText value="#{wmConfigFile.configFileName}" />
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="downloadWMFile" ajax="false">
+								<p:fileDownload
+									value="#{configurationManagement.downloadSelectedFile(wmConfigFile)}" />
+								<i class="fa fa-download" alt="download config"></i>
+							</p:commandLink>
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="deleteWMFile" oncomplete="PF('deleteConfigDialog').show();"  rendered="#{wmConfigFile.configFileName ne 'WMCONFIG.xml'}"
+							actionListener="#{configurationManagement.setSelectedWMConfig(wmConfigFile)}"
+							update="configFilesTab:configFilesListForm:wmConfigList deleteConfigForm:deleteConfigDialogId">
+								<i class="fa fa-trash-alt" alt="delete config"></i>
+							</p:commandLink>
+						</p:column>
+
+
+					</p:dataTable>
+
+					<h:outputText id="footerTitle"
+						value="#{configurationManagement.filteredWMConfigList.size() > 0 and configurationManagement.filteredWMConfigList.size() lt configurationManagement.viewWMConfigList.size() ? ''.concat(configurationManagement.filteredWMConfigList.size()).concat(' of ').concat(configurationManagement.viewWMConfigList.size()) :  configurationManagement.viewWMConfigList.size() > 0 ? ''.concat(configurationManagement.viewWMConfigList.size()) : '0' } results found"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+
+				</h:form>
+			</p:tab>
+
+			<p:tab id="scriptConfigFilesSearchResults" 
+				title="Configuration Files List #{configurationManagement.viewScriptConfigList.size() > 0 ? '('.concat(configurationManagement.viewScriptConfigList.size()).concat(')') : ''}#{configurationManagement.filteredScriptConfigList.size() > 0 ? '('.concat(configurationManagement.filteredScriptConfigList.size()).concat(')') : ''} ">
+
+				<f:facet name="title">
+					<h:outputText id="headerTitle2"
+						value="ScriptConfig #{configurationManagement.filteredScriptConfigList.size() > 0 and configurationManagement.filteredScriptConfigList.size() lt configurationManagement.viewScriptConfigList.size() ? '('.concat(configurationManagement.filteredScriptConfigList.size()).concat(' of ').concat(configurationManagement.viewScriptConfigList.size()).concat(')') : configurationManagement.viewScriptConfigList.size() > 0 ? '('.concat(configurationManagement.viewScriptConfigList.size()).concat(')') : '(0)' } " />
+				</f:facet>
+
+				<h:form id="scriptConfigFilesListForm">
+					
+					<p:remoteCommand name="updateFilteredScriptConfig" update="configFilesTab:headerTitle2 configFilesTab:scriptConfigFilesListForm:scriptConfigList configFilesTab:scriptConfigFilesListForm:footerTitle"/>	
+					
+
+					<p:dataTable id="scriptConfigList" 
+						value="#{configurationManagement.viewScriptConfigList}"
+						var="scriptConfigFile" filterDelay="1000"
+						style="width:100%"
+						selection="#{configurationManagement.selectedScriptConfig}"
+						resizableColumns="true" selectionMode="single"
+						rowIndexVar="rowScriptConfigListVar" rowKey="#{scriptConfigFile}"
+						widgetVar="scriptConfigListVar"
+						filteredValue="#{configurationManagement.filteredScriptConfigList}">
+						<p:ajax event="filter" oncomplete="updateFilteredScriptConfig();"
+							process="@all" />
+						
+						<p:column headerText="Published Date" style="width:25%"
+							sortBy="#{func:combineDateTime(scriptConfigFile.publishDate,scriptConfigFile.publishTime)}">
+							<h:outputText value="#{func:combineDateTime(scriptConfigFile.publishDate,scriptConfigFile.publishTime)}">
+								<f:convertDateTime pattern="dd MMM YYYY HH:mm"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Published by" style="width:40%"
+							sortBy="#{scriptConfigFile.systemUser}"
+							filterBy="#{scriptConfigFile.systemUser}" filterMatchMode="contains">
+							<h:outputText value="#{scriptConfigFile.systemUser}" />
+						</p:column>
+
+						<p:column headerText="Work Group" style="width:40%"
+							sortBy="#{scriptConfigFile.hpcWorkGroup.workgroupDesc}"
+							filterBy="#{scriptConfigFile.hpcWorkGroup.workgroupDesc}"
+							filterMatchMode="contains">
+							<h:outputText value="#{scriptConfigFile.hpcWorkGroup.workgroupDesc}" />
+						</p:column>
+
+						<p:column headerText="Configuration File Name" style="width:40%"
+							sortBy="#{scriptConfigFile.configFileName}"
+							filterBy="#{scriptConfigFile.configFileName}"
+							filterMatchMode="contains">
+							<h:outputText value="#{scriptConfigFile.configFileName}" />
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="downloadScriptFile" ajax="false">
+								<p:fileDownload
+									value="#{configurationManagement.downloadSelectedFile(scriptConfigFile)}" />
+								<i class="fa fa-download" alt="download config"></i>
+							</p:commandLink>
+						</p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="deleteScriptFile" oncomplete="PF('deleteConfigDialog').show();" rendered="#{scriptConfigFile.configFileName ne 'SCRIPTCONFIG.xml'}"
+							actionListener="#{configurationManagement.setSelectedScriptConfig(scriptConfigFile)}"
+							update="configFilesTab:scriptConfigFilesListForm:scriptConfigList deleteConfigForm:deleteConfigDialogId">
+								<i class="fa fa-trash-alt" alt="delete config"></i>
+							</p:commandLink>
+						</p:column>
+
+
+					</p:dataTable>
+
+					<h:outputText id="footerTitle"
+						value="#{configurationManagement.filteredScriptConfigList.size() > 0 and configurationManagement.filteredScriptConfigList.size() lt configurationManagement.viewScriptConfigList.size() ? ''.concat(configurationManagement.filteredScriptConfigList.size()).concat(' of ').concat(configurationManagement.viewScriptConfigList.size()) :  configurationManagement.viewScriptConfigList.size() > 0 ? ''.concat(configurationManagement.viewScriptConfigList.size()) : '0' } results found"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+
+				</h:form>
+			</p:tab>
+
+		</p:tabView>
+
+		<h:form id="deleteConfigForm">
+			<p:dialog id="deleteConfigDialogId" dynamic="true"
+				widgetVar="deleteConfigDialog" resizable="false" width="340px"
+				modal="true" position="center center"
+				onShow="PF('deleteConfigDialog').initPosition()" closable="false"
+				closeOnEscape="false">
+				<f:facet name="header">
+					<h:outputText value="Delete Configuration File" styleClass="dialogheader" />
+				</f:facet>
+				<p:panelGrid columns="1" width="100%">
+					<h:outputText value="Are you sure you wish to delete this Configuration File?" />
+
+				</p:panelGrid>
+				<f:facet name="footer">
+					<p:commandButton value="#{msg.fdm_action_no}"
+						onclick="PF('deleteConfigDialog').hide();"
+						styleClass="ui-confirmdialog-no">
+						
+					</p:commandButton>
+					<p:commandButton value="#{msg.fdm_action_yes}"
+						action="#{configurationManagement.deleteSelectedFile}"
+						onclick="PF('deleteConfigDialog').hide();"
+						update="configFilesTab:headerTitle configFilesTab:configFilesListForm:wmConfigList configFilesTab:configFilesListForm:footerTitle configFilesTab:headerTitle2 configFilesTab:scriptConfigFilesListForm:scriptConfigList configFilesTab:scriptConfigFilesListForm:footerTitle growl" 
+						oncomplete="#{configurationManagement.activeTab=='ScriptConfig'}? PF('scriptConfigListVar').clearFilters() : PF('wmConfigListVar').clearFilters()" />
+				</f:facet>
+			</p:dialog>
+
+
+		</h:form>
+		
+		<h:form id="replaceConfigForm">
+			<p:dialog id="replaceConfigDialogId" dynamic="true"
+				widgetVar="replaceConfigDialog" resizable="false" width="340px"
+				modal="true" position="center center"
+				onShow="PF('replaceConfigDialog').initPosition()" closable="false"
+				closeOnEscape="false">
+				<f:facet name="header">
+					<h:outputText value="Replace Configuration File" styleClass="dialogheader" />
+				</f:facet>
+				<p:panelGrid columns="1" width="100%">
+					<h:outputText value="Do you want to replace the existing #{configurationManagement.activeTab=='ScriptConfig'? 'ScriptConfig ' : 'WMConfig '} file?" />
+
+				</p:panelGrid>
+				<f:facet name="footer">
+					<p:commandButton value="#{msg.fdm_action_no}"
+						onclick="PF('replaceConfigDialog').hide();"
+						styleClass="ui-confirmdialog-no">
+						
+					</p:commandButton>
+					<p:commandButton value="#{msg.fdm_action_yes}"
+						action="#{configurationManagement.uploadConfigFile}"
+						onclick="PF('replaceConfigDialog').hide();"
+						update="configFilesTab:headerTitle configFilesTab:configFilesListForm:wmConfigList configFilesTab:configFilesListForm:footerTitle configFilesTab:headerTitle2 configFilesTab:scriptConfigFilesListForm:scriptConfigList configFilesTab:scriptConfigFilesListForm:footerTitle growl" />
+						
+				</f:facet>
+			</p:dialog>
+
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

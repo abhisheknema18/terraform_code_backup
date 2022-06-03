@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ScriptConfig xmlns="http://tempuri.org/DataSet1.xsd">
+    <ScriptMenu> 
+        <Type>SA</Type>
+        <TargetName>PHOTO</TargetName>
+        <MenuText>Test Photo</MenuText>
+        <AutoCommit>1</AutoCommit>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>SA</Type>
+        <TargetName>GFSESSION</TargetName>
+        <MenuText>GF Session Header</MenuText>
+        <AutoCommit>1</AutoCommit>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>SA</Type>
+        <TargetName>LV-CABLE</TargetName>
+        <MenuText>Low Voltage Cable</MenuText>
+        <AutoCommit>1</AutoCommit>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>SA</Type>
+        <TargetName>LV-JOINT</TargetName>
+        <MenuText>Low Voltage Joint</MenuText>
+        <AutoCommit>1</AutoCommit>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>WO</Type>
+        <TargetName>NFGRTPP</TargetName>
+        <MenuText>NFGRTPP</MenuText>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>WO</Type>
+        <TargetName>QUALITYCON</TargetName>
+        <MenuText>Cable Lay QC</MenuText>
+        <PropertyName>WoType</PropertyName>
+        <PropertyVal>QUALITYCON</PropertyVal>
+        <Mandatory>1</Mandatory>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>CANTDO</Type>
+        <TargetName>CANTDO</TargetName>
+        <MenuText/>
+    </ScriptMenu>
+</ScriptConfig>

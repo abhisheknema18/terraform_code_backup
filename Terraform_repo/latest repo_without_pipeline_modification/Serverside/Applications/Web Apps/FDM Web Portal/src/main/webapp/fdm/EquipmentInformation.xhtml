@@ -1,0 +1,97 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+
+	<p:dialog id="assetViewDialog"
+				dynamic="true"
+				widgetVar="assetViewWidgetVar" 
+				resizable="false" 
+				width="700px"  
+				modal="true" 
+				position="right center"
+				onShow="PF('assetViewWidgetVar').initPosition()" 
+				closable="false"
+				closeOnEscape="true" 
+				styleClass="quickView"
+				draggable="true" responsive="true" fitViewport="true">
+					<f:facet name="header">
+							<h:outputText value="Asset Quick View" styleClass="dialogheader" />
+							
+							<p:commandLink oncomplete="PF('assetViewWidgetVar').hide();"
+								styleClass="downloadVideoBtn">
+								<i class="fas fa-times fa-fw"></i>
+							</p:commandLink>
+							
+					</f:facet>
+				<p:panel id="assetViewPanel">
+					<h:panelGrid id = "equipmentDataId" width="95%">
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="equipNo"
+								value="#{msg.fdm_equipment_information_equipment_number_label}" />
+							<h:outputText id="equipNo"
+								value="#{equipBean.equipmentInformation.equipmentData.equipNo}" styleClass="quickAssetViewText" />
+						</h:panelGrid>
+	
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="equipDesc"
+								value="#{msg.fdm_equipment_information_equipment_description_label}" />
+							<h:outputText id="equipDesc"
+								value="#{equipBean.equipmentInformation.equipmentData.equipDesc}" styleClass="quickAssetViewText" />
+						</h:panelGrid>
+	
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="equipReference"
+								value="#{msg.fdm_search_reference_number_label}" />
+							<h:outputText id="equipReference"
+								value="#{equipBean.equipmentInformation.equipmentData.altEquipRef}" styleClass="quickAssetViewText" />
+						</h:panelGrid>
+	
+						<h:panelGrid columns="2" >
+							<h:outputLabel for="equipType"
+								value="#{msg.fdm_equipment_information_equipment_type_label}" />
+							<h:outputText id="equipType"
+								value="#{equipBean.equipmentInformation.equipmentData.equipType}" styleClass="quickAssetViewText" />
+						</h:panelGrid>
+	
+						<h:panelGrid columns="2" >
+							<h:outputLabel value="#{msg.fdm_equipment_information_equipment_location_label}" for="location" />
+							<h:outputText id="location"
+								value="#{equipBean.equipmentInformation.location !=null ? equipBean.equipmentInformation.location : ''}" styleClass="quickAssetViewText" />
+						</h:panelGrid>
+					
+						
+						<p:spacer width="300" height="20" />
+						<h:panelGrid>
+						<p:dataTable id="equipAttribTable"
+						value="#{equipBean.equipmentInformation.filteredEquipAttribList()}"
+						var="equipAtt"
+						resizableColumns="true" 
+						scrollable="true" 
+						scrollHeight="550"
+						emptyMessage="No records found"
+						rowKey="#{equipAtt.attributeName}"
+						selectionMode="single"
+					    style="border: 1px solid #d5d5d5 !important;"
+					    styleClass="eqipmentTableCls">
+						
+							<p:column headerText="Attribute Name" styleClass="script">
+									<h:outputText value="#{equipAtt.attributeName}" />
+							</p:column>
+							<p:column headerText="Value" styleClass="script">
+									<h:outputText value="#{equipAtt.value}" />
+							</p:column>
+						
+						</p:dataTable>
+						
+						</h:panelGrid>
+				</h:panelGrid>
+			</p:panel>
+		</p:dialog> 
+	
+</ui:composition>

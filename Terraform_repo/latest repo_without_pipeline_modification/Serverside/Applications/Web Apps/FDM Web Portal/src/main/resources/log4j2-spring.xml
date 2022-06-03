@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+	<Appenders>
+		<RollingFile name="rollingFile"
+			fileName="/home/fusion/fieldsmart/logs/fdm.log"
+			filePattern="/home/fusion/fieldsmart/logs/${date:yyyy-MM}/fdm.log.%i"
+			ignoreExceptions="false">
+			<PatternLayout
+				pattern="%d{DEFAULT_PERIOD} %-6p [%t] %c{1} M[%M] --> %m\n" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="5MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{DEFAULT_PERIOD} %-6p [%t] %c{1} M[%M] --> %m\n" />
+			<ThresholdFilter level="ALL" onMatch="ACCEPT"
+				onMismatch="DENY" />
+		</Console>
+
+		<Console name="STDERR" target="SYSTEM_ERR">
+			<PatternLayout pattern="%d{DEFAULT_PERIOD} %-6p [%t] %c{1} M[%M] --> %m\n" />
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+		</Console>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="org.apache" level="WARN" />
+		
+		<Logger name="com.zaxxer.hikari" level="ERROR" />
+
+		<Logger name="org.hibernate" level="WARN" />
+
+		<Logger name="org.springframework" level="WARN" />
+
+		<Logger name="javax.faces" level="WARN" />
+
+		<Logger name="com.sun.faces" level="WARN" />
+
+		<Logger name="javax.enterprise.resource.webcontainer.jsf" level="WARN" />
+		
+		<Logger name="com.amtsybex" level="INFO" />
+
+		<Root level="WARN">
+			<AppenderRef ref="rollingFile" />
+			<AppenderRef ref="STDOUT" />
+		</Root>
+
+	</Loggers>
+
+</Configuration>

@@ -1,0 +1,448 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions">
+
+	<p:sidebar id="systemAdminUserSearchWidget"
+		widgetVar="systemAdminUserSearchWidget" styleClass="searchTabs"
+		style="width:640px; padding:.5em 0em; overflow: hidden;" position="right">
+
+		<p:panel header="System User Search">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('systemAdminUserSearchWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:panel>
+			<p:tabView id="searchSytemUsers">
+				<!--  activeIndex="#{workList.activeTab}"> -->
+
+				<p:tab id="systemUserAdminSearchTab" title="Search">
+
+					<p:panel>
+
+						<h:form id="searchForm">
+							<!-- <p:defaultCommand target="searchWO" /> -->
+							<p:panelGrid id="innerContent" width="100%">
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_system_user_admin_user_code_label}" />
+									</p:column>
+
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="userCode" maxlength="10" style="width:300px"
+											value="#{systemUserAdmin.systemUserAdminCriteria.userCode}"
+											autocomplete="false" validatorMessage="User Code is invalid">
+											<f:validateRegex pattern="^[A-Za-z0-9]*$"></f:validateRegex>
+											<p:keyFilter regEx="/[a-z0-9_]/i" preventPaste="false"></p:keyFilter>
+										</p:inputText>
+									
+									
+										<p:outputLabel id="userCodeInfo"
+											style="padding-top:5px;position: absolute;left:510px">
+											<i class="fas fa-info-circle"></i>
+											<p:tooltip for="userCodeInfo"
+												value="Enter a full or partial User Code"
+												style="width:200px;" />
+										</p:outputLabel>
+									</p:column>
+
+								</p:row>
+
+								<p:row>
+									<p:column>
+										<p:outputLabel value="#{msg.fdm_system_user_admin_user_name_label}" />
+									</p:column>
+
+
+									<p:column styleClass="noPaddingCell">
+										<p:inputText id="userName" maxlength="40" style="width:300px"
+											value="#{systemUserAdmin.systemUserAdminCriteria.userName}"
+											autocomplete="false" validatorMessage="User Name is invalid">
+											<f:validateRegex pattern="^[ A-Za-z0-9)(\-)]*$"></f:validateRegex>
+											<p:keyFilter regEx="/[ a-z0-9)(\-)]/i" preventPaste="false"></p:keyFilter>
+										</p:inputText>
+									
+										<p:outputLabel id="userNameInfo"
+											style="padding-top:5px;position: absolute;left:510px">
+											<i class="fas fa-info-circle"></i>
+											<p:tooltip for="userNameInfo"
+												value="Enter a full or partial User Name"
+												style="width:200px;" />
+										</p:outputLabel>
+									</p:column>
+
+								</p:row>
+
+
+								<p:row>
+									<p:column colspan="2">
+										<p:messages id="messages" showDetail="false" closable="false">
+
+										</p:messages>
+									</p:column>
+								</p:row>
+
+								<p:row>
+
+									<p:column>
+
+										<p:commandButton id="searchAdmin"
+											value="#{msg.fdm_search_btn}"
+											action="#{systemUserAdmin.searchUsers()}"
+											update="searchForm messages" />
+
+										<p:commandButton id="cancelAdmin" action="#{systemUserAdmin.cancel}"
+											value="#{msg.fdm_search_dialog_cancel_label}"
+											onclick="PF('systemAdminUserSearchWidget').hide();"
+											update="innerContent" />
+									</p:column>
+
+									<p:column>
+										<p:commandButton id="resetBtn" value="#{msg.fdm_reset_btn}"
+											action="#{systemUserAdmin.reset}" style="float:right;left:100px;"
+											update="searchForm">
+											<p:resetInput target="innerContent" />
+										</p:commandButton>
+									</p:column>
+
+								</p:row>
+
+
+							</p:panelGrid>
+
+
+						</h:form>
+
+					</p:panel>
+
+
+				</p:tab>
+
+
+			</p:tabView>
+
+		</p:panel>
+
+	</p:sidebar>
+
+	<p:sidebar id="systemUserAdminWidget" widgetVar="systemUserAdminWidget"
+		styleClass="searchTabs" style="width:640px; padding:.5em 0em;"
+		position="right">
+
+		<p:panel
+			header="#{systemUserAdmin.isEditUser? msg.fdm_system_user_edit_sys_user_side_bar_label: msg.fdm_system_user_add_sys_user_side_bar_label}">
+			<div class="ui-icon-close-override">
+				<span class="fa fa-angle-right"
+					style="padding-left: .25em; cursor: pointer;"
+					onclick="PF('systemUserAdminWidget').hide();" />
+			</div>
+			<div style="height: 10px; width: 100%"></div>
+		</p:panel>
+
+		<p:panel rendered="#{systemUserAdmin.selectedSystemUser != null}">
+			<p:panel>
+
+				<h:form id="addSystemUserForm" autocomplete="false">
+
+					<p:panelGrid id="innerContent" width="100%">
+
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_system_user_admin_user_code_label}" />
+							</p:column>
+
+
+							<p:column styleClass="noPaddingCell"
+								rendered="#{!systemUserAdmin.isEditUser}">
+								<p:inputText id="userCodeAdd" maxlength="10" style="width:350px;text-transform: uppercase" onblur="value=value.toUpperCase()"
+									value="#{systemUserAdmin.selectedSystemUser.id}"
+									autocomplete="false" validatorMessage="User Code is invalid" required="true"
+									requiredMessage="User Code is invalid">
+									<f:validateRegex pattern="^[A-Za-z0-9]*$"></f:validateRegex>
+									<p:keyFilter regEx="/[a-z0-9_]/i" preventPaste="false"></p:keyFilter>
+									<f:validateLength minimum="1"></f:validateLength>
+								</p:inputText>
+							</p:column>
+
+							<p:column styleClass="noPaddingCell"
+								rendered="#{systemUserAdmin.isEditUser}">
+								<p:inputText id="userCodeEdit" maxlength="10"
+									style="width:350px"
+									value="#{systemUserAdmin.selectedSystemUser.id}"
+									readonly="true" autocomplete="false"
+									disabled="#{systemUserAdmin.isEditUser}">
+									<f:validateLength minimum="1"></f:validateLength>
+								</p:inputText>
+							</p:column>
+
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_system_user_admin_user_name_label}" />
+							</p:column>
+
+
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="userName" maxlength="40" style="width:350px"
+									value="#{systemUserAdmin.selectedSystemUser.userName}"
+									validatorMessage="User Name is invalid" required="true"
+									requiredMessage="User Name is invalid">
+									<f:validateLength minimum="1"></f:validateLength>
+									<f:validateRegex pattern="^[ A-Za-z0-9)(\-)]*$"></f:validateRegex>
+									<p:keyFilter regEx="/[ a-z0-9)(\-)]/i" preventPaste="false"></p:keyFilter>
+								</p:inputText>
+							</p:column>
+
+
+
+						</p:row>
+						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_system_user_admin_portal_access_label}" />
+							</p:column>
+
+							<p:column styleClass="noPaddingCell">
+
+								<p:selectOneMenu id="fdmAccessGroup"
+									editable="false"
+									value="#{systemUserAdmin.selectedSystemUser.fdmGroupCode}" 
+									style="min-width: 325px !important;">
+									<p:ajax event="change"
+										update="addSystemUserForm:fdmAccessGroup" />
+									<f:selectItem itemLabel="" itemValue=""
+										noSelectionOption="true"></f:selectItem>
+									<f:selectItems value="#{systemUserAdmin.fdmAccessGroups}"
+										var="fdmGroup" itemValue="#{fdmGroup.groupCode}"
+										itemLabel="#{fdmGroup.groupDesc}" />
+								</p:selectOneMenu>
+							</p:column>
+
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_system_user_admin_sb_access_label}" />
+							</p:column>
+
+
+							<p:column styleClass="noPaddingCell">
+
+								<p:selectOneMenu id="sbAccessGroup"
+									editable="false"
+									value="#{systemUserAdmin.selectedSystemUser.sbGroupCode}" 
+									style="min-width: 325px !important;">
+									<p:ajax event="change" listener="#{systemUserAdmin.onSBAccessGroupChange()}"
+										update="addSystemUserForm:sbAccessGroup addSystemUserForm:windowsLoginInput" />
+									<f:selectItem
+										noSelectionOption="true"></f:selectItem>
+									<f:selectItems value="#{systemUserAdmin.sbAccessGroups}"
+										var="sbGroup" itemValue="#{sbGroup.groupCode}"
+										itemLabel="#{sbGroup.groupDesc}" />
+								</p:selectOneMenu>
+							</p:column>
+
+						</p:row>						
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_system_user_admin_windows_login_lobel}" />
+							</p:column>
+
+
+							<p:column styleClass="noPaddingCell">
+								<p:inputText id="windowsLoginInput" maxlength="32" style="width:350px"
+									value="#{systemUserAdmin.selectedSystemUser.winLogin}" disabled="#{systemUserAdmin.selectedSystemUser.sbGroupCode==null||systemUserAdmin.selectedSystemUser.sbGroupCode==''}"
+									required="true"
+									requiredMessage="#{msg.fdm_system_user_admin_windows_login_required_msg}">
+								</p:inputText>
+							</p:column>
+							
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{msg.fdm_system_user_admin_user_class_label}" />
+							</p:column>
+
+							<p:column styleClass="noPaddingCell"
+								rendered="#{systemUserAdmin.validationProperty==null}">
+								<p:inputText id="editUserClass" maxlength="80"
+									style="width:350px"
+									value="#{systemUserAdmin.selectedSystemUser.userClass}"
+									validatorMessage="The User Class is invalid">
+								</p:inputText>
+							</p:column>
+ 
+							<p:column styleClass="noPaddingCell" id="userClass"
+								rendered="#{systemUserAdmin.validationProperty!=null}">
+								<p:selectOneMenu editable="false" style="min-width: 325px !important;"
+									value="#{systemUserAdmin.selectedSystemUser.userClass}">
+									
+									<f:selectItems value="#{systemUserAdmin.validationProperty}"
+										var="cat" itemValue="#{cat.validationProperty}"
+										itemLabel="#{cat.validationProperty}" />
+								</p:selectOneMenu>
+							</p:column>
+
+
+
+						</p:row>
+
+
+						<p:panelGrid>
+						
+							<p:row>
+								<p:column>
+									<p:outputLabel value="#{msg.fdm_system_user_admin_admin_user_label}" />
+								</p:column>
+
+								<p:column>
+									<p:selectBooleanCheckbox id="adminUser"
+										value="#{systemUserAdmin.selectedSystemUser.adminUserBool}"
+										 />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="#{msg.fdm_system_user_admin_revoked_label}" />
+								</p:column>
+
+								<p:column>
+									<p:selectBooleanCheckbox
+										value="#{systemUserAdmin.selectedSystemUser.revokedBool}" />
+								</p:column>
+							</p:row>
+							</p:panelGrid>
+
+							<p:panelGrid>
+							<p:row>
+								<p:column colspan="2">
+									<p:messages id="messages" showDetail="false" closable="false">
+
+									</p:messages>
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column style="width:200px">
+									<p:commandButton value="#{msg.fdm_save}"
+										action="#{systemUserAdmin.saveSystemUser}"
+										oncomplete="if(!args.validationFailed) {PF('systemUserAdminWidget').hide();}"
+										update="addSystemUserForm growl" icon="fas fa-save">
+									</p:commandButton>
+
+									<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+										onclick="PF('systemUserAdminWidget').hide();" immediate="true"
+										icon="fas fa-times">
+									</p:commandButton>
+								</p:column>
+								<p:column rendered="#{systemUserAdmin.isEditUser}"
+									style="width:295px">
+									<p:commandButton value="#{msg.fdm_system_user_delete_label}" icon="far fa-trash-alt"
+									action="#{systemUserAdmin.isDeleteUser}" style="float:right;margin-right: -5px;"
+										update="addSystemUserForm">
+									</p:commandButton>
+
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:panelGrid>
+
+
+				</h:form>
+
+			</p:panel>
+
+		</p:panel>
+
+	</p:sidebar>
+	
+	<h:form id="assignMobileUser">
+			<p:sidebar id="assignMobileUserDialog" widgetVar="assignMobileUserDialogWidget" position="right" style="width:830px;" baseZIndex="10010">
+				
+ 				<p:panel header="#{msg.fdm_system_user_select_mobile_user_side_bar_label}">
+			
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('assignMobileUserDialogWidget').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+				
+	                <p:panelGrid styleClass="whiteGrid" style="width:100%;">
+	                
+	                <p:row>
+	                <p:column style="width:440px; padding:5px;">
+	                    
+	                    <p:outputPanel style="width: 430px;overflow: auto;display: block">
+	                    	<p:panel header="#{msg.fdm_system_user_workgroup_select_label}" />
+		                    <p:tree id="workgroupSelectTree" value="#{systemUserAdmin.workgroupAssignedRoot}"
+									var="node" filterBy="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc.concat('(').concat(node.id.workgroupCode).concat(')') : node)}" 
+									filterMatchMode="contains" selectionMode="single"
+									selection="#{systemUserAdmin.selectedAssignedWorkgroupNode}">
+									<p:treeNode>
+										<h:outputText value="#{(node['class'].simpleName == 'HPCWorkGroups' ? node.workgroupDesc : node)}" />
+										<h:outputText style="font-size:0.7em;font-style:italic;" value="#{(node['class'].simpleName == 'HPCWorkGroups' ? ' ('.concat(node.id.workgroupCode).concat(')') : '')}" />
+									</p:treeNode>
+									<p:ajax event="select" update="assignMobileUser:userSelectionTree" />
+							</p:tree>
+	                    </p:outputPanel>
+
+						
+	                </p:column>
+	                <p:column style="width:340px; padding:5px;">
+	                	<p:outputPanel style="width: 330px;overflow: auto;display: block">
+	                		<p:panel header="#{msg.fdm_system_user_user_select_label}" />
+							 <p:tree id="userSelectionTree" value="#{systemUserAdmin.userAssignedRoot}"
+									var="userNode" filterMatchMode="contains"
+									filterBy="#{userNode.userName.concat('(').concat(userNode.id.userCode).concat(')')}"
+									selectionMode="single"
+									selection="#{systemUserAdmin.selectedAssigneduserNode}">
+									<p:treeNode>
+										<h:outputText value="#{userNode.userName}" />
+										<h:outputText style="font-size:0.7em;font-style:italic;" value=" (#{userNode.id.userCode})" />
+									</p:treeNode>
+							</p:tree>
+						</p:outputPanel>
+						
+	                </p:column>
+	                </p:row>
+	                
+						
+	                </p:panelGrid>
+	                
+					<f:facet name="footer">
+						
+	                <p:messages id="message" showDetail="false" closable="false">
+					</p:messages>
+					
+	                	<p:commandButton icon="fa fa-save" value="#{msg.fdm_search_dialog_ok_label}" ajax="true" 
+	                	oncomplete="if(!args.validationFailed) {PF('assignMobileUserDialogWidget').hide();}" 
+	                	update=" message" action="#{systemUserAdmin.assignUser}"/>
+	                	
+						<p:commandButton icon="fa fa-remove" value="#{msg.fdm_search_dialog_cancel_label}" onclick="PF('assignMobileUserDialogWidget').hide();" update="message"/>
+						
+						<p:commandButton value="#{msg.fdm_search_dialog_clear_label}" action="#{systemUserAdmin.clearAssignUser}" update="assignMobileUser:userSelectionTree assignMobileUser:workgroupSelectTree message"/>
+						
+	                </f:facet>
+	                
+	            </p:panel>
+
+			</p:sidebar>
+			
+		</h:form>
+
+
+</ui:composition>

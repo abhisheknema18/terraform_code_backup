@@ -1,0 +1,11 @@
+FROM selenium/node-chrome:4.1.2-20220131
+
+USER 1200
+
+#====================================
+# Install the maven files.
+#====================================
+RUN sudo apt update
+RUN sudo apt install -y maven
+
+RUN mvn --version

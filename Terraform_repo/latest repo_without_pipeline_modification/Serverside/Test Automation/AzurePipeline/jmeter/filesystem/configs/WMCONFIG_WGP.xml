@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<GenericWOW xmlns="http://tempuri.org/DataSet1.xsd">
+    <General>
+        <DataSourceType>SQLITE</DataSourceType>
+        <UsercodeDefault>1</UsercodeDefault>
+        <OperatingMode>WM</OperatingMode>
+        <ConcurrentRequestLimit>5</ConcurrentRequestLimit>
+        <DefaultWorkSortField>WorkOrderNo</DefaultWorkSortField>
+        <DefaultEquipSortField>EQUIPNO</DefaultEquipSortField>
+        <NavigationDisplay>IC</NavigationDisplay>
+        <ResAssocCodeValue>[EquipNo]_[EquipClass]_[$USERCODE]_[$USERNAME]</ResAssocCodeValue>
+        <MaxSearchResults>600</MaxSearchResults>
+        <EnableDBDownload>1</EnableDBDownload>
+        <AssetDBArea>$WGCLASSA</AssetDBArea>
+        <DBClassValue>$WGCLASSB</DBClassValue>
+        <EnableWorkBank>0</EnableWorkBank>
+        <WBClassValue>$WGCLASSB</WBClassValue>
+        <EnableValDownload>1</EnableValDownload>
+        <WorkStatusValidationType>SYS_WORKSTATUS</WorkStatusValidationType>
+        <WorkAllocationMode>W</WorkAllocationMode>
+        <TransactionRecording>1</TransactionRecording>
+        <CantDoWorkStatus>REJECTED</CantDoWorkStatus>
+        <CloseWorkStatus>CLOSED</CloseWorkStatus>
+        <RequestTimeout>60000</RequestTimeout>
+        <PollingInterval>5000</PollingInterval>
+        <TPPollingInterval>5000</TPPollingInterval>
+        <WOPollingInterval>5000</WOPollingInterval>
+        <EquipScanField>EquipNo</EquipScanField>
+        <EnableLoginRestart>0</EnableLoginRestart>
+        <HeartbeatFrequency>3600</HeartbeatFrequency>
+        <HeartbeatLocation>0</HeartbeatLocation>
+        <WOReceivedTrans>1</WOReceivedTrans>
+        <GeofenceSignOn>0</GeofenceSignOn>
+        <GeofenceSignOff>0</GeofenceSignOff>
+        <EnableConditionHistory>0</EnableConditionHistory>
+        <EnableOfflineResults>0</EnableOfflineResults>
+        <EnableVirtualAsset>0</EnableVirtualAsset>
+        <EnableWorkHistory>0</EnableWorkHistory>
+        <OperatorRound>0</OperatorRound>
+    </General>
+    <Branding/>
+    <BulkOperationsConfig>
+        <BulkOperations>1</BulkOperations>
+    </BulkOperationsConfig>	
+    <PageDefinition/>
+    <EquipmentObject>
+        <Property>
+            <PropertyName>EquipNo</PropertyName>
+            <Label>Asset Number</Label>
+            <List>1</List>
+            <Detail>1</Detail>
+            <Sort>1</Sort>
+            <Search>1</Search>
+        </Property>
+        <Property>
+            <PropertyName>ParentEquipNo</PropertyName>
+            <Label>Parent Asset Number</Label>
+            <Detail>1</Detail>
+            <Sort>1</Sort>
+            <Search>1</Search>
+        </Property>
+        <Property>
+            <PropertyName>Colour</PropertyName>
+            <Label>Colour</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>EquipDesc2</PropertyName>
+            <Label>Local Name</Label>
+            <List>1</List>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>EquipDesc</PropertyName>
+            <Label>Asset Description</Label>
+            <List>1</List>
+            <Detail>1</Detail>
+            <Sort>1</Sort>
+            <Search>1</Search>
+        </Property>
+        <Property>
+            <PropertyName>EquipStatus</PropertyName>
+            <Label>Equip Status</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>InspectionType</PropertyName>
+            <Label>Inspection Type</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>EquipClass</PropertyName>
+            <Label>Asset Class</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>AltEquipRef</PropertyName>
+            <Label>Asset Type</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>EquipType</PropertyName>
+            <Label>Equipment Type</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Latitude</PropertyName>
+            <Label>Latitude</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Longitude</PropertyName>
+            <Label>Longitude</Label>
+            <Detail>1</Detail>
+        </Property>
+    </EquipmentObject>
+    <WorkOrderObject>
+        <Property>
+            <PropertyName>WorkOrderNo</PropertyName>
+            <Label>Work Order No</Label>
+            <List>1</List>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>WorkOrderDesc</PropertyName>
+            <Label>Work Order Desc</Label>
+            <List>1</List>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>PlanStartDate</PropertyName>
+            <Label>Plan Start Date</Label>
+            <Type>NDATE</Type>
+            <List>1</List>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>WorkGroupCode</PropertyName>
+            <Label>Work Group Code</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>OperationType</PropertyName>
+            <Label>OperationType</Label>
+        </Property>
+        <Property>
+            <PropertyName>ReqFinishDate</PropertyName>
+            <Label>Req Finish Date</Label>
+            <Type>NDATE</Type>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>EquipDesc</PropertyName>
+            <Label>Equip Desc</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Latitude</PropertyName>
+            <Label>Latitude</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Longitude</PropertyName>
+            <Label>Longitude</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>ProgramId</PropertyName>
+            <Label>Program Id</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>WorkOrderId</PropertyName>
+            <Label>Work Order Id</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>UserName</PropertyName>
+            <Label>User Name</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Location</PropertyName>
+            <Label>Location</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Postcode</PropertyName>
+            <Label>Postcode</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>ProjectNo</PropertyName>
+            <Label>Project No</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Stage</PropertyName>
+            <Label>Stage</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>TeamMembers</PropertyName>
+            <Label>Team Members</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Engineer</PropertyName>
+            <Label>Engineer</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>Department</PropertyName>
+            <Label>Department</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>DepartmentType</PropertyName>
+            <Label>Department Type</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>ActivityId</PropertyName>
+            <Label>ActivityId</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>ActivityName</PropertyName>
+            <Label>Activity Name</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>EquipNo</PropertyName>
+            <Label>Equip No</Label>
+            <Detail>1</Detail>
+        </Property>
+        <Property>
+            <PropertyName>WoType</PropertyName>
+            <Label>Work Order Type</Label>
+            <List>1</List>
+            <Detail>1</Detail>
+        </Property>
+    </WorkOrderObject>
+</GenericWOW>

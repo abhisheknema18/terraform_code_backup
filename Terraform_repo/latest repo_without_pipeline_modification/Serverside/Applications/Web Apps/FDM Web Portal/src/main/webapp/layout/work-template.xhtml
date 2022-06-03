@@ -1,0 +1,183 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="main-body">
+		<div id="searchBody">
+			<h:panelGrid columns="2" class="leftTabbed" columnClasses="searchMenuCell,searchPanelCell" style="width:100%">
+				<h:panelGroup id="searchSideMenu" class="leftMenuBorder">
+					<h:form id="sideMenuForm">
+					 	<h:panelGrid columns="1" id="leftMenuVerticalSpacer" style="background:#69A488;padding:.2em;height:39px;width:100%;"> </h:panelGrid>
+						<h:panelGrid columns="1" id="leftMenu" class="leftMenuBorder">
+
+							<!-- <p:commandLink rendered="#{workList.workViewMode == 'LIST'}" action="#{workList.navigate}" value="Search Work" class="leftMenuSelected"/> -->
+
+							<!-- WORK DETAIL OPTIONS -->
+
+							<p:commandLink rendered="#{view.viewId=='/fdm/workdetail.xhtml' and workList.workDetailActiveTab == 0 and fdmenv.workManagement}" 
+								disabled="#{workList.isWorkorderEditable() == false}" 
+								action="#{workList.loadSelectedWorkgroupsAssigned()}" 
+								styleClass="leftMenuSelected" process="editWorkForm:planStartTimeEdit sideMenuForm"
+								oncomplete="PF('editWorkSideBar').show();" 
+								update="leftMenu editWorkForm:editWorkPanel assignWorkForm:workgroupSelectTree assignWorkForm:userSelectionTree msgs" >
+								<i class="leftMenuLinkIcon fa fa-pencil"></i><h:outputText value="#{msg.fdm_work_edit}"  />
+							</p:commandLink>
+							
+							<p:commandLink rendered="#{view.viewId=='/fdm/workdetail.xhtml' and workList.workDetailActiveTab == 0 and fdmenv.workManagement}" 
+								disabled="#{workList.isWorkorderDispatchable() == false}" 
+								action="#{workList.dispatchWork}" 
+								styleClass="leftMenuSelected" 
+								update="leftMenu workDetailForm:detailsTabs msgs" >
+								<i class="leftMenuLinkIcon fa fa-arrow-circle-right"></i><h:outputText value="#{msg.fdm_work_dispatch}" />
+							</p:commandLink>
+								
+							<p:commandLink rendered="#{view.viewId=='/fdm/workdetail.xhtml' and workList.workDetailActiveTab == 0 and fdmenv.workManagement}" 
+								disabled="#{workList.isWorkorderRecallable() == false}" 
+								action="#{workList.setRecallReason(null)}"
+								oncomplete="PF('recallWorkSideBarWidget').show();" 
+								styleClass="leftMenuSelected"
+								update="leftMenu msgs" >
+								<i class="leftMenuLinkIcon fa fa-long-arrow-left"></i><h:outputText value="#{msg.fdm_work_recall}"  />
+							</p:commandLink>
+								
+																
+							<p:commandLink rendered="#{view.viewId=='/fdm/workdetail.xhtml' and workList.workDetailActiveTab == 0 and fdmenv.workManagement}" 
+								disabled="#{workList.isWorkorderCloseApproveable() == false}" 
+								action="#{workList.closeWork}" 
+								styleClass="leftMenuSelected"
+								update="leftMenu workDetailForm:detailsTabs msgs" >
+								<i class="leftMenuLinkIcon fa fa-check"></i><h:outputText value="#{msg.fdm_work_approval}"  />
+							</p:commandLink>
+													
+								
+							<p:commandLink rendered="#{view.viewId=='/fdm/workdetail.xhtml' and workList.workDetailActiveTab == 0 and fdmenv.workManagement}" 
+								disabled="#{workList.isWorkorderReissueable() == false}" 
+								action="#{workList.loadSelectedWorkgroupsAssigned()}" 
+								styleClass="leftMenuSelected"
+								oncomplete="PF('reIssueWorkSideBar').show();" 
+								update="leftMenu reIssueWorkForm:reIssueWorkPanel assignWorkForm:workgroupSelectTree assignWorkForm:userSelectionTree msgs" >
+								<i class="leftMenuLinkIcon fa fa-long-arrow-right"></i><h:outputText value="#{msg.fdm_work_reissue}"  />
+							</p:commandLink>
+								
+
+							<!-- WORK LIST OPTIONS -->
+								
+							<p:commandLink rendered="#{view.viewId=='/fdm/worklist.xhtml' and workList.workViewMode == 'ALLOCATION' and fdmenv.workManagement}" 
+								disabled="#{workList.selectedWorks == null or fn:length(workList.selectedWorks) == 0}" 
+								action="#{workList.loadSelectedWorkgroupsAssigned}" 
+								styleClass="leftMenuSelected" 
+								process="leftMenu"
+								oncomplete="PF('assignWorkDialogWidget').show();" 
+								update="assignWorkForm:workgroupSelectTree assignWorkForm:userSelectionTree" >
+								<i class="leftMenuLinkIcon fa fa-user-plus"></i><h:outputText value="#{msg.fdm_work_assign}"/>
+							</p:commandLink>
+									
+							<p:commandLink rendered="#{view.viewId=='/fdm/worklist.xhtml' and workList.workViewMode == 'ALLOCATION' and fdmenv.workManagement}" 
+								disabled="#{workList.selectedWorks == null or fn:length(workList.selectedWorks) == 0}" 
+								action="#{workList.dispatchWorks(false)}" 
+								styleClass="leftMenuSelected" 
+								process="leftMenu"
+								update="leftMenu searchTab msgs" >
+								<i class="leftMenuLinkIcon fa fa-arrow-circle-right"></i><h:outputText value="#{msg.fdm_work_dispatch}" />
+							</p:commandLink>
+							
+							<p:commandLink rendered="#{view.viewId=='/fdm/userMonitor.xhtml'}" 
+								action="#{userMonitor.searchUserStatus()}" 
+								styleClass="leftMenuSelected" 
+								update="searchTabs:userListResultsForm"
+								process="leftMenu">
+								<i class="fas fa-redo" style="margin-right:5px;"></i><h:outputText value="Refresh" />
+							</p:commandLink>
+								
+								
+							<!-- <p:commandLink rendered="#{view.viewId=='/fdm/worklist.xhtml' and workList.workViewMode == 'ALLOCATION'}" 
+								disabled="#{workList.selectedWorks == null or fn:length(workList.selectedWorks) == 0}" 
+								action="#{workList.loadSelectedWorkgroupsAssigned}" 
+								value="Assign" class="leftMenu" 
+								process="sideMenuForm"
+								oncomplete="PF('assignWorkDialogWidget').show();" 
+								update="assignWorkForm:workgroupSelectTree assignWorkForm:userSelectionTree assignForm:assignDialog" />
+							
+							<p:commandLink rendered="#{view.viewId=='/fdm/worklist.xhtml' and workList.workViewMode =='ALLOCATION'}" 
+								disabled="#{workList.selectedWorks == null or fn:length(workList.selectedWorks) == 0}" 
+								action="#{workList.dispatchWork}" 
+								value="Dispatch" 
+								class="leftMenu" 
+								process="sideMenuForm"
+								update="searchTabs:workListResultsForm:workListTable msgs">
+							
+								<p:confirm header="Dispatch Confirm" message="#{msg.fdm_confirm_recall}" icon="ui-icon-blank" />
+							</p:commandLink>
+
+					
+							<p:commandLink rendered="#{view.viewId=='/fdm/workdetail.xhtml' and workList.workViewMode == 'LIST'}" 
+								disabled="#{workList.isWorkorderEditable() == false}" 
+								action="#{workList.switchEditDetailMode}" 
+								value="Edit" 
+								class="leftMenu"
+								oncomplete="PF('editWorkSideBar').show();" 
+								update="leftMenu editWorkForm:editWorkPanel editWorkForm:workgroupSelectTree editWorkForm:userSelectionTree msgs" />
+
+							<p:commandLink rendered="#{view.viewId=='/fdm/worklist.xhtml' and workList.workViewMode == 'LIST'}" 
+								disabled="#{workList.selectedWorks == null or fn:length(workList.selectedWorks) == 0}" 
+								action="#{workList.recallWork}" 
+								value="Recall" 
+								class="leftMenu"
+								process="sideMenuForm"
+								update="searchTabs:workListResultsForm:workListTable msgs" >
+
+								<p:confirm header="Recall Confirm" message="#{msg.fdm_confirm_recall}" icon="ui-icon-blank" />
+
+							</p:commandLink>
+
+
+							<p:commandLink rendered="#{view.viewId=='/fdm/worklist.xhtml' and workList.workViewMode == 'LIST'}" 
+								disabled="#{workList.selectedWorks == null or fn:length(workList.selectedWorks) == 0}" 
+								action="#{workList.loadSelectedWorkgroupsAssigned}" 
+								value="Re-Assign" 
+								class="leftMenu" 
+								oncomplete="PF('assignWorkDialogWidget').show();" 
+								update="assignWorkForm:workgroupSelectTree assignWorkForm:userSelectionTree assignForm:assignDialog" />
+								
+								
+								
+								
+							<p:commandLink rendered="#{view.viewId=='/fdm/workdetail.xhtml' and workList.workViewMode == 'CLOSE_APPROVE'}" 
+								action="#{workList.loadSelectedWorkgroupsAssigned}" 
+								value="Re-Assign" 
+								class="leftMenu" 
+								oncomplete="PF('assignWorkDialogWidget').show();" 
+								update="" />
+								
+							<p:commandLink rendered="#{view.viewId=='/fdm/workdetail.xhtml' and workList.workViewMode == 'CLOSE_APPROVE'}" 
+								action="#{workList.closeWorkBegin()}" 
+								value="Close" 
+								class="leftMenu" 
+								oncomplete="#{workList.fieldClosedResults.size() > 0 ?  'PF(\'closeWorkDialogWidget\').show();' : ''}" 
+								update="@this closeWorkForm:closeWorkDialog workDetailForm:detailsTabs" >
+								
+								<p:confirm header="Close Confirm" message="#{msg.fdm_confirm_recall}" icon="ui-icon-blank" />
+								
+							</p:commandLink> -->
+
+						</h:panelGrid>
+						
+						
+					</h:form>
+				</h:panelGroup>
+				<h:panelGroup id="searchBodyContent" styleClass="searchBodyContent">
+					<h:panelGrid columns="1" id="detailsPanel" width="100%">
+						<ui:insert name="work-body"/>
+					</h:panelGrid>			   
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,79 @@
+trigger:
+  branches:
+    include:
+      - develop
+      - features/staging/developHoldingBranch
+      - main
+      - mainTest
+  paths:
+    include:
+      - 'Applications/Service Apps/Geofield_Exchange/'
+    exclude:
+      - 'Applications/Service Apps/Geofield_Exchange/azure-ci.yml'
+      - 'Applications/Service Apps/Geofield_Exchange/azure-cd.yml'
+
+pool:
+  vmImage: 'windows-latest'
+
+name: $(TeamProject)_$(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+  solutionFile: 'Applications\Service Apps\Geofield_Exchange\GeofieldExchange.sln'
+
+stages:
+  - stage: BuildTestPublishArtifact
+    displayName: Build - Test - Publish Artifact
+    jobs:
+      - job: Build
+        steps:
+          - checkout: self
+            submodules: true
+            persistCredentials: true
+
+          - task: NuGetToolInstaller@1
+            displayName: 'Install NuGet'
+
+          - task: NuGetCommand@2
+            displayName: 'Restore NuGet packages'
+            inputs:
+              command: 'restore'
+              restoreSolution: '$(solutionFile)'
+              feedsToUse: 'select'
+              vstsFeed: '5dd57cd6-f3d8-4554-8c2c-ecbbfc29ed9f'
+
+          - task: gitversion/setup@0
+            displayName: 'Git Version (Setup)'
+            inputs:
+              versionSpec: '5.x'
+
+          - task: gitversion/execute@0
+            displayName: 'Git Version (Execute)'
+            inputs:
+              useConfigFile: true
+              configFilePath: 'Applications/Service Apps/Geofield_Exchange/GitVersion.yml'
+              updateProjectFiles: false
+              additionalArguments: '/Verbosity Minimal /updateassemblyinfo'
+
+          - task: VSBuild@1
+            displayName: 'Build Geofield Exchange Solution'
+            inputs:
+              solution: '$(solutionFile)'
+              msbuildArgs: '/m:1'
+              restoreNugetPackages: true
+
+          - task: ArchiveFiles@2
+            displayName: 'ZIP bin directory'
+            inputs:
+              rootFolderOrFile: 'Applications\Service Apps\Geofield_Exchange\GeofieldExchange\bin\'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/Geofield Exchange (Incrementals and Packaging) $(FULLSEMVER).zip'
+              replaceExistingArchive: true
+              verbose: true
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish artifacts'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'

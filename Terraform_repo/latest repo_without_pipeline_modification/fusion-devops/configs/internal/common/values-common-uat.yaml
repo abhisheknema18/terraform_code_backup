@@ -1,0 +1,30 @@
+# Default values for Tenant.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+secrets:
+  userAssignedIdentityID: "b4c4bf9f-863e-4377-94c1-9033cfad1727" # VMSS identity id
+  useVMManagedIdentity: true
+  usePodIdentity: false
+# Enter azure cloud resources here along with the name of the Vault to pull secrets from
+azure:
+  resourceGroup: "rg-glb-uat-shared" # [REQUIRED for version < 0.0.4] the resource group of the KeyVault
+  subscriptionId: "355afcaa-c2a3-43f0-9b97-cdf99af5ce11" # [REQUIRED for version < 0.0.4] the subscription ID of the KeyVault
+  tenantId: "a73aacc0-8b97-4e3e-b2b3-c6e59f0b7a9b" #Updated # the tenant ID of the AD
+  keyvaultName: "kv-web-uat-uksouth"
+ 
+labels:
+  tenant: internal
+  
+deployment:
+  configChecksum: true
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+  containers:
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - all
+        add: [ "NET_BIND_SERVICE", "SYS_TIME" ]

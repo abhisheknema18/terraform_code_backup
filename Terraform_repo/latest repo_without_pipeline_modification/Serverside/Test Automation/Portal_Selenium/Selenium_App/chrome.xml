@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="FieldSmart FDM Portal Test Suite Chrome" >
+	<parameter name="browsername" value="Chrome" />
+	<test name="FieldSmart Portal Tests - Admin User">
+		<parameter name="username" value="croninm@amt-sybex.com"/>
+		<parameter name="password" value="Fus10n@mt"/>
+ 		<classes>
+			<class name="AccessSharedToken.GenerateAccessToken">
+			<methods>
+				<exclude name="VerifyAccessForNonAdminUsers" />
+			</methods>
+			</class>
+			<class name="AccessSharedToken.AccessTokenList">
+			</class>
+			<class name="SystemUsers.EditSystemUser">
+			</class>
+			<class name="UserInvitation.CreateMobileUserInvite">
+			<methods>
+					<exclude name="VerifyVisibleWorkgroups" />
+				</methods>
+			</class>
+			<class name="UserInvitation.ViewMobileUserInvitation">
+				<methods>
+					<exclude name="VerifyVisibleInvitationsForWGAdminUSer" />
+				</methods>
+			</class>
+			<class name="UserInvitation.ViewSystemUserInvitation">
+			</class>
+			<class name="UserInvitation.CreateSystemUserInvite">
+			</class>
+			<class name="UserInvitation.ProcessSystemUserInvitationURL">
+			</class>
+			<class name="ConfigurationFile.ConfigurationFiles">
+			</class>
+		</classes>
+	</test>
+	<test name="FieldSmart Portal Tests - Work Group Admin User">
+		<parameter name="username"
+			value="trisha.quinn@amt-sybex.com" />
+		<parameter name="password" value="P@ssw0rd23" />
+		<classes>
+			<class name="UserInvitation.CreateMobileUserInvite">
+			<methods>
+					<include name="VerifyVisibleWorkgroups" />
+				</methods>
+			</class>
+			<class name="UserInvitation.ViewMobileUserInvitation">
+				<methods>
+					<include name="VerifyVisibleInvitationsForWGAdminUSer" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="FieldSmart Portal Tests - Non Admin User">
+		<parameter name="username"
+			value="Abhishek.Patil2@capita.com" />
+		<parameter name="password" value="Sybex101" />
+		<classes>
+			<class name="AccessSharedToken.GenerateAccessToken">
+				<methods>
+					<include name="VerifyAccessForNonAdminUsers" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+</suite> 

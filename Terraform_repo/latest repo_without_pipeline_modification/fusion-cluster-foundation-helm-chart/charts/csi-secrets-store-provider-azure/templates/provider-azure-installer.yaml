@@ -1,0 +1,122 @@
+{{- if .Values.linux.enabled}}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ template "sscdpa.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+{{ include "sscdpa.labels" . | indent 2 }}
+spec:
+  updateStrategy:
+{{ toYaml .Values.linux.updateStrategy | indent 4 }}
+  selector:
+    matchLabels:
+      app: {{ template "sscdpa.name" . }}
+  template:
+    metadata:
+{{ include "sscdpa.labels" . | indent 6 }}
+{{- if .Values.linux.podLabels }}
+{{- toYaml .Values.linux.podLabels | nindent 8 }}
+{{- end }}
+{{- if or .Values.linux.podAnnotations .Values.Azure.proxySettings.isProxyEnabled }}
+      annotations:
+{{- if .Values.linux.podAnnotations}}
+{{- toYaml .Values.linux.podAnnotations | nindent 8 }}
+{{- end }}
+# this will ensure pods are rolled in next helm upgrade if cert files are updated.
+{{- if .Values.Azure.proxySettings.isProxyEnabled }}
+        checksum/arc-proxy-config: {{ include (print $.Template.BasePath "/arc-proxy-secret.yaml") . | sha256sum }}
+{{- end }}
+{{- end }}
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      serviceAccountName: csi-secrets-store-provider-azure
+      hostNetwork: true
+      containers:
+        - name: provider-azure-installer
+          image: "{{ .Values.linux.image.repository }}:{{ .Values.linux.image.tag }}"
+          imagePullPolicy: {{ .Values.linux.image.pullPolicy }}
+          args:
+            - --endpoint=unix:///provider/azure.sock
+            {{- if .Values.logFormatJSON }}
+            - --log-format-json={{ .Values.logFormatJSON }}
+            {{- end }}
+            {{- if .Values.logVerbosity }}
+            - -v={{ .Values.logVerbosity }}
+            {{- end }}
+            {{- if .Values.constructPEMChain }}
+            - --construct-pem-chain={{ .Values.constructPEMChain }}
+            {{- end }}
+            {{- if .Values.linux.customUserAgent }}
+            - --custom-user-agent={{ .Values.linux.customUserAgent }}
+            {{- end }}
+            - --healthz-port={{ .Values.linux.healthzPort }}
+            - --healthz-path={{ .Values.linux.healthzPath }}
+            - --healthz-timeout={{ .Values.linux.healthzTimeout }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.linux.healthzPath }}
+              port: {{ .Values.linux.healthzPort }}
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+            periodSeconds: 30
+          resources:
+{{ toYaml .Values.linux.resources | indent 12 }}
+          securityContext:
+          {{- if not .Values.linux.privileged }}
+            allowPrivilegeEscalation: false
+          {{- end }}
+            readOnlyRootFilesystem: true
+            runAsUser: 0
+            capabilities:
+              drop:
+              - ALL
+          {{- if .Values.linux.privileged }}
+            privileged: true
+          {{- end }}
+          {{- if .Values.Azure.proxySettings.isProxyEnabled }}
+          envFrom:
+            - secretRef:
+                name: arc-proxy-config
+          {{- end }}
+          volumeMounts:
+            - name: provider-vol
+              mountPath: /provider
+            {{- if .Values.linux.volumeMounts }}
+            {{- toYaml .Values.linux.volumeMounts | nindent 12 }}
+            {{- end}}
+            {{- if  and .Values.Azure.proxySettings.isProxyEnabled .Values.Azure.proxySettings.proxyCert }}
+            - mountPath: /etc/ssl/certs/proxy-cert.crt
+              subPath: proxy-cert.crt
+              name: proxy-certstore
+            {{- end }}
+      affinity:
+{{ toYaml .Values.linux.affinity | indent 8 }}
+      {{- if .Values.linux.priorityClassName }}
+      priorityClassName: {{ .Values.linux.priorityClassName | quote }}
+      {{- end }}
+      volumes:
+        - name: provider-vol
+          hostPath:
+            path: {{ .Values.linux.providersDir }}
+        {{- if .Values.linux.volumes }}
+        {{- toYaml .Values.linux.volumes | nindent 8 }}
+        {{- end}}
+        {{- if  and .Values.Azure.proxySettings.isProxyEnabled .Values.Azure.proxySettings.proxyCert }}
+        - name: proxy-certstore
+          secret:
+            secretName: arc-proxy-cert
+        {{- end }}
+      nodeSelector:
+        kubernetes.io/os: linux
+{{- if .Values.linux.nodeSelector }}
+{{- toYaml .Values.linux.nodeSelector | nindent 8 }}
+{{- end }}
+{{- with .Values.linux.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- end -}}

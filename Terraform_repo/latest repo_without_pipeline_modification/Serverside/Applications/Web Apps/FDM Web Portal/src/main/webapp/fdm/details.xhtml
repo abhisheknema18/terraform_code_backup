@@ -1,0 +1,1126 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/details-template.xhtml">
+
+	<ui:param name="bean" value="#{searchResults}" />
+	
+	<ui:define name="details-body">
+	
+	<style>
+	 table .ui-datatable tbody td:ui-widget-content{
+	 	border-bottom: 1px solid #dddddd;
+	}
+	.ui-dialog-title{
+		width:100%
+	}    
+	
+	.ui-datepicker {
+		top: 145px !important;
+	}
+	
+	.multiPickEditResponse .ui-state-highlight .ui-icon {
+	background-image:
+		url('#{request.contextPath}/javax.faces.resource/images/ui-icons_333333_256x240.png.xhtml?ln=primefaces-bootstrap')
+		!important;
+	}
+	.assoResultsTable{
+		border: 1px solid lightgrey !important;
+		
+	}
+	
+	.fa-circle-hidden.fullwidth:before {
+  		content: "\f111\f111\f111\f111\f111\f111\f111\f111\f111\f111";                               
+	}
+
+
+	</style>
+		<script>
+			$(document).ready(notesRowExpander);
+			
+			function notesRowExpander() {
+				var $this = PF('resultSetTableVar');
+				$this.tbody.off('click.datatable-expansion',
+						'.notesTag').on(
+						'click.datatable-expansion',
+						'.notesTag',
+						null,
+						function() {
+							$this.toggleExpansion($(this).find(
+									'div.ui-row-toggler'));
+						});
+			}
+			
+		</script>
+		<h:form id="detailsForm">
+			<div id="navigationContainer" class="resultNavigationContainer">
+				<div id="navigation" class="resultNavigation">
+				
+					<p:commandLink id="dynaButton" styleClass="resultNavigationButton fa fa-download" />
+					    <p:menu overlay="true" trigger="dynaButton" my="left top" at="left bottom">
+					        <p:menuitem value="Word" icon="fa fa-file-word" ajax="false">
+					        	<p:fileDownload value="#{details.extractScriptResult(false)}" />
+					        </p:menuitem>
+					       	<p:menuitem value="PDF" icon="fa fa-file-pdf" ajax="false" >
+						       	<p:fileDownload value="#{details.extractScriptResult(true)}" />
+					       	</p:menuitem>
+					    </p:menu>
+					    
+					<p:commandLink id="nonAjax"
+						action="#{searchResults.navigateReturn}" update="@all"
+						title="Return to List" styleClass="resultNavigationButton fa fa-list" />
+
+					<p:commandLink id="prevNav" oncomplete="notesRowExpander()"
+						rendered="#{searchResults.isReturnToMultiView() != true}"
+						styleClass="resultNavigationButton fa fa-arrow-left"
+						action="#{searchResults.navigatePrevious()}"
+						disabled="#{not searchResults.previous}"
+						title="Previous"
+						update="@this nextNav detailsTab searchSideMenu detailsForm:returnIdPanel" />
+
+					<p:commandLink id="nextNav" oncomplete="notesRowExpander()"
+						rendered="#{searchResults.isReturnToMultiView() != true}"
+						styleClass="resultNavigationButton fa fa-arrow-right"
+						action="#{searchResults.navigateNext()}"
+						disabled="#{not searchResults.next}"
+						update="@this prevNav detailsTab searchSideMenu detailsForm:returnIdPanel" execute="@page"
+						title="Next"
+						event="click" />
+
+				</div>
+			</div>
+			<p:panel id="returnIdPanel" style="height:1px">
+			<div style="text-align:right" id="returnScriptId">
+					<h:outputText styleClass="returnIdCls" value="#{details.script.id}"/>
+			</div>
+			</p:panel>
+			<p:panel id="detailsTab">
+				<!-- activeIndex="#{search.activeTab}" -->
+				<h:panelGrid columns="2" width="100%">
+
+					<h:panelGrid columns="2"
+						rendered="#{not empty details.script.workOrderNo}">
+						<h:outputLabel for="workOrderDescription"
+							value="#{msg.fdm_details_work_order_description_label}" />
+						<h:outputText id="workOrderDescription"
+							value="#{details.script.workOrderDesc}" styleClass="headerText" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="2"
+						rendered="#{not empty details.script.workOrderNo}">
+						<h:outputLabel for="workOrderNo"
+							value="#{msg.fdm_details_work_order_no_label}" />
+						<h:outputText id="workOrderNo"
+							value="#{details.script.workOrderNo}" styleClass="headerText" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="3"
+						rendered="#{not empty details.script.workOrderNo or not empty details.script.equipNo}">
+						<h:outputLabel for="equipmentDescription"
+							value="#{msg.fdm_details_equipment_description_label}" />
+						<h:outputText id="equipmentDescription"
+							value="#{details.script.equipDesc}" styleClass="headerText"/>
+						<p:commandLink id="detailAssetQuickViewBtn" rendered="#{details.equipmentInformation.equipmentData!=null}"
+						onclick="PF('assetViewWidgetVar').show();"
+						update=	"assetDialogViewId:assetViewPanel"
+						style="padding:5px;line-height:25px"
+						>
+								<i class="fas fa-search" alt="edit" ></i>
+							</p:commandLink>
+							<p:tooltip for="detailAssetQuickViewBtn" value="#{msg.fdm_quick_view_tool_tip}"></p:tooltip>
+					</h:panelGrid>
+
+					<h:panelGrid columns="2"
+						rendered="#{empty details.script.workOrderNo and empty details.script.equipNo}">
+						<h:outputLabel for="summaryDescription"
+							value="#{msg.fdm_details_summary_description_label}" />
+						<h:outputText id="summaryDescription"
+							value="#{details.script.summaryDesc}" styleClass="headerText" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="2">
+						<h:outputLabel for="resultStatus"
+							value="#{msg.fdm_details_result_status_label}" />
+						<h:outputText id="resultStatus"
+							value="#{details.script.resultStatus}" styleClass="headerText" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="2">
+						<h:outputLabel for="scriptDescription"
+							value="#{msg.fdm_details_script_description_label}" />
+						<h:outputText id="scriptDescription"
+							value="#{details.scriptDescription}" styleClass="headerText" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="2">
+						<h:outputLabel value="#{msg.fdm_details_completed_label}" />
+						<h:panelGroup styleClass="headerText">
+							<h:outputText id="completedDate" value="#{details.completeDate}">
+								<f:convertDateTime dateStyle="medium" />
+							</h:outputText>
+							<h:outputText id="completedTime" value="#{details.completeTime}"
+								styleClass="dateTimeText" />
+						</h:panelGroup>
+					</h:panelGrid>
+
+					<h:panelGrid columns="2">
+						<h:outputLabel for="user" value="#{msg.fdm_details_user_label}" />
+						<h:outputText id="user" value="#{details.script.hpcUser.userName}"
+							styleClass="headerText" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="2">
+						<h:outputLabel for="deviceId"
+							value="#{msg.fdm_details_device_id_label}" />
+						<h:outputText id="deviceId" value="#{details.script.deviceId}"
+							styleClass="headerText" />
+					</h:panelGrid>
+				</h:panelGrid>
+				<h:panelGrid id="resultSetTablePnl" columns="1" width="100%"
+					styleClass="resultSetTable">
+					<p:accordionPanel activeIndex="-2" cache="false" multiple="true"
+						id="resultNoteAcc">
+					    <p:tab title="#{msg.fdm_result_notes_title} (#{details.resultNotes.size()})">
+
+							<p:dataTable id="scriptResultNotes" value="#{details.resultNotes}" var="notes" rowKey="#{notes.id}" resizableColumns="true" emptyMessage="No notes found" styleClass = "listHighLightTableCls">
+								<p:column headerText="#{msg.fdm_result_note_label}" styleClass="noteText">
+									<h:outputText value="#{notes.noteText}" />
+								</p:column>
+								<p:column headerText="#{msg.fdm_result_user_name_label}" styleClass="userNamecls">
+									<h:outputText value="#{notes.id.createUser}" />
+								</p:column>
+								<p:column headerText="#{msg.fdm_result_date_label}" styleClass ="dateField">
+									<h:outputText value="#{func:intToDate(notes.id.createDate)}">
+										<f:convertDateTime dateStyle="medium" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="#{msg.fdm_result_time_label}" styleClass = "dateField">
+									<h:outputText value="#{func:parseTime(notes.id.createTime)}" />
+								</p:column>
+								<p:column styleClass="noteButton">
+									<f:facet name="header">
+										<p:commandLink id="addNotes" icon="far fa-plus-square"
+											update="resultNotesAddForm:resultNotesAdd"
+											oncomplete="PF('resultNotesAddWidget').show();"
+											disabled="#{!fdmenv.resultNotesView}">
+											<f:setPropertyActionListener value="true"
+												target="#{details.addResultNotesFlag}" />
+												<i class="far fa-plus-square" alt="edit" style="font-size : 1.2em;"></i>
+										</p:commandLink>
+										<p:tooltip for="addNotes" value="#{msg.fdm_add_note_tool_tip}"></p:tooltip>
+									</f:facet>
+									<p:panelGrid columns="2">
+										<p:commandLink id="editNotes" update="resultNotesAddForm:resultNotesAdd"
+											oncomplete="PF('resultNotesAddWidget').show();"
+											disabled="#{notes.id.createUser ne details.username or !fdmenv.resultNotesView}">
+											<f:setPropertyActionListener value="#{notes}"
+												target="#{details.selectedResultNotes}" />
+											<f:setPropertyActionListener value="false"
+												target="#{details.addResultNotesFlag}" />
+												<i class="far fa-edit" alt="edit"></i>
+										<p:tooltip for="editNotes" value="#{msg.fdm_edit_note_tool_tip}"></p:tooltip>
+										</p:commandLink>
+										
+									<p:commandLink id="deleteNotes"
+										oncomplete="PF('deleteDialogVar').show();"
+										disabled="#{notes.id.createUser ne details.username or !fdmenv.resultNotesView}"
+										update="resultNotesAddForm">
+										<f:setPropertyActionListener value="#{notes}"
+											target="#{details.selectedResultNotes}" />
+										<f:setPropertyActionListener value="#{notes.noteText}"
+											target="#{details.addResNotes}" />
+											<i class="far fa-trash-alt" alt="add"></i>
+											
+									<p:tooltip for="deleteNotes" value="#{msg.fdm_delete_note_tool_tip}"></p:tooltip>
+									</p:commandLink>
+									
+									</p:panelGrid>
+								</p:column>
+							</p:dataTable>
+						</p:tab>
+						
+					    <!--39979 - Script Results Status History Start -->	
+						 <p:tab title="#{msg.fdm_result_status_history_title_label} (#{details.resultHistoryStatusLog.size()})" id = "statusHistoryTab">
+							<p:dataTable id="statusHistoryId" value="#{details.resultHistoryStatusLog}" var="statusHistory" resizableColumns="true" emptyMessage="No status history found" styleClass="statusHistoryCls listHighLightTableCls">
+								 <p:column headerText="#{msg.fdm_result_status_history_header_status}" styleClass = "statusCls">
+									<h:outputText value="#{statusHistory.id.resultStatus}"/>
+								</p:column>
+								 <p:column headerText="#{msg.fdm_result_date_label}" styleClass = "dateField">
+									<h:outputText value="#{func:intToDate(statusHistory.id.aquiredDate)}" >
+										<f:convertDateTime dateStyle="medium" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="#{msg.fdm_result_time_label}" styleClass = "dateField">
+									<h:outputText value="#{func:parseTime(statusHistory.id.aquiredTime)}">
+									</h:outputText>
+								</p:column>
+								<p:column headerText="#{msg.fdm_result_user_name_label}" styleClass = "userNameCls">
+									<h:outputText value="#{statusHistory.systemUsers != null ? statusHistory.systemUsers.userName : statusHistory.userCode}" />
+								</p:column>
+							</p:dataTable>
+						</p:tab>
+						<!--39979 - Script Results Status History End -->
+						
+						<!--40434 - Additional Information start -->	
+						 <p:tab title="Additional Information (#{details.additionalInfo.size()})" id = "additionalInformationTab" rendered="#{details.additionalInfo.size()!=0}">
+							<p:dataTable id="additionalInformationId" value="#{details.additionalInfo}" var="additionalInfo" resizableColumns="true" 
+							styleClass="additionalInfoCls">
+								
+								 <p:column headerText="Item" styleClass="fieldNameCls" sortOrder="asc">
+									<h:outputText value="#{details.getLabelForCarryThroughRes(additionalInfo)}"/>
+								</p:column>
+								
+								 <p:column headerText="Value" styleClass = "fieldValueCls">
+									<h:outputText value="#{additionalInfo.fieldValue}" >
+										<f:convertDateTime dateStyle="medium" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</p:tab>
+						<!--40434 - Additional Information End -->
+						
+						<!--FDE060 -KN - Associated Results start -->
+						<p:tab title="Associated Results (#{details.assoScriptResults.size()})" id="assoTab" rendered="#{details.assoScriptResults.size() > 0}">
+							<p:dataTable value="#{details.assoScriptResults}" var="assoRes" resizableColumns="true" scrollHeight="150" scrollable="true"
+								styleClass="assoResultsTable" style="width:100%">
+
+								<p:column headerText="Date" styleClass="dateField"
+									sortBy="#{func:intToDate(assoRes.completeDate)}">
+									<h:outputText value="#{func:intToDate(assoRes.completeDate)}">
+									<f:convertDateTime dateStyle="medium" />
+									</h:outputText>
+								</p:column>
+
+								<p:column headerText="Work Order" style="width:100px"
+									sortBy="#{assoRes.workOrderNo}" styleClass="word-wrap">
+									<h:outputText value="#{assoRes.workOrderNo}" />
+								</p:column>
+
+								<p:column headerText="Work Order Description" style="width:20%;"
+									sortBy="#{assoRes.workOrderDesc}" styleClass="word-wrap">
+									<h:outputText value="#{assoRes.workOrderDesc}" />
+								</p:column>
+
+								<p:column headerText="Equipment Description" style="width:15%;"
+									sortBy="#{assoRes.equipDesc}" styleClass="word-wrap">
+									<h:outputText value="#{assoRes.equipDesc}" />
+								</p:column>
+
+								<p:column headerText="Equipment Reference" style="width:10%;"
+									sortBy="#{assoRes.altEquipRef}" styleClass="word-wrap">
+									<h:outputText value="#{assoRes.altEquipRef}" />
+								</p:column>
+
+								<p:column style="width:15%;" headerText="#{msg.fdm_search_results_script_code_label}"
+									sortBy="#{assoRes.scriptVersions.script.scriptCode.concat('/').concat(assoRes.scriptVersions.versionNumberInt)}">
+									<h:outputText value="#{assoRes.scriptVersions.script.scriptCode}" />
+									<h:outputText value="/#{assoRes.scriptVersions.versionNumberInt}"
+										style="color:grey" />
+								</p:column>
+
+								<p:column headerText="Script Description" style="width:15%;"
+									sortBy="#{assoRes.script.scriptDesc}" styleClass="word-wrap">
+									<h:outputText value="#{assoRes.scriptVersions.script.scriptDesc}" />
+								</p:column>
+
+								<p:column headerText="User" style="width:13%;"
+									sortBy="#{assoRes.completeUser}" styleClass="word-wrap">
+									<h:outputText value="#{assoRes.completeUser}" />
+								</p:column>
+
+								<p:column headerText="Status" style="width:12%;"
+									sortBy="#{assoRes.resultStatus}" styleClass="word-wrap">
+									<h:outputText value="#{assoRes.resultStatus}" />
+								</p:column>
+
+								<p:column styleClass="tableIcon">
+									<p:commandLink id="assoResQuickViewBtn" action="#{detailsQuickView.initialise(assoRes)}"
+										update="resultQuickViewForm:detailDialog"
+										oncomplete="PF('detailDialog').show();">
+										<i class="fa fa-search" alt="Quick View"></i>
+									</p:commandLink>
+									<p:tooltip for="assoResQuickViewBtn" value="#{msg.fdm_quick_view_tool_tip}"></p:tooltip>
+								</p:column>
+
+
+							</p:dataTable>
+						</p:tab>
+						<!--FDE060 - KN - Associated Results End -->
+						
+					</p:accordionPanel>
+					
+                    
+                    
+					<p:spacer width="300" height="20" />
+					
+					<h:panelGrid columns="2" style="float:right; margin-bottom:10px" cellpadding="5">
+        				<h:outputText value="#{msg.fdm_details_script_question_toggle}" style="padding-right:5px; line-height:24px;"/>
+						<p:toggleSwitch id="showAll" value="#{details.showAllQuestions}">
+							<p:ajax update="resultSetTable" oncomplete="notesRowExpander()"/>
+						</p:toggleSwitch>
+					</h:panelGrid>
+					
+					<p:dataTable id="resultSetTable" value="#{details.answers}"
+						var="result" rowIndexVar="resultTableRowInd"
+						rowStyleClass="#{result.heading ? ( details.showAllQuestions or result.isHasAnsweredQuestions() ? 'heading' : 'hideRow') : (result.endMarker ? 'endMarker' : (result.answered ? 'answered' :(details.showAllQuestions ? 'notAnswered' : 'hideRow'))) }"
+						resizableColumns="true" selectionMode="single"
+						selection="#{details.highlightedAnswer}" rowKey="#{result.id}" widgetVar="resultSetTableVar">
+						
+						<p:column headerText="#{msg.fdm_details_script_header_label}"
+							styleClass="script">
+							<h:outputText value="#{result.script}" />
+						</p:column>
+						<p:column headerText="#{msg.fdm_details_response_header_label}"
+							styleClass="response" style="#{result.bitmap or result.photograph ? 'text-align: center;' : 'text-align: left;'}" rendered="#{result.responseType eq 'OK' and !result.viewPII}">
+							<h:outputText value="#{result.extendedResponse != null ? result.response.concat(result.extendedResponse) : result.response}"
+								rendered="#{not result.bitmap and not result.photograph and not result.date and not result.multiPickList}" styleClass = "#{result.taskListItems != null ? 'taskItemList' : ''  }"
+								style="#{result.ootFlag != 0 ? result.otCol : result.colorMap.get(result.response)}"> 
+							</h:outputText>
+							
+							<h:outputText value="(#{result.uom})" rendered="#{result.uom != null}" style="padding-left:5px"/>
+
+							<p:panelGrid rendered="#{result.multiPickList and result.responseType ne 'OK'}">
+								<p:row>
+									<h:outputText value="#{result.response}" />
+								</p:row>
+							</p:panelGrid>
+							<p:panelGrid rendered="#{result.multiPickList and result.responseType eq 'OK'}">
+								<p:row>
+									<ul class="multipickList">
+	
+										<li><h:outputText value="#{result.response}" style="#{result.colorMap.get(result.response)}"/></li>
+	
+										<ui:repeat value="#{result.multiPickListItems}"
+											var="countMulti">
+											<li ><h:outputText value="#{countMulti.id.response}" style="#{result.colorMap.get(countMulti.id.response)}"/></li>
+										</ui:repeat>
+	
+									</ul>
+								</p:row>
+							</p:panelGrid>
+
+							<p:panelGrid rendered="#{result.taskListItems != null and result.responseType ne 'OK'}">
+								<p:row>
+									<h:outputText value="#{result.response}" style="#{result.colorMap.get(result.response)}"/>
+								</p:row>
+							</p:panelGrid>
+							<p:panelGrid rendered="#{result.taskListItems != null and result.responseType eq 'OK'}">
+								<p:row>
+									<ul class="multipickList">
+										<ui:repeat value="#{result.taskListItems}" var="countItem">
+											<li class="#{countItem.task.taskCompleteCode == 'TC' ?  'taskListComplete' : 'taskListNotComplete'}">
+											<h:outputText value="#{countItem.task.taskDesc}"  style = "#{result.colorMap.get(countItem.task.taskDesc)}"/></li>
+										</ui:repeat>
+									</ul>
+								</p:row>
+							</p:panelGrid>
+
+							<h:outputText value="#{result.dateValue}"
+								rendered="#{result.date}">
+								<f:convertDateTime dateStyle="medium" />
+							</h:outputText>
+							<h:commandLink rendered="#{result.bitmap}" target="_blank"
+								action="image.xhtml">
+								<f:setPropertyActionListener
+									target="#{details.selectedAnswer.activeImage}"
+									value="#{result.base64Bitmap}" />
+								<h:graphicImage value="#{result.base64Bitmap}"
+									rendered="#{result.bitmap}" />
+							</h:commandLink>
+							<h:commandLink rendered="#{result.photograph}" target="_blank"
+								action="image.xhtml">
+								<f:setPropertyActionListener
+									target="#{details.selectedAnswer.activeImage}"
+									value="#{result.base64Photograph}" />
+								<h:graphicImage value="#{result.base64Photograph}"
+									rendered="#{result.photograph and result.responseType eq 'OK'}" />
+							</h:commandLink>
+							<p:commandLink value="Play #{result.video ? 'Video' : 'Audio'}"
+								oncomplete="PF('audioVideoDialogVar').show();"
+								action="#{details.setSelectedAnswer(result)}"
+								rendered="#{(result.video or result.audio) and result.responseType eq 'OK'}"
+								update="audioVideoDialogForm:audioVideoDialog"
+								icon="#{result.video ? 'far fa-video' : 'far fa-microphone'}">
+								<f:setPropertyActionListener target="#{details.videoTag}"
+									value="#{result.video}" />
+							</p:commandLink>
+						</p:column>
+						<p:column rendered="#{result.responseType eq 'OK' and result.viewPII}">
+						<div style="#{result.answered ? '' : 'display:none;'}">
+							<i class="fas fa-circle-hidden fa-xs fullwidth" style="color:#666; border-color:#666;padding-top: 5px;}" aria-hidden="true"></i>
+						</div>		
+						</p:column>
+						<p:column rendered="#{result.responseType ne 'OK'}" headerText="#{msg.fdm_details_response_header_label}"
+							styleClass="response">
+							<h:outputText value="#{result.responseType}" />
+						</p:column>
+						 <p:column headerText="#{msg.fdm_details_free_text_header_label}"
+                            styleClass="freeText" style="border-right: none;height:1px;">
+                            
+                            <div style="#{result.freeText != null and result.freeText != '' ? '' : 'display:none;'}">
+                                <i class="fa fa-circle-hidden fa-xs fullwidth" style="#{result.responseType eq 'OK' and result.viewPII ? 'color:#666; border-color:#666;padding-top: 5px;' : 'display:none;'}" aria-hidden="true"></i>
+                            </div>
+
+ 
+
+                            <div style="width:100%; height:100%; display: table; padding:0px;">
+
+ 
+
+                                <div style="display: table-cell;">
+                                    <h:outputText value="#{result.freeText}" rendered="#{!result.viewPII}"/>
+                                </div>
+                                <div style="display: table-cell;width:1px;vertical-align:middle">
+                                    <p:commandLink class = "notesTag sticky-notes tableIcon" id="editLogBtn" 
+                                    rendered="#{details.isEditable(result.itemType) and not result.viewPII and result.isLogPresent}"
+                                    style="color:grey;padding:2px">
+                                        <h:outputText rendered="#{result.answered}" id="editLogId"
+                                            styleClass="fa fa-history" value="" />
+                                            <f:setPropertyActionListener value="true"
+                                            target="#{details.showEditLog}" />
+                                        <p:tooltip for="editLogBtn" value="Edit Log"></p:tooltip>
+                                        <p:rowToggler rendered="#{result.answered}" id="editLogrowToggId" />
+                                    </p:commandLink>
+                                </div>
+                            </div>
+                        </p:column>
+
+						<p:column styleClass="tableIcon">
+							<p:commandLink id="editResultResponsetBtn" rendered="#{details.isEditable(result.itemType) and not result.heading}"
+								action="#{details.setSelectedAnswer(result)}" 
+								update="questionResponseForm:questionResponse questionResponseForm:freeText"
+								oncomplete="PF('questionResponseWidget').show();" disabled="#{result.viewPII}">
+								<p:resetInput target="questionResponseForm"></p:resetInput>
+								<i class="far fa-edit" alt="edit"></i>
+								<f:setPropertyActionListener value="#{result}"
+            						target="#{details.highlightedAnswer}" />
+            						<p:tooltip for="editResultResponsetBtn" value="#{msg.fdm_edit_response_tool_tip}" rendered="#{!result.viewPII}"></p:tooltip>
+							</p:commandLink>
+						</p:column>
+							<p:column styleClass="notesTag sticky-notes tableIcon">
+								<p:commandLink rendered="#{result.answered}" id="noteTag"
+									style="#{result.resultNotes.size() > 0 ? 'color:red' : 'color:black'}"
+									styleClass="far fa-sticky-note" value="" >
+									<f:setPropertyActionListener value="false"
+            						target="#{details.showEditLog}" />
+									</p:commandLink>
+									
+								<p:rowToggler rendered="#{result.answered}" id="rowToggId" />
+								<p:tooltip for="detailsForm:resultSetTable:#{resultTableRowInd}:noteTag" value="Notes"></p:tooltip>
+							</p:column>
+						<p:rowExpansion id="rowExpander" styleClass="rowExpnsionSty">
+						<p:panel styleClass="rowExpnStyPl">
+							<p:dataTable id="rowExpanTable" rendered="#{!details.showEditLog}" value="#{result.resultNotes}" emptyMessage="No notes found"
+								var="notes" selectionMode="single" resizableColumns="true"
+								selection="#{details.selectedResultNotes}" rowKey="#{notes.id}">
+								<p:column headerText="#{msg.fdm_result_note_label}" styleClass="noteText">
+									<h:outputText value="#{notes.noteText}" />
+								</p:column>
+								<p:column headerText="#{msg.fdm_result_user_name_label}"
+									styleClass="userNameCls">
+									<h:outputText value="#{notes.id.createUser}" />
+								</p:column>
+								<p:column headerText="#{msg.fdm_result_date_label}" styleClass = "dateField">
+									<h:outputText value="#{func:intToDate(notes.id.createDate)}">
+										<f:convertDateTime dateStyle="medium" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="#{msg.fdm_result_time_label}" styleClass = "dateField">
+									<h:outputText value="#{func:parseTime(notes.id.createTime)}" />
+								</p:column>
+
+								<p:column styleClass="noteButton">
+									<f:facet name="header">
+										<p:commandLink id="addNotesQues"
+											update="resultNotesAddForm:resultNotesAdd"
+											oncomplete="PF('resultNotesAddWidget').show();"
+											disabled="#{!fdmenv.resultNotesView}">
+											<f:setPropertyActionListener value="#{result}"
+												target="#{details.rowLevelDetails}" />
+											<f:setPropertyActionListener value="true"
+												target="#{details.addResultNotesFlag}" />
+											<f:setPropertyActionListener value="#{resultTableRowInd}"
+												target="#{details.resultNotesRowNo}" />
+												<i class="far fa-plus-square" alt="add" style="font-size: 1.2em;"></i>
+												<p:tooltip  for="addNotesQues" value="#{msg.fdm_add_note_tool_tip}"></p:tooltip>
+										</p:commandLink>
+										
+									</f:facet>
+									<p:panelGrid columns="2">
+									<p:commandLink id="editNotesQues"
+										update="resultNotesAddForm:resultNotesAdd"
+										oncomplete="PF('resultNotesAddWidget').show();"
+										disabled="#{notes.id.createUser ne details.username or !fdmenv.resultNotesView}">
+										<f:setPropertyActionListener value="#{notes}"
+											target="#{details.selectedResultNotes}" />
+										<f:setPropertyActionListener value="false"
+											target="#{details.addResultNotesFlag}" />
+										<f:setPropertyActionListener value="#{resultTableRowInd}"
+											target="#{details.resultNotesRowNo}" />
+											<i class="far fa-edit" alt="edit"></i>
+											<p:tooltip  for="editNotesQues" value="#{msg.fdm_edit_note_tool_tip}"></p:tooltip>
+									</p:commandLink>
+									
+									<p:commandLink id="deleteNotesQues"
+										oncomplete="PF('deleteDialogVar').show();"
+										disabled="#{notes.id.createUser ne details.username or !fdmenv.resultNotesView}"
+										update="resultNotesAddForm">
+										<f:setPropertyActionListener value="#{notes}"
+											target="#{details.selectedResultNotes}" />
+										<f:setPropertyActionListener value="#{result}"
+												target="#{details.rowLevelDetails}" />
+										<f:setPropertyActionListener value="#{notes.noteText}"
+											target="#{details.addResNotes}" />
+										<f:setPropertyActionListener value="#{resultTableRowInd}"
+											target="#{details.resultNotesRowNo}" />
+											<i class="far fa-trash-alt" alt="delete"></i>
+											<p:tooltip  for="deleteNotesQues" value="#{msg.fdm_delete_note_tool_tip}"></p:tooltip>
+									</p:commandLink>
+									
+									</p:panelGrid>
+								</p:column>
+							</p:dataTable>
+							</p:panel>
+							
+							<p:panel styleClass="rowExpnStyPl" rendered="#{details.showEditLog}">
+								<p:dataTable id="editLog"
+									value="#{result.resLogList}" var="logs"
+									selectionMode="single" resizableColumns="true"
+									selection="#{details.highlightedAnswer}" rowKey="#{logs.id}">
+									<p:column headerText="#{msg.fdm_edit_log_user_name}"
+										style="width:150px">
+										<h:outputText value="#{logs.updateUser}" />
+									</p:column>
+									<p:column headerText="#{msg.fdm_edit_log_date}"
+										styleClass="dateField">
+										<h:outputText value="#{func:intToDate(logs.updateDate)}">
+											<f:convertDateTime dateStyle="medium" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="#{msg.fdm_edit_log_time}"
+										styleClass="dateField">
+										<h:outputText value="#{func:parseTime(logs.updateTime)}" />
+									</p:column>
+									<p:column headerText="#{msg.fdm_edit_log_type}"
+										style="width:90px">
+										<h:outputText
+											value="#{logs.editType.equals('E')?'Edit':'Add'}" />
+									</p:column>
+									<p:column headerText="#{msg.fdm_edit_log_previous_response}"
+										styleClass="noteText" style="width:60%">
+										<p:panelGrid>
+											<p:row>
+												<h:outputText value="#{logs.resRespLog.response}"
+													rendered="#{!result.date and result.itemType ne 'TIME' and !result.multiPickList}" />
+												<h:outputText value=" (#{logs.resRespLog.uom})"
+													rendered="#{logs.resRespLog.uom!=null}" />
+												<h:outputText
+													value="#{logs.resRespLog.response eq 'O/R' || logs.resRespLog.response eq 'N/A' ? logs.resRespLog.response : func:intToDate(logs.resRespLog.response)}"
+													rendered="#{result.date}">
+													<f:convertDateTime dateStyle="medium" />
+												</h:outputText>
+	
+												<h:outputText
+													value="#{logs.resRespLog.response eq 'O/R' || logs.resRespLog.response eq 'N/A' ? logs.resRespLog.response : func:parseTime(logs.resRespLog.response)}"
+													rendered="#{result.itemType eq 'TIME'}">
+													<f:convertDateTime timeStyle="short" pattern="HH:mm:ss" />
+	`											</h:outputText>
+											</p:row>
+										</p:panelGrid>
+										<p:panelGrid rendered="#{result.multiPickList}">
+											<p:row>
+												<ul class="multipickList">
+													<li><h:outputText value="#{logs.resRespLog.response}" /></li>
+													<ui:repeat value="#{logs.resSupLog}" var="countMulti">
+														<li><h:outputText value="#{countMulti.id.response}" /></li>
+													</ui:repeat>
+												</ul>
+											</p:row>
+										</p:panelGrid>
+
+										<p:panelGrid rendered="#{result.taskList}">
+											<p:row>
+												<ui:repeat value="#{logs.resTaskLog}" var="countItem">
+													<ul class="multipickList">
+														<li
+															class="#{countItem.taskCompleteCode == 'TC' ?  'taskListComplete' : 'taskListNotComplete'}">
+															<h:outputText value="#{countItem.taskDesc}" />
+														</li>
+													</ul>
+												</ui:repeat>
+											</p:row>
+										</p:panelGrid>
+
+										<p:panelGrid rendered="#{result.photograph and logs.resBlobLog.getBlob()!=null}">
+											<p:row> 
+												<h:graphicImage id="photoPreview"
+													value="#{logs.resBlobLog.getBlob()}"
+													styleClass="resLogImgCls"
+													alt="No Image Found" />
+											</p:row>
+										</p:panelGrid>
+
+									</p:column>
+									<p:column headerText="Free Text" style="width:40%">
+										<h:outputText value="#{logs.resTxtLog.freeText}" />
+									</p:column>
+
+
+								</p:dataTable>
+							</p:panel>
+							
+							<p:spacer width="300" height="20" />
+						</p:rowExpansion>
+					</p:dataTable>
+				</h:panelGrid>
+
+			</p:panel>
+
+		</h:form>
+
+		<h:form id="questionResponseForm" enctype="multipart/form-data" >
+		<p:remoteCommand name="refreshEditPanelResponse" update="detailsForm:resultSetTablePnl" process="@all" oncomplete="notesRowExpander()"> </p:remoteCommand>
+			<!--  ie7 doesn't like auto width, so we have to manually specify widths for image and non-image response dialogs -->
+			<p:sidebar id="questionResponse"
+				widgetVar="questionResponseWidget" resizable="false"
+				position="right">
+				
+				<p:panel id="editResSidePanel" header="#{details.selectedAnswer.answered?msg.fdm_details_edit_question_response_dialog_header_label:msg.fdm_details_add_question_response_dialog_header_label}">
+				
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('questionResponseWidget').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+								<h:panelGrid columns="2" style="float:right">
+								<h:outputLabel
+									value="#{details.editDate!=null?func:intToDate(details.editDate):func:intToDate(details.selectedAnswer.resultDate)}"
+									style="font-size: 10px;margin: 0px; width:50px;padding-right: 10px;" rendered="#{details.editDate!=null||details.selectedAnswer.resultDate!=null}">
+									<f:convertDateTime dateStyle="short"
+										pattern="#{msg.date_pattern}" />
+								</h:outputLabel>
+
+								<h:outputLabel
+									value="#{details.editTime!=null?func:parseTime(details.editTime):func:parseTime(details.selectedAnswer.resultTime)}"
+									style="font-size: 10px;margin: 0px; width:50px;" rendered="#{details.editTime!=null || details.selectedAnswer.resultTime!=null}">
+									<f:convertDateTime timeStyle="short" pattern="HH:mm:ss" />
+								</h:outputLabel>
+								</h:panelGrid>
+								
+					<h:panelGrid columns="1" width="100%">
+	
+						<h:panelGrid columns="2" columnClasses="detailsPopupLabel, detailsPopupResponse">
+							<h:outputLabel for="question"
+								value="#{msg.fdm_details_script_dialog_label}" />
+							<h:outputText id="question"
+								value="#{details.selectedAnswer.script}"
+								style="font-size:18px"/>
+						</h:panelGrid>
+						<p:spacer height="30px"></p:spacer>
+						<h:panelGrid columns="2" id="responseEditPanel"
+							columnClasses="detailsPopupLabel, detailsPopupResponse">
+							<h:outputLabel value="#{msg.fdm_details_response_dialog_label}" />
+							<h:panelGrid  style="height:250px" >
+						<!-- Formated Data Response -->	
+							<p:panelGrid rendered="#{details.selectedAnswer.itemType eq 'FORMATTED DATA INPUT'}">
+							<div id ="FormatResponse" class="formattedDataEditResponse">
+								<p:repeat var="sel" varStatus="repeatstat" id="formatRepeat"
+									value="#{details.selectedAnswer.formatInputDefList}">
+									
+									<p:inputText size="1" id="formatData"
+										value="#{details.selectedAnswer.deltaResponse[sel.id.charPos]}" maxlength="1" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox or sel.charType eq 'SC'}"
+										onblur="#{sel.caseField eq 'L' ? 'value=value.toLowerCase()' : (sel.caseField eq 'U' ? 'value=value.toUpperCase()' : '')}"
+										style="width: 30px;text-align: center;" styleClass="#{sel.caseField eq 'L' ? 'formattedInputLowerCase' : (sel.caseField eq 'U' ? 'formattedInputUpperCase' : '')}">
+																			
+										<p:keyFilter regEx="/[#{details.selectedAnswer.formatPattern(sel)}]/" />
+										<p:tooltip position="bottom"
+											value="#{details.selectedAnswer.toolTipDisplay(sel)}" showEvent="focus"
+											for="questionResponseForm:formatRepeat:#{sel.id.charPos}:formatData"
+											hideEvent="blur" />
+											
+									</p:inputText>
+									
+								</p:repeat>
+							</div>	
+							</p:panelGrid>
+						<!-- String Response -->
+							<p:inputTextarea id="stringRes" value="#{details.selectedAnswer.deltaResponse}"
+								styleClass="threeLineDialog" maxlength="#{details.selectedAnswer.fieldSize != null ? details.selectedAnswer.fieldSize : 1250 }"
+								rendered="#{details.selectedAnswer.itemType eq 'STRING'}" validatorMessage="Response will not allow “ (double quote) and ‘ (single quote)."
+								disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+								required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}"
+								requiredMessage="#{details.mandatoryResponseErrorMessage}">
+								<f:validateRegex pattern="^[#{details.regExp}]*$" for="stringRes" ></f:validateRegex>
+								 <p:keyFilter regEx="/[#{details.regExp}]/" preventPaste="false" />
+							</p:inputTextarea>
+							<h:panelGrid
+								rendered="#{details.selectedAnswer.itemType eq 'NUMERIC' or details.selectedAnswer.itemType eq 'DECIMAL'}">
+								<p:row>
+									<p:column>
+									<!-- Numeric Response -->
+										<p:inputText id="noEditResponse" value="#{details.selectedAnswer.deltaResponseInt}" converterMessage="Value must be a whole integer"
+											rendered="#{details.selectedAnswer.itemType eq 'NUMERIC'}"  validatorMessage="Error Decimal value" 
+											maxlength="#{details.selectedAnswer.fieldSize != null ? details.selectedAnswer.fieldSize : 9 }"
+											 style="width:170px" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+											 required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}"
+											requiredMessage="#{details.mandatoryResponseErrorMessage}"> 
+										</p:inputText>
+									<!-- Decimal Response -->
+										<p:inputText  id ="desEditResponse" value="#{details.selectedAnswer.deltaResponseDes}" converterMessage="Value must be numeric"
+											rendered="#{details.selectedAnswer.itemType eq 'DECIMAL'}" validatorMessage="Error Decimal value"
+											maxlength="#{details.selectedAnswer.fieldSize != null ? details.selectedAnswer.fieldSize : 20 }"
+											style="width:170px" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+											required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}"
+											requiredMessage="#{details.mandatoryResponseErrorMessage}">
+										</p:inputText>
+									</p:column>
+									<p:column>
+									<!-- UOM Response -->
+										<p:selectOneMenu value="#{details.selectedAnswer.deltaUom}"
+											rendered="#{details.selectedAnswer.unitOfMeasureList != null}"
+											styleClass="uomSelectBox" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+											required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}"
+											requiredMessage="#{details.mandatoryResponseErrorMessage}">
+											<p:ajax event="change" listener="#{details.setUomValidationLimits}" >
+											
+											</p:ajax>
+											<f:selectItems
+												value="#{details.selectedAnswer.unitOfMeasureList}"
+												var="selectIteam" itemLabel="#{selectIteam.id.uomType}"
+												itemValue="#{selectIteam.id.uomType}">
+												
+											</f:selectItems>
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+							</h:panelGrid>
+							<!-- Single Pick Response -->
+							<p:selectOneMenu value="#{details.selectedAnswer.deltaResponse}" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+								rendered="#{details.selectedAnswer.itemType eq 'SINGLE PICK' or details.selectedAnswer.itemType eq 'SINGLE PICK (RULE BASED)' or details.selectedAnswer.itemType eq 'CONDITION' or details.selectedAnswer.itemType eq 'YES/NO'}"
+								required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}" style="min-width:380px !important;"
+								requiredMessage="#{details.mandatoryResponseErrorMessage}">
+								<f:selectItem itemLabel="" itemValue="" noSelectionOption="true"></f:selectItem>
+								<f:selectItems value="#{details.selectedAnswer.validationPropertyList}"
+									var="selectIteam" itemLabel="#{selectIteam.validationProperty}"
+									itemValue="#{selectIteam.validationProperty}">
+								</f:selectItems>
+							</p:selectOneMenu>
+							<!-- Single Pick Condition Response -->
+							<p:selectOneMenu value="#{details.selectedAnswer.deltaResponse}" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+								rendered="#{details.selectedAnswer.itemType eq 'INSTRUCTION'}" style="min-width:380px !important;"
+								required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}"
+								requiredMessage="#{details.mandatoryResponseErrorMessage}">
+								<f:selectItem itemLabel="" itemValue="" noSelectionOption="true"></f:selectItem>
+								<f:selectItem itemLabel="COMPLETED" itemValue="COMPLETED"></f:selectItem>
+								<f:selectItem itemLabel="NOT COMPLETED" itemValue="NOT COMPLETED"></f:selectItem>
+							</p:selectOneMenu>
+							<!-- Multi Pick Response -->
+							<p:selectManyMenu value="#{details.selectedAnswer.deltaResponse}" showCheckbox="true" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}" 
+								rendered="#{details.selectedAnswer.itemType eq 'MULTI PICK' or details.selectedAnswer.itemType eq 'MULTI PICK (RULE BASED)' or details.selectedAnswer.itemType eq 'TASK LIST'}"
+								style="width: 395px;" scrollHeight="230" required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}"
+											requiredMessage="#{details.mandatoryResponseErrorMessage}" styleClass="multiPickEditResponse">
+								<f:selectItems 
+									value="#{details.selectedAnswer.validationPropertyList}"
+									var="selectIteam" itemLabel="#{selectIteam.validationProperty}"
+									itemValue="#{selectIteam.validationProperty}"></f:selectItems>
+							</p:selectManyMenu>
+							<!-- Time Response -->
+							<p:datePicker id="timePickerId" value="#{details.selectedAnswer.deltaResponse}" pattern="HH:mm"
+								converterMessage="Invalid time format" showIcon="true"
+								rendered="#{details.selectedAnswer.itemType eq 'TIME'}" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+								timeOnly="true" style="width:150px;" styleClass="timePickStyle" 
+								required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}"
+											requiredMessage="#{details.mandatoryResponseErrorMessage}">
+								<f:convertDateTime pattern="HH:mm"></f:convertDateTime>
+								<p:keyFilter regEx="/[0-9:]/"></p:keyFilter>
+							</p:datePicker>
+
+							<!-- Date Response -->
+							<p:calendar value="#{details.selectedAnswer.deltaResponse}" id="editResDate"
+								showOn="button" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+								pattern="#{msg.date_pattern}" mode="popup"
+								converterMessage="#{msg.fdm_search_invalid_date_format}" validatorMessage="Invalid date format"
+								rendered="#{details.selectedAnswer.itemType eq 'DATE'}" styleClass="editPanelDatePicker"
+								required="#{details.mandatoryResponse and !details.selectedAnswer.mandatorymodifierCheckBox}"
+											requiredMessage="#{details.mandatoryResponseErrorMessage}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" ></f:convertDateTime>
+							</p:calendar>
+							<!-- Photograph Response -->
+							<h:panelGrid rendered="#{details.selectedAnswer.photograph}">
+								<p:panelGrid  style="height: 320px;">
+									<p:row>
+										<p:column>
+											
+												<h:graphicImage id="photoPreview" 
+													value="#{details.selectedAnswer.deltaResponse}"
+													style="max-width:400px; max-height: 300px;" alt="No Image Found"/>
+											
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column style="vertical-align : bottom;">
+								
+											<p:fileUpload mode="advanced" skinSimple="true" dragDropSupport="false" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+												listener="#{details.fileUploadListener}" accept=".png,.jpg,.jpeg,.gif" 
+												allowTypes="/(\.|\/)(jpe?g)$/i" auto="true" styleClass="photoResponseUploder"
+												invalidFileMessage="Please upload only jpg/jpeg files"
+												update="messages photoPreview" label="Replace" chooseIcon="fas fa-retweet">									
+											</p:fileUpload>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+								
+							</h:panelGrid>
+						<!-- Level Question should be modified in upcoming  -->
+							<h:panelGrid
+								rendered="#{details.selectedAnswer.itemType eq 'LEVEL'}"
+								style="vertical-align: center;" >
+								<p:panelGrid>
+									<p:row>
+										<p:column style="width: 120px;">
+											<h:outputText 
+												value="#{details.selectedAnswer.leftLabel}" />
+										</p:column>
+										<p:column style="text-align: center;width: 50px;">
+											<h:outputText id="outputDisplay"  size="1" style="text-align: center;" 
+												value="#{details.selectedAnswer.deltaResponse}" disabled="true" />
+											 <h:inputHidden id="output" value="#{details.selectedAnswer.deltaResponse}" />
+										</p:column>
+										<p:column style="text-align: right;width: 120px;">
+											<h:outputText 
+												value="#{details.selectedAnswer.rightLabel}" />
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column colspan="3">
+										<p:slider for="output" style="width: 360px"
+											minValue="#{details.selectedAnswer.startValue}" disabled="#{details.selectedAnswer.mandatorymodifierCheckBox}"
+											maxValue="#{details.selectedAnswer.maxValSlidder}" step="#{details.selectedAnswer.increment}" 
+											rendered="#{details.selectedAnswer.itemType eq 'LEVEL'}"
+											displayTemplate="{value}" display="outputDisplay" />
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+							</h:panelGrid>
+							</h:panelGrid>
+
+						</h:panelGrid>
+
+						<h:panelGrid columns="2" columnClasses="detailsPopupLabel, detailsPopupResponse">
+							<h:outputLabel for="freeText"
+								value="#{msg.fdm_details_free_text_dialog_label}" />
+							<p:inputTextarea id="freeText" maxlength="200"
+								value="#{details.selectedAnswer.deltaFreeText}" validatorMessage="Free Text will not allow “ (double quote) and ‘ (single quote)."
+								styleClass="threeLineDialog" required="#{details.selectedAnswer.inputType eq 'MO' and details.selectedAnswer.mandatorymodifierCheckBox}"
+								requiredMessage="Free text required.">
+								<f:validateRegex pattern="^[#{details.regExp}]*$" for="stringRes" ></f:validateRegex>
+								 <p:keyFilter regEx="/[#{details.regExp}]/" preventPaste="false" />
+								</p:inputTextarea>
+								<h:outputLabel value=""
+									style="font-size: 10px;margin: 0px;"/>
+						</h:panelGrid>
+						<p:spacer width="300" height="30" />
+						<h:panelGrid columns="2" style="float: right">
+								<p:toggleSwitch styleClass="editReponseCheckBox" 
+									label="#{details.selectedAnswer.inputType eq 'MO' ? 'O/R' : 'N/A'}"
+									value="#{details.selectedAnswer.mandatorymodifierCheckBox}"  
+									rendered="#{details.selectedAnswer.inputType eq 'MN' or details.selectedAnswer.inputType eq 'O' or details.selectedAnswer.inputType eq 'MO'}" >
+									<p:ajax event="change" listener="#{details.selectedAnswer.setEditPanelResponse}"   update="responseEditPanel"></p:ajax></p:toggleSwitch>
+									<h:outputLabel rendered="#{details.selectedAnswer.inputType eq 'MN' or details.selectedAnswer.inputType eq 'O' or details.selectedAnswer.inputType eq 'MO'}" 
+									 value="#{details.selectedAnswer.inputType eq 'MO' ? 'O/R' : 'N/A'}" style="width:50px;padding-left:5px"></h:outputLabel>
+							</h:panelGrid>
+						<p:spacer width="300" height="70" />
+						<h:panelGrid columns="1">
+						
+						<p:messages id="messages" showDetail="false" closable="false">
+						</p:messages>
+						</h:panelGrid>
+	
+					</h:panelGrid>
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.fdm_save}" icon="fas fa-save"
+							type="submit" action="#{details.saveResponse(false)}" oncomplete="if(!args.validationFailed) { PF('questionResponseWidget').hide();refreshEditPanelResponse();}"
+							update="editResSidePanel messages" />
+						<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+							icon="fas fa-times" 
+							oncomplete="PF('questionResponseWidget').hide();" />
+					</f:facet>
+				</p:panel>
+			</p:sidebar>
+			
+			<p:dialog 	id="confirmSaveDlg" 
+					dynamic="true"					
+					widgetVar="confirmSaveDlgVar" 
+					resizable="false" 
+					width="340px"   
+					modal="true"
+					position="center center" onShow="PF('confirmSaveDlgVar').initPosition()"
+					closable="false"
+					closeOnEscape="false"> 
+					<f:facet name="header">
+						<h:outputText value="Confirm" styleClass="dialogheader" />
+					</f:facet>
+		    <p:panelGrid columns="1" width="100%">
+		    <h:outputText value="The entered value is outside the tolerance levels. Do you wish to continue ? " />
+				
+			</p:panelGrid>
+				<f:facet name="footer">
+					<p:commandButton value="#{msg.fdm_action_no}"
+						oncomplete="PF('confirmSaveDlgVar').hide();"
+						styleClass="ui-confirmdialog-no">
+					</p:commandButton>
+					<p:commandButton value="#{msg.fdm_action_yes}"
+						action="#{details.saveResponse(true)}"
+						oncomplete="PF('confirmSaveDlgVar').hide();PF('questionResponseWidget').hide();refreshEditPanelResponse();"/>
+
+				</f:facet>
+			</p:dialog> 
+			
+		</h:form>
+		
+		<h:form id="resultNotesAddForm">
+			<!--  ie7 doesn't like auto width, so we have to manually specify widths for image and non-image response dialogs -->
+			<p:sidebar id="resultNotesAdd"
+				widgetVar="resultNotesAddWidget" resizable="false"
+				position="right">
+				
+				<p:panel id="addEditPanel" header="#{details.addResultNotesFlag ? 'Add Note' : 'Edit Note'}">
+				<p:focus context="addEditPanel"/>
+					<div class="ui-icon-close-override">
+						<span class="fa fa-angle-right" style="cursor:pointer;" onclick="PF('resultNotesAddWidget').hide();"/>
+					</div>
+					<div style="height:10px;width:100%"></div>
+								
+					<p:panelGrid columns="1" width="100%"
+						columnClasses="detailsPopupLabel, detailsPopupResponse">
+	
+						<p:panelGrid columns="2">
+							<h:outputLabel for="question" style="width:50px"
+								value="Note" />
+							<p:inputTextarea id="addResNotes" value="#{details.addResNotes}" maxlength="150" rows="7" cols="50" rendered="#{details.addResultNotesFlag}">
+							</p:inputTextarea>
+							<p:inputTextarea id="editResNotes" value="#{details.selectedResultNotes.noteText}" maxlength="150" rows="7" cols="50" rendered="#{!details.addResultNotesFlag}">
+							</p:inputTextarea>
+						</p:panelGrid>
+	
+					</p:panelGrid>
+					<p:spacer height="20px"></p:spacer>
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.fdm_save}" icon="fas fa-save"
+							action="#{details.addUpdateResultNote}"
+							oncomplete="PF('resultNotesAddWidget').hide();"
+							update="detailsForm:resultNoteAcc detailsForm:resultSetTable:#{details.resultNotesRowNo}:rowExpanTable :detailsForm:resultSetTable:@row(#{details.resultNotesRowNo})">
+							</p:commandButton>
+							
+					</f:facet>
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.fdm_search_dialog_cancel_label}"
+							icon="fas fa-times" 
+							onclick="PF('resultNotesAddWidget').hide();" >
+							<f:setPropertyActionListener value=""
+													target="#{details.addResNotes}" />
+							</p:commandButton>
+					</f:facet>
+				</p:panel>
+			</p:sidebar>
+
+			
+			<p:dialog 	id="deleteDialogId" 
+					dynamic="true"					
+					widgetVar="deleteDialogVar" 
+					resizable="false" 
+					width="340px"   
+					modal="true"
+					position="center center" onShow="PF('deleteDialogVar').initPosition()"
+					closable="false"
+					closeOnEscape="false"> 
+					<f:facet name="header">
+						<h:outputText value="Delete Note" styleClass="dialogheader" />
+					</f:facet>
+		    <p:panelGrid columns="1" width="100%">
+		    <h:outputText value="Are you sure you wish to delete this note?" />
+				
+			</p:panelGrid>
+				<f:facet name="footer">
+					<p:commandButton value="#{msg.fdm_action_no}"
+						onclick="PF('deleteDialogVar').hide();"
+						styleClass="ui-confirmdialog-no">
+						<f:setPropertyActionListener value=""
+							target="#{details.addResNotes}" />
+					</p:commandButton>
+					<p:commandButton value="#{msg.fdm_action_yes}"
+						action="#{details.deleteResultNote}"
+						onclick="PF('deleteDialogVar').hide();"
+						update="detailsForm:resultNoteAcc detailsForm:resultSetTable:#{details.resultNotesRowNo}:rowExpanTable :detailsForm:resultSetTable:@row(#{details.resultNotesRowNo})" />
+
+				</f:facet>
+			</p:dialog> 
+		
+		</h:form>
+		
+		<h:form  id="audioVideoDialogForm">
+			<p:remoteCommand name="audioVideoRecomteCloseCommand" update="audioVideoDialogForm:audioVideoDialog"></p:remoteCommand>
+			<p:dialog id="audioVideoDialog" 
+				dynamic="true"
+				widgetVar="audioVideoDialogVar" 
+				resizable="false" 
+				width="500px"  height="#{details.videoTag ? '500px' : '100px' }"
+				modal="true" 
+				position="center center"
+				onShow="PF('audioVideoDialogVar').initPosition()" 
+				closable="false"
+				closeOnEscape="false" 
+				draggable="false"
+				onHide="audioVideoRecomteCloseCommand()">
+
+				<f:facet name="header">
+
+					<h:outputText value="Media Playback" />
+					<p:commandLink oncomplete="PF('audioVideoDialogVar').hide();"
+						styleClass="downloadVideoBtn" style="padding-left: 10px;">
+						<i class="fas fa-times fa-fw" style="font-size: 20px"></i>
+					</p:commandLink>
+
+					<p:commandLink action="#{details.saveVideoAudio}" ajax="false"
+						styleClass="downloadVideoBtn" style="padding-right: 10px;">
+						<i class="fas fa-download fa-fw" style="font-size: 20px"></i>
+					</p:commandLink>
+
+				</f:facet>
+
+				<p:panel rendered="#{details.videoTag}">
+				<video id="videoContainer" controls="controls"  width="450px" height="450px" controlsList="nodownload" disablePictureInPicture="true"> 
+					<source src="#{details.selectedAnswer.base64Video}" type="video/mp4"/> 
+					<source src="#{details.selectedAnswer.base64Video}" type="video/quicktime"/> 
+					Your browser does not support HTML5 video.
+				</video>
+				</p:panel>
+				<p:panel rendered="#{!details.videoTag}">
+				
+				<audio  id="audioContainer" controls="controls" style="width:100%" controlsList="nodownload"> 
+					<source src="#{details.selectedAnswer.base64Video}" type="audio/m4a"/> 
+					<source src="#{details.selectedAnswer.base64Video}" type="audio/aac"/> 
+					<source src="#{details.selectedAnswer.base64Video}" type="audio/wav"/> 
+					Your browser does not support HTML5 Audio.
+				</audio>
+				</p:panel>
+			</p:dialog>
+		
+		</h:form>
+		
+		<h:form id="assetDialogViewId">
+		
+		<ui:include src="../fdm/EquipmentInformation.xhtml">
+			<ui:param name="equipBean" value="#{details}"></ui:param>
+		</ui:include>
+		
+		</h:form>
+		
+			<ui:include src="detailsQuickView.xhtml">
+		</ui:include>
+	</ui:define>
+</ui:composition>

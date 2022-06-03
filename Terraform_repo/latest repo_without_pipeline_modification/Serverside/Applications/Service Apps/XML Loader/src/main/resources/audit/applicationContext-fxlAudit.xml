@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+     http://www.springframework.org/schema/tx 
+     http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+     http://www.springframework.org/schema/aop 
+     http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+     http://www.springframework.org/schema/util 
+     http://www.springframework.org/schema/util/spring-util-4.0.xsd
+     http://www.springframework.org/schema/context 
+     http://www.springframework.org/schema/context/spring-context-4.0.xsd
+     http://www.springframework.org/schema/jdbc
+     http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd">
+
+
+	<!-- Required to support auto-wiring -->
+	<context:annotation-config />
+
+	
+	<!-- 
+	#################################################################
+	# Audit Database Datasource Configuration						#
+	#################################################################
+	-->
+	
+	<jdbc:initialize-database data-source="fxl_auditDataSource" ignore-failures="ALL">
+		<jdbc:script location="classpath:audit/create_fxlauditdb.sql"/>
+	</jdbc:initialize-database>
+
+	<!-- H2 Data Source -->
+	
+    <bean id="fxl_auditDataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    	<constructor-arg>
+    		<bean class="com.zaxxer.hikari.HikariConfig">  
+				<property name="driverClassName" value="${fxl.audit.jdbc.driverClassName}" />
+				<property name="jdbcUrl" value="${fxl.audit.jdbc.url}" />
+				<property name="username" value="${fxl.audit.jdbc.username}" />
+				<property name="password" value="${fxl.audit.jdbc.password}" />
+		    	<property name="maximumPoolSize" value="${fxl.audit.jdbc.pool.max_size}" />
+		    </bean> 
+    	</constructor-arg>
+    </bean>
+	
+	
+	<!-- 
+	#################################################################
+	# Hibernate Configuration										#
+	#################################################################
+	-->
+	
+	<util:list id="fxlAuditHibernateMappings" value-type="java.lang.String">
+		<value>audit/hibernate_mappings/AuditFiles.hbm.xml</value>
+		<value>audit/hibernate_mappings/AuditMilestones.hbm.xml</value>
+		<value>audit/hibernate_mappings/FileErrors.hbm.xml</value>
+		<value>audit/hibernate_mappings/MilestoneValues.hbm.xml</value>
+		<value>audit/hibernate_mappings/StatusValues.hbm.xml</value>
+	</util:list>
+	
+	<!-- Hibernate Session Factory -->
+	<bean id="fxl_auditHibernateSessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="fxl_auditDataSource" />
+		<property name="hibernateProperties" ref="fxl_auditHibernateProperties" />
+		<property name="mappingResources" ref="fxlAuditHibernateMappings" />
+	</bean>
+
+	<!-- Hibernate Properties -->
+	<util:properties id="fxl_auditHibernateProperties">
+		<prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+		<prop key="hibernate.show_sql">false</prop>
+		<prop key="hibernate.format_sql">true</prop>
+		<prop key="hibernate.default_schema">fxlauditdb</prop>
+	</util:properties>
+
+
+	<!-- 
+	#################################################################
+	# Audit Database Transaction Management Configuration			#
+	#################################################################
+	-->
+	
+	<!-- Transaction Manager -->
+	<bean id="fxl_auditTransactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="fxl_auditHibernateSessionFactory" />
+	</bean>
+
+	<!-- Transaction Exception Translator -->
+	<bean id="fxl_auditHibernateExceptionTranslator"
+		class="org.springframework.orm.hibernate5.HibernateExceptionTranslator" />
+
+	<!-- Transaction Advice -->
+	<tx:advice id="fxl_auditServiceTxAdvice" transaction-manager="fxl_auditTransactionManager">
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="is*" read-only="true" />
+			<tx:method name="perform*" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Throwable" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<aop:pointcut id="fxl_auditBackendServiceMethods"
+			expression="execution(* com.amtsybex.fieldreach.xmlloader.audit.service.*.*(..))" />
+		<aop:advisor advice-ref="fxl_auditServiceTxAdvice"
+			pointcut-ref="fxl_auditBackendServiceMethods" />
+	</aop:config>
+
+
+	<!-- 
+	#################################################################
+	# Audit Database Maintenance									#
+	#################################################################
+	-->
+	
+	<bean id="fxl_auditDbMaintenanceTask"
+		class="com.amtsybex.fieldreach.xmlloader.audit.maintenance.impl.AuditDbMaintenanceTaskImpl"
+		destroy-method="stopMaintenanceTask">
+		<property name="retentionPeriod" value="${fxl.audit.retention.period}" />
+	</bean>
+
+
+	<!-- 
+	#################################################################
+	# Audit DAO Beans												#
+	# DAO beans will be auto-wired into audit service bean.			#
+	#################################################################
+	-->
+	
+	<!-- Generic DAO that will be the parent of all DAOs. Used to provide access 
+		to audit Database Hibernate Session Factory. -->
+	<bean id="fxl_auditGenericDAO" abstract="true"
+		class="com.amtsybex.fieldreach.xmlloader.audit.dao.impl.GenericDAO">
+		<property name="sessionFactory" ref="fxl_auditHibernateSessionFactory" />
+	</bean>
+
+	<!-- 'audit_files' DAO bean -->
+	<bean id="fxl_auditAuditFilesDao" parent="fxl_auditGenericDAO"
+		class="com.amtsybex.fieldreach.xmlloader.audit.dao.impl.AuditFilesDaoImpl" />
+
+	<!-- 'audit_milestones' DAO bean -->
+	<bean id="fxl_auditAuditMilestonesDao" parent="fxl_auditGenericDAO"
+		class="com.amtsybex.fieldreach.xmlloader.audit.dao.impl.AuditMilestonesDaoImpl" />
+
+	<!-- 'status_values' DAO bean -->
+	<bean id="fxl_auditStatusValuesDao" parent="fxl_auditGenericDAO"
+		class="com.amtsybex.fieldreach.xmlloader.audit.dao.impl.StatusValuesDaoImpl" />
+
+	<!-- 'milestone_values' DAO bean -->
+	<bean id="fxl_auditMilestoneValuesDao" parent="fxl_auditGenericDAO"
+		class="com.amtsybex.fieldreach.xmlloader.audit.dao.impl.MilestoneValuesDaoImpl" />
+
+	<!-- 'file_error' DAO bean -->
+	<bean id="fxl_auditFileErrorsDao" parent="fxl_auditGenericDAO"
+		class="com.amtsybex.fieldreach.xmlloader.audit.dao.impl.FileErrorsDaoImpl" />
+
+
+	<!-- 
+	#################################################################
+	# Audit Database Service Beans									#
+	#################################################################
+	-->
+
+	<!-- Audit Service Bean -->
+	<bean id="fxl_auditService"
+		class="com.amtsybex.fieldreach.xmlloader.audit.service.impl.AuditServiceImpl" />
+
+</beans>

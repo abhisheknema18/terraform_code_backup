@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WorkOrder>
+	<WorkOrderDetail>
+		<WorkOrderNo>Rel-1004</WorkOrderNo>
+		<WorkOrderDesc>Release workorder - 1004</WorkOrderDesc>
+	     <WorkGroupCode>REGRESSION</WorkGroupCode>
+	     <OperationType>REL</OperationType>
+	     <Latitude>57.12345</Latitude>
+	     <Longitude>51.1234</Longitude>
+		<PlanStartDate>20210907</PlanStartDate>
+	     <ReqFinishDate>20210907</ReqFinishDate>
+	     <ReqFinishTime>1200</ReqFinishTime>
+		<CreationDate>20210907</CreationDate>
+		<CreationTime>123105</CreationTime>
+		<DistrictCode>CAM</DistrictCode>
+		<FuelType>PETROL</FuelType>
+		<Make>RENAULT</Make>
+		<Model>MEGANE DYNAMIQUE</Model>
+		<Owner>BORRd</Owner>
+		<Colour>BLUE</Colour>
+		<AccountNo>0714-96-5820</AccountNo>
+		<AccountClientNo>07/55/513916</AccountClientNo>
+		<Contact>000 8408 4101</Contact>
+		<Email>REGRESSION_TEST.COM</Email>
+	    <EquipDesc>DETACHED</EquipDesc>
+		<AdditionalText/>
+		</WorkOrderDetail>
+</WorkOrder>

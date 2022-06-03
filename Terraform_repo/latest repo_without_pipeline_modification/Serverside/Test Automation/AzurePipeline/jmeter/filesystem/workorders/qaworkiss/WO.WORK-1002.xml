@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WorkOrder>
+	<WorkOrderDetail>
+		<WorkOrderNo>WORK-1002</WorkOrderNo>
+		<WorkOrderDesc>WORKISSUE TEST 1002</WorkOrderDesc>
+		<WorkGroupCode>WORKISSUE</WorkGroupCode>
+		<OperationType>REL</OperationType>
+		<PlanStartDate>20211014</PlanStartDate>
+		<UserCode>qaworkiss</UserCode>
+	    <ReqFinishDate>20211014</ReqFinishDate>
+	    <ReqFinishTime>1200</ReqFinishTime>
+		<CreationDate>20211014</CreationDate>
+		<CreationTime>123105</CreationTime>
+		<DistrictCode>REG</DistrictCode>
+		<FuelType>PETROL</FuelType>
+		<Make>RENAULT</Make>
+		<Model>MEGANE DYNAMIQUE</Model>
+		<Owner>BORRd</Owner>
+		<Colour>BLUE</Colour>
+		<AccountNo>0714-96-5820</AccountNo>
+		<AccountClientNo>07/55/513916</AccountClientNo>
+		<Contact>000 8408 4101</Contact>
+		<Email>BORREGO@ACME.COM</Email>
+	    <EquipDesc>DETACHED</EquipDesc>
+		<AdditionalText/>
+		<OperationType>REL</OperationType>
+	</WorkOrderDetail>
+</WorkOrder>

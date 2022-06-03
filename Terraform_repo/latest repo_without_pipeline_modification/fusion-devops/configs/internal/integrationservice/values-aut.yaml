@@ -1,0 +1,49 @@
+# Default values for integration webservices.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+configmap:
+  configuration:
+    # Enable swagger documentation
+    SPRING_PROFILES_ACTIVE: swagger
+    # Database connection string
+    DEFAULT_JDBC_URL: jdbc:sqlserver://sqlfg-web-aut-uksouth.database.windows.net:1433;databaseName=fieldsmart-aut;
+    SERVER_SERVLET_CONTEXT_PATH: '/aut/integration/'
+
+labels:
+  environment: aut
+  
+ingress:
+  hosts:
+    - host: amt.v1.fieldsmarttest.com
+      paths:
+        - path: /aut/integration
+          pathType: Prefix
+
+  tls:
+  - hosts:
+    - amt.v1.fieldsmarttest.com
+    secretName: aks-ingress-tls
+
+probes:
+  enabled: true
+  livenessProbe:
+    httpGet:
+      path: /aut/integration/actuator/health/liveness
+      port: http
+    initialDelaySeconds: 60
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /aut/integration/actuator/health/readiness
+      port: http
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+    

@@ -1,0 +1,70 @@
+# Referenced by pipeline:
+#   - https://dev.azure.com/amtsybex1/Mobile/_build?definitionId=682
+
+# Explicitly set none for repository trigger
+trigger:
+  - none
+
+variables:
+  - name: artifactFolderName
+    value: 'CI-pipeline/WebServicesInt'
+  - name: artifactName
+    value: fieldsmartsqldatabase
+  - group: 'Fusion_Common'
+
+resources:
+  pipelines:
+    - pipeline: CI-pipeline  # Name of the pipeline resource
+      source: FieldSmartSQLDatabase-CI # Name of the triggering pipeline
+      trigger:
+        branches:
+          include:
+            - main
+            - develop
+
+stages:
+  # Deploy database to SANDBOX
+  #- template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacDeployment.yml  # Template reference
+  #  parameters:
+  #    envName: 'SANDBOX'
+  #    groupName: 'FusionCloudDeploymentTF_AUT_uksouth'
+- stage: DeployArtifactDEV
+  displayName: Deploy Artifact to DEV
+      # Deploy database to DEV
+  jobs:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacDeployment.yml  # Template reference
+      parameters:
+        envName: 'DEV'
+        groupName: 'FusionCloudDeploymentTF_DEV_uksouth'
+
+- stage: DeployArtifactQA
+  displayName: Deploy Artifact to QA
+
+  jobs:      
+    # Deploy database to QA
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacDeployment.yml  # Template reference
+      parameters:
+        envName: 'QA'
+        groupName: 'FusionCloudDeploymentTF_QA_uksouth'
+
+- stage: DeployArtifactUAT
+  displayName: Deploy Artifact to UAT
+
+  jobs:
+  # Deploy database to UAT
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacDeployment.yml  # Template reference
+      parameters:
+        envName: 'UAT'
+        groupName: 'FusionCloudDeploymentTF_UAT_uksouth'
+
+  ## Deploy database to Preprod
+  #- template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacDeployment.yml  # Template reference
+  #  parameters:
+  #    envName: 'PREPROD'
+  #    groupName: 'FusionCloudDeploymentTF_DEV_uksouth'
+
+  ## Deploy database to Prod
+  #- template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dacpacDeployment.yml  # Template reference
+  #  parameters:
+  #    envName: 'PROD'
+  #    groupName: 'FusionCloudDeploymentTF_DEV_uksouth'

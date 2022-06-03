@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="GenericWOW">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="General" type="General" minOccurs="1"
+					maxOccurs="1" />
+				<xs:element name="PageDefinition" type="PageDefinition"
+					minOccurs="0" maxOccurs="1" />
+				<xs:element name="WorkOrderObject" type="WorkOrderObject"
+					minOccurs="0" maxOccurs="1" />
+				<xs:element name="EquipmentObject" type="EquipmentObject"
+					minOccurs="0" maxOccurs="1" />
+			</xs:all>
+		</xs:complexType>
+	</xs:element> 
+	<xs:complexType name="General">
+		<xs:all>
+			<xs:element name="OperatingMode" minOccurs="1"
+				maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Which Operation Mode the application will
+						operate in WM - Work Management or AM - Asset Management
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="" />
+						<xs:enumeration value="WM" />
+						<xs:enumeration value="AM" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PollingInterval" minOccurs="0"
+				maxOccurs="1" type="xs:unsignedInt">
+				<xs:annotation>
+					<xs:documentation>The elapsed time interval in milliseconds
+						that will be used by Work Manager when polling the local file
+						store for result files to upload.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ConcurrentRequestLimit" minOccurs="0"
+				maxOccurs="1" type="xs:unsignedShort">
+				<xs:annotation>
+					<xs:documentation>The maximum number of concurrent upload
+						threads that can be executed simultaneously.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RequestTimeout" minOccurs="0"
+				maxOccurs="1" type="xs:unsignedInt">
+				<xs:annotation>
+					<xs:documentation>The elapsed time interval in milliseconds
+						after which a web service call will timeout if there is no
+						response form the web server.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DefaultWorkSortField" minOccurs="0"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The tag will identify the property name field
+						in the Work Order definition that is to be used as the default
+						sort field when listing Work Order search results.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DefaultEquipSortField" minOccurs="0"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The tag will identify the property name field
+						in the Equipment definition that is to be used as the default
+						sort field when listing equipment search results or
+						subordinate equipment items.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DefaultWorkFilter" minOccurs="0"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Defines the default work order filter field
+						if one has not already been set in the application.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ResAssocCodeValue" minOccurs="0"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Used to determine how the RESASSOCCODE
+						parameter value should be populated when running a script
+						against an Equipment.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TPPollingInterval" minOccurs="0"
+				maxOccurs="1" type="xs:unsignedInt">
+				<xs:annotation>
+					<xs:documentation>Defines the time interval in milliseconds at
+						which the transaction processing thread will check the
+						Documents/Transactions folder for new transaction files.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WOPollingInterval" minOccurs="0"
+				maxOccurs="1" type="xs:unsignedInt">
+				<xs:annotation>
+					<xs:documentation>Defines the time interval in milliseconds at
+						which the work order download thread will be triggered to
+						check for new work.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EnableValDownload" minOccurs="0"
+				maxOccurs="1" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Determines whether the application checks for
+						updates to validation lists used in the application that may
+						have been updated in the Fieldreach server.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkAllocationMode" minOccurs="0"
+				maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Defines how work orders are allocated to
+						field users. Based on this parameter the web service will
+						retrieve different work order information from the server.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="" />
+						<xs:enumeration value="MW" />
+						<xs:enumeration value="W" />
+						<xs:enumeration value="U" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ResultsHistory" minOccurs="0"
+				maxOccurs="1" type="xs:unsignedShort">
+				<xs:annotation>
+					<xs:documentation>Controls the number of days that the script
+						result history will be retained in the Script-Player
+						ResultsHistory database, then number of days that downloaded
+						script result files will be kept and the number of days
+						temporary files media files will be kept.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkHistory" minOccurs="0" maxOccurs="1"
+				type="xs:unsignedShort">
+				<xs:annotation>
+					<xs:documentation>Defines the number of days that the work
+						history will be retained in the local database.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CantDoWorkStatus" minOccurs="0"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Defines the work status value to be used when
+						updating the local WorkHistory table and when setting the work
+						status value in the transaction record.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CloseWorkStatus" minOccurs="0"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Defines the work status value to be used when
+						updating the local WorkHistory table and when setting the work
+						status value in the transaction record.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkStatusValidationType" minOccurs="0"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Holds the name of the Fieldreach Validation Type
+						defining the list of allowed Work Order status values which can be
+						set from the field</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="HeartbeatFrequency" minOccurs="0"
+				maxOccurs="1" type="xs:unsignedShort">
+				<xs:annotation>
+					<xs:documentation>Number of seconds between heartbeat transaction
+						generations. Default if not included 3600 secs.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="HeartbeatLocation" minOccurs="0"
+				maxOccurs="1" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Hearbeat location tracking</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WOReceivedTrans" minOccurs="0"
+				maxOccurs="1" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Controls the creation of “RECEIVED ON DEVICE”
+						work status transactions.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DataSource" minOccurs="0" maxOccurs="1"
+				type="xs:string">
+				<xs:annotation>
+					<xs:documentation>To be used to provide additional connection
+						details for the data source.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DataSourceType" minOccurs="1"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Type of Database</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OverdueDateField" minOccurs="0"
+				maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Identify the property name field in the
+						WorkOrderObject definition that is to be used to determine if a
+						work order can be classified as overdue.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionRecording" minOccurs="0"
+				maxOccurs="1" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Controls Transaction Processing within the
+						application.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="PageDefinition">
+		<xs:all>
+			<xs:element name="WorkOrder" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Page" minOccurs="0"
+							maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="PageName" minOccurs="1"
+										maxOccurs="1" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Name of the page which is used in the
+												WorkOrderObject as a cross-reference to define what page
+												a data field will be displayed on.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="PageHeading" minOccurs="1"
+										maxOccurs="1" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Display name of the Page.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Equipment" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Page" minOccurs="0"
+							maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="PageName" minOccurs="1"
+										maxOccurs="1" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Name of the page which is used in the
+												EquipmentObject as a cross-reference to define what page
+												a data field will be displayed on.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="PageHeading" minOccurs="1"
+										maxOccurs="1" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Display name of the Page.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="WorkOrderObject">
+		<xs:sequence>
+			<xs:element name="Property" minOccurs="0"
+				maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="PropertyName" minOccurs="1"
+							maxOccurs="1" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Holds a specific field name reference from
+									the Work Order.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Label" minOccurs="1" maxOccurs="1"
+							type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The label name that will be used when
+									displaying or referencing the associated field within Work
+									Manager
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PageName" minOccurs="0" maxOccurs="1"
+							type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Used to identify the page (Defined in the
+									Page Definition section) the property is displayed on
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="List" minOccurs="0" maxOccurs="1"
+							type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Indicates if the associated field will be
+									displayed in the search results screen.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Detail" minOccurs="0" maxOccurs="1"
+							type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Indicates if the associated field will be
+									displayed on the Detail screen.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Sort" minOccurs="0" maxOccurs="1"
+							type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Indicates if the field can be used to sort
+									Equipment/Work Order lists
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Search" minOccurs="0" maxOccurs="1"
+							type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Indicates if the associated field can be
+									used on the Search screen to carry out searches
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Type" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>Used to identify the data type of the
+									associated property.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="" />
+									<xs:enumeration value="NDATE" />
+									<xs:enumeration value="NTIME" />
+									<xs:enumeration value="URL" />
+									<xs:enumeration value="TEL" />
+									<xs:enumeration value="EMAIL" />
+									<xs:enumeration value="NUMERIC" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="ValidationType" minOccurs="0"
+							maxOccurs="1" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Associates a Validation Type with a field.
+									The Validation Type can have an associated list of values
+									which can provide options for searching for assets in the
+									database or filtering the work order list.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PropertyDef" minOccurs="0"
+							maxOccurs="1" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Specifies the contents of a derived field
+									that is composed of other already existing fields
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EquipmentObject">
+		<xs:sequence>
+			<xs:element name="Property" minOccurs="0"
+				maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="PropertyName" minOccurs="1"
+							maxOccurs="1" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Holds a specific field name reference from
+									the Work Order.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Label" minOccurs="1" maxOccurs="1"
+							type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The label name that will be used when
+									displaying or referencing the associated field within Work
+									Manager
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PageName" minOccurs="0" maxOccurs="1"
+							type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Used to identify the page (Defined in the
+									Page Definition section) the property is displayed on
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="List" minOccurs="0" maxOccurs="1"
+							type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Indicates if the associated field will be
+									displayed in the search results screen.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Detail" minOccurs="0" maxOccurs="1"
+							type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Indicates if the associated field will be
+									displayed on the Detail screen.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Search" minOccurs="0" maxOccurs="1"
+							type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>Indicates if the associated field can be
+									used on the Search screen to carry out searches
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Type" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>Used to identify the data type of the
+									associated property.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="" />
+									<xs:enumeration value="NDATE" />
+									<xs:enumeration value="NTIME" />
+									<xs:enumeration value="URL" />
+									<xs:enumeration value="TEL" />
+									<xs:enumeration value="EMAIL" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="ValidationType" minOccurs="0"
+							maxOccurs="1" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Associates a Validation Type with a field.
+									The Validation Type can have an associated list of values
+									which can provide options for searching for assets in the
+									database or filtering the work order list.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PropertyDef" minOccurs="0"
+							maxOccurs="1" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Specifies the contents of a derived field
+									that is composed of other already existing fields
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

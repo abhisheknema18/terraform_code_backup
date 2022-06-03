@@ -1,0 +1,21 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<h:panelGrid id="pageInfo" columns="1" style="width:100%; background-color: #fff">
+		<h:panelGrid columns="1" style="color: #000;padding:10px;width:100%; text-align:center; font-size:1.3em; font-weight:bold; letter-spacing:1px;">
+			<h:outputText value="#{bean.title}" />
+		</h:panelGrid>
+		<!-- <h:panelGrid columns="2" style="float:right;">
+			<h:graphicImage id="pageHelp" value="/images/btnHelp.png" onclick="#{helpIdrefmode ne null ? 'ctxHelp' : 'showHelpById'}(#{helpId});" style="cursor:pointer;" title="#{tooltipHelper.tipWithKey(helpId)}" />
+			<rich:toolTip rendered="#{helpId ne null}" mode="client" value="#{tooltipHelper.tipWithKey(helpId)}" for="pageHelp" direction="bottom-left"/>
+		</h:panelGrid>-->
+	</h:panelGrid>
+	
+</ui:composition>
+ 

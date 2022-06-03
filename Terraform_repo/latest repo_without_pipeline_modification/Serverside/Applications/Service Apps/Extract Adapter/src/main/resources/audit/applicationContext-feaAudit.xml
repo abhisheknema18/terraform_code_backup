@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/tx 
+     http://www.springframework.org/schema/tx/spring-tx.xsd
+     http://www.springframework.org/schema/aop 
+     http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/util 
+     http://www.springframework.org/schema/util/spring-util.xsd
+     http://www.springframework.org/schema/context 
+     http://www.springframework.org/schema/context/spring-context.xsd
+     http://www.springframework.org/schema/jdbc
+     http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+
+	<!-- Required to support auto-wiring -->
+	<context:annotation-config />
+
+	
+	<!-- 
+	#################################################################
+	# Audit Database Datasource Configuration						#
+	#################################################################
+	-->
+	
+	<jdbc:initialize-database data-source="fea_auditDataSource" ignore-failures="ALL">
+		<jdbc:script location="classpath:audit/create_feaauditdb.sql"/>
+	</jdbc:initialize-database>
+
+	<!-- H2 Data Source -->
+	
+    <bean id="fea_auditDataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    	<constructor-arg>
+    		<bean class="com.zaxxer.hikari.HikariConfig">  
+				<property name="driverClassName" value="${fea.audit.jdbc.driverClassName}" />
+				<property name="jdbcUrl" value="${fea.audit.jdbc.url}" />
+				<property name="username" value="${fea.audit.jdbc.username}" />
+				<property name="password" value="${fea.audit.jdbc.password}" />
+		    	<property name="maximumPoolSize" value="${fea.audit.jdbc.pool.max_size}" />
+		    </bean> 
+    	</constructor-arg>
+    </bean>
+	
+	
+	<!-- 
+	#################################################################
+	# Hibernate Configuration										#
+	#################################################################
+	-->
+	
+	<util:list id="feaAuditHibernateMappings" value-type="java.lang.String">
+		<value>audit/hibernate_mappings/ExtractAudit.hbm.xml</value>
+		<value>audit/hibernate_mappings/Redelivery.hbm.xml</value>
+		<value>audit/hibernate_mappings/ExtractErrors.hbm.xml</value>
+	</util:list>
+	
+	<!-- Hibernate Session Factory -->
+	<bean id="fea_auditHibernateSessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="fea_auditDataSource" />
+		<property name="hibernateProperties" ref="fea_auditHibernateProperties" />
+		<property name="mappingResources" ref="feaAuditHibernateMappings" />
+	</bean>
+
+	<!-- Hibernate Properties -->
+	<util:properties id="fea_auditHibernateProperties">
+		<prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+		<prop key="hibernate.show_sql">false</prop>
+		<prop key="hibernate.format_sql">true</prop>
+		<prop key="hibernate.default_schema">feaauditdb</prop>
+	</util:properties>
+
+
+	<!-- 
+	#################################################################
+	# Audit Database Transaction Management Configuration			#
+	#################################################################
+	-->
+	
+	<!-- Transaction Manager -->
+	<bean id="fea_auditTransactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="fea_auditHibernateSessionFactory" />
+	</bean>
+
+	<!-- Transaction Exception Translator -->
+	<bean id="fea_auditHibernateExceptionTranslator"
+		class="org.springframework.orm.hibernate5.HibernateExceptionTranslator" />
+
+	<!-- Transaction Advice -->
+	<tx:advice id="fea_auditServiceTxAdvice" transaction-manager="fea_auditTransactionManager">
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Throwable" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<aop:pointcut id="fea_auditBackendServiceMethods"
+			expression="execution(* com.amtsybex.fieldreach.extract.audit.service.*.*(..))" />
+		<aop:advisor advice-ref="fea_auditServiceTxAdvice"
+			pointcut-ref="fea_auditBackendServiceMethods" />
+	</aop:config>
+
+
+	<!-- 
+	#################################################################
+	# Audit Database Maintenance									#
+	#################################################################
+	-->
+	
+	<bean id="fea_auditDbMaintenanceTask"
+		class="com.amtsybex.fieldreach.extract.audit.maintenance.impl.AuditDbMaintenanceTaskImpl"
+		destroy-method="stopMaintenanceTask">
+		<property name="retentionPeriod" value="${fea.audit.retention.period}" />
+	</bean>
+
+	
+	<!-- 
+	#################################################################
+	# Audit DAO Beans												#
+	# DAO beans will be auto-wired into audit service bean.			#
+	#################################################################
+	-->
+	
+	<!-- Generic DAO that will be the parent of all DAOs. Used to provide access 
+		to audit Database Hibernate Session Factory. -->
+		 
+	<bean id="fea_auditGenericDAO" abstract="true"
+		class="com.amtsybex.fieldreach.extract.audit.dao.impl.GenericDAO">
+		<property name="sessionFactory" ref="fea_auditHibernateSessionFactory" />
+	</bean>
+	
+	<!-- 'extract_audit' DAO bean -->
+	<bean id="fea_extractAuditDao" parent="fea_auditGenericDAO"
+		class="com.amtsybex.fieldreach.extract.audit.dao.impl.ExtractAuditDaoImpl" />
+		
+	<!-- 'extract_errors' DAO bean -->
+	<bean id="fea_extractErrorsDao" parent="fea_auditGenericDAO"
+		class="com.amtsybex.fieldreach.extract.audit.dao.impl.ExtractErrorsDaoImpl" />
+
+	<!-- 'redelivery' DAO bean -->
+	<bean id="fxl_redeliveryDao" parent="fea_auditGenericDAO"
+		class="com.amtsybex.fieldreach.extract.audit.dao.impl.RedeliveryDaoImpl" />
+
+
+	<!-- 
+	#################################################################
+	# Audit Database Service Beans									#
+	#################################################################
+	-->
+
+	<!-- Audit Service Bean -->
+	
+	<bean id="fea_auditService"
+		class="com.amtsybex.fieldreach.extract.audit.service.impl.AuditServiceImpl" >
+		<property name="errorStatus" value="${fea.status.error}"/>
+	</bean>
+	
+	
+</beans>

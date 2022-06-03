@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[HPCWGCat] (
+    [WGCatId]   INT          NOT NULL,
+    [WGCatDesc] VARCHAR (40) NULL,
+    CONSTRAINT [PK_HPCWGCAT] PRIMARY KEY CLUSTERED ([WGCatId] ASC)
+);
+

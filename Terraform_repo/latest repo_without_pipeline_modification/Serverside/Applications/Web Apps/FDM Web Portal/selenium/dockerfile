@@ -1,0 +1,30 @@
+FROM acrplatdevshared.azurecr.io/selenium:regTests
+
+#====================================
+# Copy the source code project.
+#====================================
+COPY ["Test Automation/Portal_Selenium/","/opt/Portal_Selenium"]
+
+#====================================
+# Scripts to run Selenium Standalone
+#====================================
+COPY ["Applications/Web Apps/FDM Web Portal/selenium/start-selenium.sh", "/opt/Portal_Selenium/Selenium_App/start-selenium.sh"]
+
+USER root
+
+RUN cd /opt
+RUN mkdir -p /opt/selenium_reports 
+RUN chown -R seluser:seluser /opt/selenium_reports
+RUN pwd
+RUN chown -R seluser:seluser /opt/Portal_Selenium
+WORKDIR "/opt/Portal_Selenium/Selenium_App"
+
+USER seluser
+
+# Boolean value, maps "--relax-checks"
+ENV SE_RELAX_CHECKS true
+
+EXPOSE 4444
+
+RUN chmod +x start-selenium.sh
+ENTRYPOINT ["/opt/Portal_Selenium/Selenium_App/start-selenium.sh"]

@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+		
+	<script type="text/javascript">
+	    //<![CDATA[
+		function start() {
+		    PF('statusDialog').show();
+		}
+		 
+		function stop() {
+		    PF('statusDialog').hide();
+		}
+	    //]]>
+	</script> 
+		
+		
+	<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+	 
+	<p:dialog id="statusDialog" widgetVar="statusDialog" draggable="false" closable="false" resizable="false" showHeader="false">
+			<center>
+	        <h:graphicImage value="/images/loadingBar.gif" alt="ai"/>
+	        <br /><h:outputText value="#{msg.fdm_status_loading_message}" />
+	        </center>
+	</p:dialog>
+
+
+</ui:composition>

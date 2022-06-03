@@ -1,0 +1,104 @@
+# Default values for Extract Adapter.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: acrplatdevshared.azurecr.io/extractadapter
+#  Override tag from command-line, example: --set image.tag=0.1.55-beta-develop.126
+#  tag: "0.1.55-beta-develop.126"
+
+deployment:
+  volumes:
+    - name: secrets-store-inline
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          secretProviderClass: extractadapter-fieldsmart
+    - name: fs-volume
+      persistentVolumeClaim:
+        claimName: azurefile
+  volumeMounts:
+    - name: secrets-store-inline
+      mountPath: "/mnt/secrets-store"
+      readOnly: true
+    - mountPath: "/home/fusion/fieldsmart"
+      name: fs-volume
+
+
+service:
+  env:
+    - name: DEFAULT_JDBC_PASSWORD
+      value: DbPassword
+    - name: DEFAULT_JDBC_USERNAME
+      value: DbUser
+    - name: DEFAULT_INSTANCE_KEY
+      value: InstanceKey
+
+configmap:
+  enabled: true
+  configuration:
+    # Flag indicating if binary data should be extracted
+    FEA_EXTRACT_BINARY: 'false'
+    # Extract Additional references for N/A and O/R response types
+    FEA_IGNORE_NA_OR: 'false'
+    # Extract Fieldroles where the field results are empty
+    FEA_IGNORE_BLANKFIELDROLE: 'false'
+    # InterfaceQueue table polling interval in milliseconds
+    FEA_POLLING_INTERVAL: '60000'
+    # Interval at which message redelivery will be attempted in milliseconds
+    FEA_REDELIVERY_INTERVAL: '60000'
+    # Maximum number of attempts to attempt re-delivery of a message
+    FEA_REDELIVERY_MAX_ATTEMPTS: '5'
+    # Status a result will be given if an error occurred during extraction
+    FEA_STATUS_ERROR: 'ERROR'
+    # Flag indicating if AIB header information should be added to JMS messages
+    FEA_AIB_HEADERS: 'false'
+    # Value used to populated 'Destination' element in extracted message 'Header' section
+    FEA_SCRIPTRESULT_DESTINATION: 'DIR'
+    # Thread pool to support concurrent extraction of script results
+    FEA_THREADPOOL_SIZE: '5'
+    # LOG level.
+    LOGGING_LEVEL_ROOT: #{LOGGINGLEVEL}#
+    # Log Level  for HIKARI
+    LOGGING_LEVEL_COM_ZAXXER_HIKARI: #{LOGHIKARI}#
+    # Log level for SPRINGFRAMEWORK
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: #{LOGSPRINGFRAMEWORK}#
+    # Logging level for Hibernate
+    LOGGING_LEVEL_ORG_HIBERNATE: #{LOGHIBERNATE}#
+    # Logging Level for AMTSYBEX 
+    LOGGING_LEVEL_COM_AMTSYBEX: #{LOGAMTSYBEX}#
+    # Logging Level for APACHE 
+    LOGGING_LEVEL_ORG_APACHE: #{LOGAPACHE}#
+    # Logging Level for AMTSYBEX 
+    LOGGING_LEVEL_COM_AMTSYBEX_FIELDREACH: #{LOGAMTSYBEXFIELDREACH}#
+#resources:
+#  requests:
+#    memory: "350Mi"
+#    cpu: "50m"
+#  limits:
+#    memory: "700Mi"
+#    cpu: "100m"
+    
+secretProviderClass:
+  enabled: true
+  name: extractadapter-fieldsmart
+  secretObjects:
+    type: Opaque
+    data:
+      - key: DbPassword
+        objectName: DbPassword
+      - key: DbUser
+        objectName: DbUser
+      - key: InstanceKey
+        objectName: InstanceKey
+  keyVaultSecrets:
+    - objectName: DbPassword
+      objectType: secret
+      objectVersion: ''
+    - objectName: DbUser
+      objectType: secret
+      objectVersion: ''
+    - objectName: InstanceKey
+      objectType: secret
+      objectVersion: ''

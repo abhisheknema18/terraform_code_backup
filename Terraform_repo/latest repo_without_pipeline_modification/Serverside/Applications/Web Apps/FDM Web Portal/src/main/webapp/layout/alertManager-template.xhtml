@@ -1,0 +1,36 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="main-body">
+		<div id="searchBody">
+			<h:panelGrid columns="2" class="leftTabbed" columnClasses="searchMenuCell,searchPanelCell" style="width:100%">
+				<h:panelGroup id="searchSideMenu" class="leftMenuBorder">
+					<h:form id="sideMenuForm">
+					 	<h:panelGrid columns="1" id="leftMenuVerticalSpacer" style="background:#69A488;padding:.2em;height:39px;width:100%;"> </h:panelGrid>
+						<h:panelGrid columns="1" id="leftMenu" class="leftMenuBorder">
+
+							<p:commandLink styleClass="leftMenuAction" disabled="#{alertManagerList.selectedAlerts.size() == 0}" action="#{alertManagerList.closeSelectedAlerts()}"  update="searchTab menuForm:alertsEquipBtn msgs">
+							<i class="leftMenuLinkIcon fa fa-window-close"></i><h:outputText value="#{msg.fdm_alert_close}"/>
+							</p:commandLink>
+							
+						</h:panelGrid>
+
+					</h:form>
+				</h:panelGroup>
+				<h:panelGroup id="searchBodyContent" styleClass="searchBodyContent">
+					<h:panelGrid columns="1" id="listPanel" width="100%">
+						<ui:insert name="alertList-body"/>
+					</h:panelGrid>			   
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+	</ui:define>
+</ui:composition>

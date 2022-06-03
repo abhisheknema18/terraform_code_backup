@@ -1,0 +1,36 @@
+div.gridbox_networkflow {
+	border:none;
+}
+
+div.gridbox_networkflow .xhdr {
+/*
+	background-color: #E7E7E7;
+	border-spacing: 0px;
+	*/
+}
+
+table.hdr[style] {
+	background-color: #E7E7E7;
+	border-spacing: 0px;
+	width: 100% !important;
+	margin: 0px !important;
+	padding: 0px !important;
+}
+
+td.gridbox_networkflow {
+	border:none;
+}
+
+div.gridbox_networkflow table.hdr td {
+	background-color: #E7E7E7;
+	border-color: #D4D0C8;
+}
+
+div.gridbox_networkflow table.obj td {
+	border: none;
+}
+
+.treeViewColumn {
+	width:50%;
+}
+

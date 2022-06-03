@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WorkOrder>
+	<WorkOrderDetail>
+		<WorkOrderNo>1001-104</WorkOrderNo>
+		<WorkOrderDesc>Work Order 1001-104</WorkOrderDesc>
+		<PlanStartDate>20210810</PlanStartDate>
+		<WorkGroupCode>QUINN</WorkGroupCode>
+	    <ReqFinishDate>20211201</ReqFinishDate>
+	    <ReqFinishTime>1200</ReqFinishTime>
+		<CreationDate>20140529</CreationDate>
+		<CreationTime>123105</CreationTime>
+		<DistrictCode>CAM</DistrictCode>
+		<FuelType>PETROL</FuelType>
+		<Make>RENAULT</Make>
+		<Model>MEGANE DYNAMIQUE</Model>
+		<Owner>BORRd</Owner>
+		<Colour>BLUE</Colour>
+		<AccountNo>0714-96-5820</AccountNo>
+		<AccountClientNo>07/55/513916</AccountClientNo>
+		<Contact>000 8408 4101</Contact>
+		<Email>BORREGO@ACME.COM</Email>
+	    <EquipDesc>DETACHED</EquipDesc>
+		<AdditionalText/>
+		</WorkOrderDetail>
+</WorkOrder>

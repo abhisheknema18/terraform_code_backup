@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ScriptConfig xmlns="http://tempuri.org/DataSet1.xsd">
+    <ScriptMenu>
+        <Type>SA</Type>
+        <TargetName>GMT</TargetName>
+        <MenuText>GM Test</MenuText>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>SA</Type>
+        <TargetName>VEHICLE</TargetName>
+        <MenuText>VEHICLE</MenuText>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>WO</Type>
+        <TargetName>DIESELG</TargetName>
+        <MenuText>Diesel Generator</MenuText>
+    </ScriptMenu>
+    <ScriptMenu>
+        <Type>CLOSEWORK</Type>
+        <TargetName>FDE049-S2</TargetName>
+        <MenuText>Close Work</MenuText>
+        <AutoCommit>1</AutoCommit>
+    </ScriptMenu>
+</ScriptConfig>

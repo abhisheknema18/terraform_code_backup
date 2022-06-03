@@ -1,0 +1,156 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:func="http://amt-sybex.com/functions">
+
+<h:panelGroup id="dashyMain#{widgetId}" >
+
+	<div class="ui-g-6 ui-md-4 ui-lg-3 ui-xl-2 dashboardItem">
+
+		<h:form id="dashItemForm#{widgetId}">
+
+
+			<p:panel id="dashItem#{widgetId}"
+				styleClass="panelStyle #{dashboardItem.localisationTag}Panel">
+
+
+<div style="position:absolute; left:5px; top: 5px; color:white; background:none; width:20px; height:20px; font-size:20px; opacity:0.3">
+
+</div>
+				<!-- <f:facet name="actions">
+			
+				<p:commandLink id="delete" styleClass="dashboardCounterButtonItem fa fa-trash" action="#{dashboard.removeItem(dashboardItem)}" />
+
+				<p:commandLink id="edit" styleClass="dashboardCounterButtonItem fa fa-pencil" action="#{dashboardItem.loadSelectedX}" update="dashEditDialog#{widgetId}" oncomplete="PF('dashEditDialogWidget#{widgetId}').show()"/>
+				
+				<p:commandLink id="carryoutSearch" styleClass="dashboardCounterButtonItem fa fa-arrow-right" action="#{dashboardItem.viewResults()}" />
+
+	        </f:facet> -->
+
+				<h:panelGroup id="dashy" styleClass="counter">
+					<p:remoteCommand name="cancelEdit#{widgetId}"
+						actionListener="#{dashboardItem.cancelEdit()}"
+						update="dashy"
+						style="display: none;" />
+					<p:poll widgetVar="updatePoll#{widgetId}" rendered="#{dashboard.refreshRate > 0}"
+						interval="#{dashboard.refreshRate}"
+						listener="#{dashboardItem.refresh()}" update="dashy" />
+
+					<div class="wrapper70" style="margin-bottom:1em;">
+
+						<div class="innerContent">
+						
+							<div style="position: relative; height: 100%; width: 100%; margin: 5px auto;">
+								
+								<div style="display:table; table-layout:fixed; width:100%;font-size: 1.2em; color: white;">
+								<!-- 32701 - KN - Added Over Due logo -->
+								<div style="display: table-cell; width:30px;"><span style="opacity:0.6; padding-left:0.5em;" class="#{dashboardItem.getImageTag()}" /></div>
+								<div style="display: table-cell; text-align: center;white-space:nowrap;overflow: hidden;">#{dashboardItem.criteriaObjs.title}</div>
+								<div style="display: table-cell; width:30px;"></div>
+								
+
+								</div>
+								
+								<div id="content" style="display: flex; justify-content: center; align-items: center; color: white; width: 100%; height: calc(100% - 40px); font-size: 5vw; font-family: StagSansBook; text-align: center; vertical-align: middle;">
+									#{dashboardItem.totalValue}</div>
+								
+								<!-- <div id="header" style="position:absolute;  text-align: center; font-size: 1.2em; color: white;">#{dashboardItem.criteriaObjs.title}</div>
+								
+								<div id="headerIcon" style="position: absolute; top: 0px; width: 100%; text-align: left; font-size: 1.2em; color: white; opacity:0.6; padding-left:0.5em;"><span class="#{dashboardItem.criteriaObjs.xAxis == 'SCRIPT' ? 'fa fa-file' : dashboardItem.criteriaObjs.xAxis == 'WORK' ? 'fa fa-clipboard-check' : 'fa fa-users'}" /></div>
+								
+								 -->
+							</div>
+						</div>
+
+						<div id="scriptChart#{widgetId}Updated"
+							style="position: absolute; bottom: -10px; font-size: 0.7em; color: white; width: 100%; text-align: right; height:35px;">
+
+	
+					
+							<div style="float: right; padding-bottom:0.5em">
+							
+								<!-- <p:commandLink id="delete"
+									styleClass="dashboardCounterButtonItem fa fa-trash"
+									style="color:white !important;"
+									action="#{dashboard.removeItem(dashboardItem)}" 
+									update="dashboardCountItems msgs"/> -->
+								<p:commandLink id="refresh"
+									style="color:white !important;"
+									styleClass="dashboardButtonItem fa fa-redo"
+									action="#{dashboardItem.refresh}"
+									update="msgs dashyMain#{widgetId}"/>
+								
+								<p:commandLink id="edit"
+									styleClass="dashboardCounterButtonItem fa fa-pencil"
+									style="color:white !important;"
+									action="#{dashboardItem.loadSelected()}"
+									resetValues="true"
+									update="msgs dashEditForm#{widgetId}:dashEditDialog#{widgetId}"
+									oncomplete="PF('dashEditDialogWidget#{widgetId}').show()" />
+
+								<p:commandLink id="carryoutSearch"
+									styleClass="dashboardCounterButtonItem fa fa-list"
+									style="color:white !important;"
+									action="#{dashboardItem.viewResults()}" />
+
+
+							</div>
+							
+							<div id="time#{widgetId}"
+								style="float: left; line-height: 35px; height: 35px; opacity:0.6;"></div>
+
+							<script>
+								var d = new Date();
+								document.getElementById('time#{widgetId}').innerHTML = "Updated: " + d.toLocaleTimeString();
+							</script> 
+
+						</div>
+					</div>
+
+					<p:repeat value="#{dashboardItem.results}" var="_entry"
+						varStatus="status">
+
+						<div class=""
+							id="hiddenSearch#{widgetId}.#{_entry.title}">
+							<h:commandButton style="display:none" id="hiddenSearchLink"
+								action="#{dashboardItem.viewResults(_entry)}">
+								<f:ajax />
+							</h:commandButton>
+						</div>
+
+					</p:repeat>
+
+
+				</h:panelGroup>
+
+
+
+			</p:panel>
+				
+
+		<p:draggable scope="counter" id="DRAG#{widgetId}"
+			for=":dashItemForm#{widgetId}:dashItem#{widgetId}" revert="true" stack=".ui-panel"/>
+
+		<p:droppable scope="counter" id="DROP#{widgetId}"
+			for=":dashItemForm#{widgetId}:dashItem#{widgetId}" tolerance="intersect"
+			hoverStyleClass="panelHover" onDrop="handleDrop">
+			<p:ajax listener="#{dashboard.onDashboardItemDrop}"
+				update="dashboardAddItem dashboardCountItems dashboardGraphItems msgs" />
+		</p:droppable>
+
+		</h:form>
+
+			
+		<ui:include src="../dashboard/DashboardEditSideBar.xhtml">
+			<ui:param name="dashboardItem" value="#{dashboardItem}" />
+		</ui:include>
+				
+	</div>
+
+</h:panelGroup>
+
+</ui:composition>

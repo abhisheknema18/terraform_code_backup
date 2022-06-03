@@ -1,0 +1,152 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:func="http://amt-sybex.com/functions"
+	template="/layout/search-template.xhtml">
+	
+	<f:metadata>
+		<f:viewParam name="equipno" value="#{search.directequipNo}"
+			required="false" />
+		<f:viewParam name="workorderno" value="#{search.directWorkOrderNo}"
+			required="false" />
+		<!-- 32370-KN-Return id Param change Start-->
+		<f:viewParam name="returnid" value="#{search.directReturnId}"
+			required="false" />
+		<!-- 32370-KN-Return id Param change End-->
+		<f:event type="preRenderView" listener="#{search.searchDirect}" />
+	</f:metadata>
+
+	<ui:param name="bean" value="#{search}" />
+	
+	<ui:define name="search-body">
+
+		<p:tabView id="searchTabs">
+		
+			<p:tab id="searchResults"
+				title="#{msg.fdm_search_search_results_tab_label} #{searchResults.results.size() > 0 ? '('.concat(searchResults.results.size()).concat(')') : ''}#{searchResults.resultsFiltered.size() > 0 ? '('.concat(searchResults.resultsFiltered.size()).concat(')') : ''} "
+				disabled="#{fn:length(searchResults.results) == 0 and search.activeTab == 0}">
+            	
+				<f:facet name="title">
+		        	<h:outputText id="theTitle" value="#{msg.fdm_search_search_results_tab_label} #{searchResults.resultsFiltered.size() > 0 and searchResults.resultsFiltered.size() lt searchResults.results.size() ? '('.concat(searchResults.resultsFiltered.size()).concat(' of ').concat(searchResults.results.size()).concat(')') : searchResults.results.size() > 0 ? '('.concat(searchResults.results.size()).concat(')') : '(0)' } " />
+		        </f:facet>
+		        
+				<h:form id="searchForm">
+				
+					<!-- bit of a hack for a primefaces bug, the update on the ajax filter is always one step behind so use oncomplete instead to update the count -->
+					<p:remoteCommand name="updateFilteredValue" action="#{searchResults.resetSelectionAfterFilter}" update="searchTabs:theTitle searchResultsCount searchTabs:searchForm searchSideMenu"/>	
+
+
+					<div style="position:absolute;height:39px;right:20px;top:0px;padding:4px; color:white">
+						<p:commandLink id="dynaButton" styleClass="resultNavigationButton fa fa-download" />
+						    <p:menu overlay="true" trigger="dynaButton" my="left top" at="left bottom">
+						        <p:menuitem value="Excel" icon="fa fa-file-excel" ajax="false">
+						        	<p:dataExporter type="xls" target="resultsTable" fileName="ScriptResults" />
+						        </p:menuitem>
+						       	<p:menuitem value="PDF" icon="fa fa-file-pdf" ajax="false" >
+						       		<p:dataExporter type="pdf" target="resultsTable" fileName="ScriptResults"  preProcessor="#{download.preProcessPDF}"/>
+						       	</p:menuitem>
+						    </p:menu>
+					</div>
+				
+
+					<p:dataTable id="resultsTable" widgetVar="resultsTable" value="#{searchResults.results}"
+						filteredValue="#{searchResults.resultsFiltered}"
+						var="result" fixedHeader="false" 
+						multiViewState="true"
+						rowStatePreserved="true"
+						filterDelay="1000"
+						rowSelectMode="add"
+						style="min-width:1275px;"
+						selection="#{searchResults.selectedResults}"
+						rowKey="#{result.id}" resizableColumns="true" paginator="false">
+
+						<p:ajax event="page" listener="#{searchResults.onPageChange}" />
+						<p:ajax event="rowSelect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowUnselect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowDblselect" update="searchSideMenu" process="@this" />
+						<p:ajax event="toggleSelect" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowSelectCheckbox" update="searchSideMenu" process="@this" />
+						<p:ajax event="rowUnselectCheckbox" update="searchSideMenu" process="@this" /> 
+						<p:ajax event="filter" oncomplete="updateFilteredValue();" process="@this" />
+						 
+						 <p:column exportable="false" rendered="#{searchResults.results.size() > 0}" selectionMode="multiple" style="width:16px;text-align:center;"/>
+						 	
+										
+						<p:column styleClass="dateField" headerText="#{msg.fdm_search_results_date_label}" filterMatchMode="contains" sortBy="#{func:intToDate(result.completeDate)}"  filterBy="#{func:intToDateString(result.completeDate)}">
+
+							<h:outputText value="#{func:intToDateString(result.completeDate)}">
+							</h:outputText>
+						</p:column>
+						<p:column style="width:100px;"
+							headerText="#{msg.fdm_search_results_work_order_no_label}"
+							rendered="#{searchResults.workOrderNo}" filterMatchMode="contains" filterBy="#{result.workOrderNo}" sortBy="#{result.workOrderNo}">  
+				            <h:outputText value="#{result.workOrderNo}" />
+				        </p:column>
+						<p:column style="width:22%;"
+							headerText="#{msg.fdm_search_results_work_order_description_label}"
+							rendered="#{searchResults.workOrderNo}" filterMatchMode="contains" filterBy="#{result.workOrderDesc}"  sortBy="#{result.workOrderDesc}">  
+				            <h:outputText value="#{result.workOrderDesc}" /> 
+				        </p:column>
+						<p:column style="width:22%;"
+							headerText="#{msg.fdm_search_results_equipment_description_label}" filterMatchMode="contains" filterBy="#{result.equipDesc}"  sortBy="#{result.equipDesc}">  
+				            <h:outputText value="#{result.equipDesc}" />
+				        </p:column>
+						<p:column style="width:155px ;"
+							headerText="#{msg.fdm_search_results_equipment_reference_label}" filterMatchMode="contains" filterBy="#{result.altEquipRef}" sortBy="#{result.altEquipRef}">  
+				            <h:outputText value="#{result.altEquipRef}" />
+				        </p:column>
+				        <!-- 41092 - Front end changes to add the new column in Search results Start-->
+				          <p:column style="width:20%"
+							headerText="#{msg.fdm_search_results_script_code_label}" filterMatchMode="contains" 
+							filterBy="#{result.returnedScript.scriptCode.concat('/').concat(result.returnedScript.scriptVersions.versionNumberInt)}" 
+							sortBy="#{result.returnedScript.scriptCode.concat('/').concat(result.returnedScript.scriptVersions.versionNumberInt)}">  
+				            <h:outputText value="#{result.returnedScript.scriptCode}" /> <h:outputText value="/#{result.returnedScript.scriptVersions.versionNumberInt}" style="color:grey"/>
+				        </p:column>
+				        <!-- 41092 - Front end changes to add the new column in Search results End-->
+						<p:column style="width:20%;"
+							headerText="#{msg.fdm_search_results_script_description_label}" filterMatchMode="contains" filterBy="#{result.summaryDesc}"  sortBy="#{result.summaryDesc}" >  
+				          	<h:outputText value="#{result.summaryDesc}" />
+				        </p:column>
+						<p:column style="width:16%" headerText="#{msg.fdm_search_results_field_user_label}" filterMatchMode="contains" filterBy="#{result.completeUser}" sortBy="#{result.completeUser}">  
+				            <h:outputText value="#{result.completeUser}" />
+				        </p:column>
+						<p:column style="width:80px;" headerText="#{msg.fdm_search_results_status_label}" filterMatchMode="contains" filterBy="#{result.resultStatus}" sortBy="#{result.resultStatus}">  
+				            <h:outputText value="#{result.resultStatus}" /> 
+				        </p:column>
+				        
+					   <p:column styleClass="tableIcon" exportable="false">
+							<p:commandLink id="resultQuickViewBtn"
+								action="#{detailsQuickView.initialise(result.getReturnedScript())}"
+								update="resultQuickViewForm:detailDialog"
+								oncomplete="PF('detailDialog').show();">
+								<i class="fa fa-search" alt="Quick View"></i>
+							</p:commandLink>
+							<p:tooltip id="resultQuickView" for="resultQuickViewBtn" value="#{msg.fdm_quick_view_tool_tip}"></p:tooltip>
+						</p:column>
+						<p:column styleClass="tableIcon" exportable="false">
+							<p:commandLink id="resultDetailedViewBtn" action="#{searchResults.findScriptByRowDetails(result)}">
+								<i class="fa fa-external-link"></i>
+								<f:setPropertyActionListener value="#{result}" target="#{searchResults.selectedResult}" />
+							</p:commandLink>
+							<p:tooltip id="resultDetailedView" for="resultDetailedViewBtn" value="#{msg.fdm_detailed_view_tool_tip}"></p:tooltip>
+						</p:column>
+
+					</p:dataTable>
+						
+					<h:outputText id="searchResultsCount"
+						value="#{searchResults.resultsFiltered.size() > 0 and searchResults.resultsFiltered.size() lt searchResults.results.size() ? ''.concat(searchResults.resultsFiltered.size()).concat(' of ').concat(searchResults.results.size()) :  searchResults.results.size() > 0 ? ''.concat(searchResults.results.size()) : '0' } #{msg.fdm_search_results_results_found_label}"
+						class="infomsg ui-messages ui-widget ui-messages-info ui-corner-all" />
+
+				</h:form>
+			</p:tab>
+		</p:tabView>
+
+		<ui:include src="detailsQuickView.xhtml">
+		</ui:include>
+		
+	</ui:define>
+</ui:composition>
